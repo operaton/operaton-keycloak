@@ -1,11 +1,8 @@
-# Installation on Camunda Platform Run
-This document describes the installation of the **Keycloak Camunda Identity Provider Plugin** on a the [Camunda BPM Run](https://docs.camunda.org/manual/latest/user-guide/camunda-bpm-run/) distribution.
-
 ## Install the Keycloak Identity Provider Plugin
 
 In order to install the Keycloak Identity Provider Plugin you have to download the library ``camunda-platform-7-keycloak-run-x.y.z.jar`` and copy it to ``$CAMUNDA_BPM_RUN_ROOT/configuration/userlib``.
 
-Please be aware that you must use the provided ``*-run-x.y.z.jar`` (fat jar, packaged with the "**-run**" extension) including transitive dependencies. The additional library is available since version ``2.0.0`` and can be found e.g. on [Maven Central](https://search.maven.org/search?q=g:org.camunda.bpm.extension%20AND%20a:camunda-platform-7-keycloak-run).
+Please be aware that you must use the provided ``*-run-x.y.z.jar`` (fat jar, packaged with the "**-run**" extension) including transitive dependencies. The additional library is available since version ``2.0.0`` and can be found e.g. on [Maven Central](https://search.maven.org/search?q=g:org.operaton.bpm.extension%20AND%20a:operaton-keycloak-run).
 
 For the records - included dependencies are:
 
@@ -29,8 +26,8 @@ plugin.identity.keycloak:
   keycloakAdminUrl: https://localhost:9001/auth/admin/realms/camunda
   clientId: camunda-identity-service
   clientSecret: 12345678-abcd-efgh-ijkl-123456789012
-  useUsernameAsCamundaUserId: true
-  useGroupPathAsCamundaGroupId: true
+  useUsernameAsOperatonUserId: true
+  useGroupPathAsOperatonGroupId: true
   administratorGroupName: camunda-admin
   disableSSLCertificateValidation: true
 ```
@@ -38,7 +35,7 @@ plugin.identity.keycloak:
 Please be aware that you have to **delete** the following properties:
 
 ```yml
-camunda.bpm:
+operaton.bpm:
   admin-user:
   id: demo
   password: demo

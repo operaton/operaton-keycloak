@@ -11,6 +11,6 @@
 *.ipr
 /extension-all/dependency-reduced-pom.xml
 /extension-run/dependency-reduced-pom.xml
-/examples/sso-kubernetes/camunda-db.mv.db
-/camunda-db.mv.db
-/.run/camunda-platform-7-keycloak-root [clean,install].run.xml
+/examples/sso-kubernetes/operaton-db.mv.db
+/operaton-db.mv.db
+/.run/operaton-keycloak-root [clean,install].run.xml

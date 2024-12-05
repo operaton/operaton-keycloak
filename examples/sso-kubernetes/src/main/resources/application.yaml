@@ -1,5 +1,5 @@
 spring.datasource:
-  url: ${JDBC_URL:jdbc:h2:./camunda-db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE}
+  url: ${JDBC_URL:jdbc:h2:./operaton-db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE}
   username: ${JDBC_USER:sa}
   password: ${JDBC_PASSWORD:sa}
 #spring.h2.console.enabled: true
@@ -8,7 +8,7 @@ spring:
   jersey:
     application-path: /engine-rest
 
-camunda.bpm:
+operaton.bpm:
   history-level: audit
   authorization:
     enabled: true
@@ -18,7 +18,7 @@ camunda.bpm:
 
 server:
   port: 8080
-  servlet.context-path: /camunda
+  servlet.context-path: /operaton
 
 # Metrics & Health
 management:
@@ -54,34 +54,34 @@ spring.security:
           scope: openid, profile, email
       provider:
         keycloak:
-          issuer-uri: ${keycloak.url.auth}/realms/camunda
-          authorization-uri: ${keycloak.url.auth}/realms/camunda/protocol/openid-connect/auth
-          user-info-uri: ${keycloak.url.auth}/realms/camunda/protocol/openid-connect/userinfo
-          token-uri: ${keycloak.url.token}/realms/camunda/protocol/openid-connect/token
-          jwk-set-uri: ${keycloak.url.token}/realms/camunda/protocol/openid-connect/certs
+          issuer-uri: ${keycloak.url.auth}/realms/operaton
+          authorization-uri: ${keycloak.url.auth}/realms/operaton/protocol/openid-connect/auth
+          user-info-uri: ${keycloak.url.auth}/realms/operaton/protocol/openid-connect/userinfo
+          token-uri: ${keycloak.url.token}/realms/operaton/protocol/openid-connect/token
+          jwk-set-uri: ${keycloak.url.token}/realms/operaton/protocol/openid-connect/certs
           # set user-name-attribute one of: 
           # - sub                -> default; using keycloak ID as camunda user ID
-          # - email              -> useEmailAsCamundaUserId=true
-          # - preferred_username -> useUsernameAsCamundaUserId=true
+          # - email              -> useEmailAsOpeartonUserId=true
+          # - preferred_username -> useUsernameAsOperatonUserId=true
           user-name-attribute: preferred_username
 
 logging.level.org.springframework.security: DEBUG
 
-# Camunda Rest API
+# Operaton Rest API
 rest.security:
   enabled: true
   provider: keycloak
   required-audience: camunda-rest-api
 
-# Camunda Keycloak Identity Provider Plugin
+# Operaton Keycloak Identity Provider Plugin
 plugin.identity.keycloak:
   keycloakIssuerUrl: ${keycloak.url.plugin}/realms/camunda
   keycloakAdminUrl: ${keycloak.url.plugin}/admin/realms/camunda
   clientId: ${keycloak.client.id}
   clientSecret: ${keycloak.client.secret}
-  useEmailAsCamundaUserId: false
-  useUsernameAsCamundaUserId: true
-  useGroupPathAsCamundaGroupId: true
+  useEmailAsOperatonUserId: false
+  useUsernameAsOperatonUserId: true
+  useGroupPathAsOperatonGroupId: true
   enforceSubgroupsInGroupQuery: true
   administratorGroupName: camunda-admin
   disableSSLCertificateValidation: true

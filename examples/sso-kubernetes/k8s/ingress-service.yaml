@@ -16,7 +16,7 @@ spec:
   - host: armstrong02
     http:
       paths:
-        - path: /(camunda)(.*)(/|$)
+        - path: /(operaton)(.*)(/|$)
           pathType: Prefix
           backend:
             service:

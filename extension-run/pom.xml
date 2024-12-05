@@ -2,16 +2,16 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-	  <groupId>org.camunda.bpm.extension</groupId>
-	  <artifactId>camunda-platform-7-keycloak-root</artifactId>
-	  <version>7.22.1-SNAPSHOT</version>
+	  <groupId>org.operaton.bpm.extension</groupId>
+	  <artifactId>operaton-keycloak-root</artifactId>
+	  <version>1.0.0-beta-2</version>
 	</parent>
 
-    <artifactId>camunda-platform-7-keycloak-run</artifactId>
+    <artifactId>operaton-keycloak-run</artifactId>
 
 	<packaging>jar</packaging>
-    <name>Camunda Platform 7 - engine plugins - identity - keycloak - extension - run</name>
-	<description>Camunda 7 Keycloak Identity Provider Plugin for Camunda Platform 7 Run</description>
+    <name>Operaton - engine plugins - identity - keycloak - extension - run</name>
+	<description>Operaton Keycloak Identity Provider Plugin for Operaton Run</description>
 
 	<properties>
 		<maven.compiler.source>${version.java}</maven.compiler.source>
@@ -21,13 +21,13 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.camunda.bpm.extension</groupId>
-			<artifactId>camunda-platform-7-keycloak</artifactId>
+			<groupId>org.operaton.bpm.extension</groupId>
+			<artifactId>operaton-keycloak</artifactId>
 		</dependency>
 
         <dependency>
-            <groupId>org.camunda.bpm.springboot</groupId>
-            <artifactId>camunda-bpm-spring-boot-starter-rest</artifactId>
+            <groupId>org.operaton.bpm.springboot</groupId>
+            <artifactId>operaton-bpm-spring-boot-starter-rest</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -94,7 +94,7 @@
 							<createSourcesJar>true</createSourcesJar>
 							<artifactSet>
                                 <excludes>
-                                    <exclude>org.camunda.commons:*</exclude>
+                                    <exclude>org.operaton.commons:*</exclude>
                                     <exclude>org.slf4j:*</exclude>
                                 </excludes>
 							</artifactSet>
@@ -136,14 +136,14 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<!-- make sure javadocs are generated for camunda-platform-7-keycloak-run -->
+				<!-- make sure javadocs are generated for operaton-keycloak-run -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<configuration>
 					<includeDependencySources>true</includeDependencySources>
 					<includeTransitiveDependencySources>true</includeTransitiveDependencySources>
 					<dependencySourceIncludes>
-						<include>org.camunda.bpm.extension:camunda-platform-7-keycloak</include>
+						<include>org.operaton.bpm.extension:operaton-keycloak</include>
 					</dependencySourceIncludes>
 					<additionalDependencies>
 						<additionalDependency>

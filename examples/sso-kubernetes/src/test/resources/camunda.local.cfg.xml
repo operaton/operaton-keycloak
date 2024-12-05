@@ -4,10 +4,10 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans   http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-  <bean id="processEngineConfiguration" class="org.camunda.bpm.engine.impl.cfg.StandaloneInMemProcessEngineConfiguration">
+  <bean id="processEngineConfiguration" class="org.operaton.bpm.engine.impl.cfg.StandaloneInMemProcessEngineConfiguration">
     <property name="history" value="full" />
     <property name="expressionManager">
-        <bean class="org.camunda.bpm.engine.test.mock.MockExpressionManager"/>
+        <bean class="org.operaton.bpm.engine.test.mock.MockExpressionManager"/>
     </property>
   </bean>
 

@@ -2,16 +2,16 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-	  <groupId>org.camunda.bpm.extension</groupId>
-	  <artifactId>camunda-platform-7-keycloak-root</artifactId>
-		<version>7.22.1-SNAPSHOT</version>
+	  <groupId>org.operaton.bpm.extension</groupId>
+	  <artifactId>operaton-keycloak-root</artifactId>
+		<version>1.0.0-beta-2</version>
 	</parent>
 
-    <artifactId>camunda-platform-7-keycloak-jwt</artifactId>
+    <artifactId>operaton-keycloak-jwt</artifactId>
 
 	<packaging>jar</packaging>
-    <name>Camunda Platform 7 - engine plugins - identity - keycloak - jwt extension</name>
-	<description>A Camunda 7 Identity Provider Plugin for Keycloak - JWT addon</description>
+    <name>Operaton - engine plugins - identity - keycloak - jwt extension</name>
+	<description>A Operaton Identity Provider Plugin for Keycloak - JWT addon</description>
 
 	<properties>
 		<maven.compiler.source>${version.java}</maven.compiler.source>
@@ -21,8 +21,8 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.camunda.bpm</groupId>
-			<artifactId>camunda-engine</artifactId>
+			<groupId>org.operaton.bpm</groupId>
+			<artifactId>operaton-engine</artifactId>
 			<scope>provided</scope>
 		</dependency>
 
@@ -33,8 +33,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.camunda.bpm.springboot</groupId>
-			<artifactId>camunda-bpm-spring-boot-starter-test</artifactId>
+			<groupId>org.operaton.bpm.springboot</groupId>
+			<artifactId>operaton-bpm-spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
  		
@@ -44,8 +44,8 @@
 			<scope>test</scope>
 		</dependency>
         <dependency>
-            <groupId>org.camunda.bpm.webapp</groupId>
-            <artifactId>camunda-webapp-jakarta</artifactId>
+            <groupId>org.operaton.bpm.webapp</groupId>
+            <artifactId>operaton-webapp-jakarta</artifactId>
 			<classifier>classes</classifier>
 			<scope>provided</scope>
         </dependency>

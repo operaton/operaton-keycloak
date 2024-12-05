@@ -19,16 +19,16 @@ services:
       - ./ssl/cert.pem:/keycloak/config/ssl/cert.pem
       - ./ssl/key.pem:/keycloak/config/ssl/key.pem
 
-  camunda:
+  operaton:
     build: .
     ports: 
       - 8080:8080
     env_file:
-      - ./env/camunda.env
+      - ./env/operaton.env
     depends_on:
       - keycloak
     restart: always
     volumes:
-      - ./config/default.yml:/camunda/configuration/default.yml
-      - ./config/production.yml:/camunda/configuration/production.yml
+      - ./config/default.yml:/operaton/configuration/default.yml
+      - ./config/production.yml:/operaton/configuration/production.yml
 

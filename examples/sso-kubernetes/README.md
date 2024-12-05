@@ -96,7 +96,7 @@ For further details on how to setup a Keycloak Camunda Identity Service Client s
 
 ### Keycloak Identity Provider Plugin
 
-The class ``KeycloakIdentityProvider.java`` in package ``org.camunda.bpm.extension.keycloak.showcase.plugin`` will activate the plugin.
+The class ``KeycloakIdentityProvider.java`` in package ``org.operaton.bpm.extension.keycloak.showcase.plugin`` will activate the plugin.
 
 The main configuration part in ``applicaton.yaml`` is as follows:
 
@@ -116,9 +116,9 @@ plugin.identity.keycloak:
   keycloakAdminUrl: ${keycloak.url.plugin}/admin/realms/camunda
   clientId: ${keycloak.client.id}
   clientSecret: ${keycloak.client.secret}
-  useEmailAsCamundaUserId: false
-  useUsernameAsCamundaUserId: true
-  useGroupPathAsCamundaGroupId: true
+  useEmailAsOperatonUserId: false
+  useUsernameAsOperatonUserId: true
+  useGroupPathAsOperatonGroupId: true
   administratorGroupName: camunda-admin
   disableSSLCertificateValidation: true
 ```
@@ -130,7 +130,7 @@ For configuration details of the plugin see documentation of [Keycloak Identity 
 
 ### OAuth2 SSO Configuration
 
-For OAuth2 SSO configuration see package ``org.camunda.bpm.extension.keycloak.showcase.sso``.
+For OAuth2 SSO configuration see package ``org.operaton.bpm.extension.keycloak.showcase.sso``.
 
 The additional configuration parts in ``applicaton.yaml`` are as follows:
 
@@ -162,8 +162,8 @@ spring.security.oauth2:
         jwk-set-uri: ${keycloak.url.token}/realms/camunda/protocol/openid-connect/certs
         # set user-name-attribute one of: 
         # - sub                -> default; using keycloak ID as camunda user ID
-        # - email              -> useEmailAsCamundaUserId=true
-        # - preferred_username -> useUsernameAsCamundaUserId=true
+        # - email              -> useEmailAsOperatonUserId=true
+        # - preferred_username -> useUsernameAsOperatonUserId=true
         user-name-attribute: preferred_username
 ```
 
@@ -204,7 +204,7 @@ Finally we assign the created Client Scope to our existing Camunda-Identity-Serv
 
 This ensures, that only users authenticated at the Camunda-Identity-Service are allowed to access Camunda's REST API. Fine grained configuration of the authorization rights can be achieved by adding rules to Camunda's Authorization configuration.
 
-The security implementation snippets for the REST Api part can be found in package ``org.camunda.bpm.extension.keycloak.showcase.rest``. 
+The security implementation snippets for the REST Api part can be found in package ``org.operaton.bpm.extension.keycloak.showcase.rest``. 
 
 Besides a typical Web security configuration ``RestApiSecurityConfig`` including OAuth 2.0 Resource Server support we need a ``KeycloakAuthenticationFilter`` registered at the end of the Spring Security Filter Chain. Its job is to pass the authenticated user id and groupIds to Camunda's IdentityService:
 
@@ -309,7 +309,7 @@ public SecurityFilterChain httpSecurity(HttpSecurity http) throws Exception {
 }
 ```
 
-The handler itself (see ``org.camunda.bpm.extension.keycloak.showcase.sso.KeycloakLogoutHandler``) takes care of sending an appropriate redirect to Keycloak. The redirect URI will look similar to
+The handler itself (see ``sso.org.operaton.bpm.extension.keycloak.showcase.KeycloakLogoutHandler``) takes care of sending an appropriate redirect to Keycloak. The redirect URI will look similar to
 ``http://<keycloak-server>/realms/camunda/protocol/openid-connect/logout?redirect_uri=http://<camunda-server>/camunda``.
 
 So the logout button now redirects to the Keycloak logout URL which then redirects back to the Camunda Cockpit. Because we're not authenticated any more, Spring Security will then start a new authentication flow.

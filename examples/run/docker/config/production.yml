@@ -2,7 +2,7 @@
 # The provided links to documentation guides for each property will give more information about the purpose of each property.
 # security guide: https://docs.camunda.org/manual/latest/user-guide/security/
 
-camunda.bpm:
+operaton.bpm:
 # https://docs.camunda.org/manual/latest/user-guide/security/#http-header-security-in-webapps
 # https://docs.camunda.org/manual/latest/webapps/shared-options/header-security/
   webapp:
@@ -47,10 +47,10 @@ server:
 # do not use the provided certificate in production
   ssl:
     key-store: classpath:keystore.p12
-    key-store-password: camunda
+    key-store-password: operaton
     key-store-type: pkcs12
-    key-alias: camunda
-    key-password: camunda
+    key-alias: operaton
+    key-password: operaton
   port: 8443
 
 # https://docs.camunda.org/manual/latest/user-guide/security/#http-header-security-in-webapps
@@ -90,8 +90,8 @@ plugin.identity.keycloak:
   keycloakAdminUrl: ${keycloak.host}/auth/admin/realms/${keycloak.realm}
   clientId: ${keycloak.client.id}
   clientSecret: ${keycloak.client.secret}
-  useEmailAsCamundaUserId: false
-  useUsernameAsCamundaUserId: true
-  useGroupPathAsCamundaGroupId: true
+  useEmailAsOperatonUserId: false
+  useUsernameAsOperatonUserId: true
+  useGroupPathAsOperatonGroupId: true
   administratorGroupName: camunda-admin
   disableSSLCertificateValidation: true

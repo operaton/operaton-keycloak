@@ -5,27 +5,28 @@
   <!-- Attention: to properly separate dependencies of extension and examples, do not define any dependencies/management here! -->
 
   <parent>
-    <groupId>org.camunda.community</groupId>
-    <artifactId>community-hub-release-parent</artifactId>
-    <version>1.4.4</version>
+    <groupId>org.operaton</groupId>
+    <artifactId>operaton-release-parent</artifactId>
+    <version>1.0.0</version>
   </parent>
 
-  <groupId>org.camunda.bpm.extension</groupId>
-  <artifactId>camunda-platform-7-keycloak-root</artifactId>
-  <version>7.22.1-SNAPSHOT</version>
+  <groupId>org.operaton.bpm.extension</groupId>
+  <artifactId>operaton-keycloak-root</artifactId>
+  <version>1.0.0-beta-2</version>
   <packaging>pom</packaging>
-  <name>Camunda Platform 7 - engine plugins - identity - keycloak - root</name>
-  <description>A Camunda 7 Identity Provider Plugin for Keycloak</description>
-  
+  <name>Operaton - engine plugins - identity - keycloak - root</name>
+  <description>A Operaton Identity Provider Plugin for Keycloak</description>
+
+
+
   <properties>
     <version.java>17</version.java>
     <encoding>UTF-8</encoding>
     <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
     <project.build.resourceEncoding>${encoding}</project.build.resourceEncoding>
-    
+
     <!-- versions -->
-	<version.camunda>7.22.0</version.camunda>
-    <!-- <version.camunda>7.20.0-ee</version.camunda> -->
+	<version.operaton>1.0.0-beta-2</version.operaton>
 	<version.springBoot>3.3.5</version.springBoot>
     <version.commons-codec>1.17.1</version.commons-codec>
 
@@ -41,27 +42,11 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:git@github.com:camunda/camunda-platform-7-keycloak.git</connection>
-    <url>scm:git:git@github.com:camunda/camunda-platform-7-keycloak.git</url>
-    <developerConnection>scm:git:git@github.com:camunda/camunda-platform-7-keycloak.git</developerConnection>
+    <connection>scm:git:git@github.com:operaton/operaton-keycloak.git</connection>
+    <url>scm:git:git@github.com:operaton/operaton-keycloak.git</url>
+    <developerConnection>scm:git:git@github.com:operaton/operaton-keycloak.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
-
-  <!-- repositories used for distribution of releases and snapshots, DO NOT CHANGE -->
-  <distributionManagement>
-    <repository>
-      <id>camunda-nexus</id>
-      <name>camunda bpm community extensions</name>
-      <url>https://artifacts.camunda.com/artifactory/camunda-bpm-community-extensions/</url>
-    </repository>
-    <snapshotRepository>
-      <id>camunda-nexus</id>
-      <name>camunda bpm community extensions snapshots</name>
-      <url>https://artifacts.camunda.com/artifactory/camunda-bpm-community-extensions-snapshots/</url>
-      <!-- for maven 2 compatibility -->
-      <uniqueVersion>true</uniqueVersion>
-    </snapshotRepository>
-  </distributionManagement>
 
   <modules>
     <module>extension</module>
@@ -74,9 +59,9 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.camunda.bpm</groupId>
-        <artifactId>camunda-bom</artifactId>
-        <version>${version.camunda}</version>
+        <groupId>org.operaton.bpm</groupId>
+        <artifactId>operaton-bom</artifactId>
+        <version>${version.operaton}</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
@@ -89,38 +74,36 @@
       </dependency>
       <!-- modules -->
       <dependency>
-        <groupId>org.camunda.bpm.extension</groupId>
-        <artifactId>camunda-platform-7-keycloak</artifactId>
+        <groupId>org.operaton.bpm.extension</groupId>
+        <artifactId>operaton-keycloak</artifactId>
         <version>${project.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>org.camunda.bpm.extension</groupId>
-        <artifactId>camunda-platform-7-keycloak-jwt</artifactId>
+        <groupId>org.operaton.bpm.extension</groupId>
+        <artifactId>operaton-keycloak-jwt</artifactId>
         <version>${project.version}</version>
         <scope>provided</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
 
-  <repositories>
-    <!-- Camunda Repository -->
-    <repository>
-        <id>camunda-bpm</id>
-        <name>Camunda Enterprise Maven Repository</name>
-        <url>https://artifacts.camunda.com/artifactory/camunda-bpm/</url>
-    </repository>
-    <!-- Camunda EE Repository 
-    <repository>
-        <id>camunda-bpm-ee</id>
-        <name>Camunda Enterprise Maven Repository</name>
-        <url>https://artifacts.camunda.com/artifactory/camunda-bpm-ee/</url>
-    </repository>
-    -->
-  </repositories>
-
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+          <useDefaultManifestFile>false</useDefaultManifestFile>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -132,16 +115,16 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.11.1</version>
+        <version>3.10.1</version>
         <configuration>
           <!-- disable javadoc linter to not fail on incomplete javadoc -->
           <additionalJOption>-Xdoclint:none</additionalJOption>
           <legacyMode>true</legacyMode>
           <additionalDependencies>
             <dependency>
-              <groupId>org.camunda.bpm</groupId>
-              <artifactId>camunda-engine</artifactId>
-              <version>${version.camunda}</version>
+              <groupId>org.operaton.bpm</groupId>
+              <artifactId>operaton-engine</artifactId>
+              <version>${version.operaton}</version>
             </dependency>
           </additionalDependencies>
         </configuration>

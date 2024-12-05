@@ -1,4 +1,4 @@
-# Camunda Platform 7 - Example for Spring Boot & Keycloak Identity Provider - JWT extension
+# Operaton - Example for Spring Boot & Keycloak Identity Provider - JWT extension
 
 This is the alternative way, how Keycloak can be configured with client side JWT authentication in Camunda Cockpit.
 This configuration does not rely on server side and does not require sticky sessions on your environment.
@@ -10,7 +10,7 @@ It is based on javascript integration from Keycloak (keycloak.js) and an interce
 ## Prerequisites
 
 1. Configure Keycloak as described in the main part - [here](https://github.com/camunda-community-hub/camunda-platform-7-keycloak/tree/master/examples#prerequisites-in-your-keycloak-realm)
-2. Add additional client for UI access - ``camunda-jwt``
+2. Add additional client for UI access - ``operaton-jwt``
 
 You need to set:
 - Access Type - ``public``
@@ -25,7 +25,7 @@ allowing us to extract groups from the corresponding token claim.
 ![JWT client mappers](docs/camunda-jwt-mappers.PNG)
 ![JWT client scopes](docs/camunda-jwt-group-mapper.PNG)
 
-## Usage with Camunda Spring Boot
+## Usage with Operaton Spring Boot
 
 The integration basics are absolutely the same as described in the main part - [here](https://github.com/camunda-community-hub/camunda-platform-7-keycloak/tree/master/examples#usage-with-camunda-spring-boot)
 
@@ -33,8 +33,8 @@ Your dependency for the Keycloak Identity Provider still is:
 
 ```xml
     <dependency>
-        <groupId>org.camunda.bpm.extension</groupId>
-        <artifactId>camunda-platform-7-keycloak</artifactId>
+        <groupId>org.operaton.bpm.extension</groupId>
+        <artifactId>operaton-keycloak</artifactId>
     </dependency>
 ```
 
@@ -46,8 +46,8 @@ First of all we need an additional dependency which does most of the magic:
 
 ```xml
     <dependency>
-        <groupId>org.camunda.bpm.extension</groupId>
-        <artifactId>camunda-platform-7-keycloak-jwt</artifactId>
+        <groupId>org.operaton.bpm.extension</groupId>
+        <artifactId>operaton-keycloak-jwt</artifactId>
     </dependency>
 ```
 
@@ -67,6 +67,7 @@ In order to setup Spring Boot's OAuth2 security add the following Maven dependen
 With all that stuff in place we then need a Web Security Configuration as follows:
 
 ```java
+
 @ConditionalOnMissingClass("org.springframework.test.context.junit.jupiter.SpringExtension")
 @Configuration
 @EnableWebSecurity
@@ -77,14 +78,14 @@ public class WebAppSecurityConfig {
     private static final String AUTHENTICATION_FILTER_NAME = "Authentication Filter";
 
     @Inject
-    private CamundaBpmProperties camundaBpmProperties;
+    private OperatonBpmProperties operatonBpmProperties;
 
     @Inject
     private KeycloakCockpitConfiguration keycloakCockpitConfiguration;
 
     @Bean
     public SecurityFilterChain httpSecurity(HttpSecurity http) throws Exception {
-        String path = camundaBpmProperties.getWebapp().getApplicationPath();
+        String path = operatonBpmProperties.getWebapp().getApplicationPath();
         return http
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers(antMatcher(path + "/api/**"), antMatcher("/engine-rest/**")))
@@ -102,17 +103,17 @@ public class WebAppSecurityConfig {
                 .build();
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Bean
     public FilterRegistrationBean containerBasedAuthenticationFilter() {
-        String camundaWebappPath = camundaBpmProperties.getWebapp().getApplicationPath();
+        String operatonWebappPath = operatonBpmProperties.getWebapp().getApplicationPath();
 
         FilterRegistrationBean filterRegistration = new FilterRegistrationBean();
-        filterRegistration.setFilter(new KeycloakJwtAuthenticationFilter(camundaWebappPath));
-        filterRegistration.setInitParameters(Collections.singletonMap("authentication-provider", "org.camunda.bpm.extension.keycloak.auth.KeycloakJwtAuthenticationProvider"));
+        filterRegistration.setFilter(new KeycloakJwtAuthenticationFilter(operatonWebappPath));
+        filterRegistration.setInitParameters(Collections.singletonMap("authentication-provider", "org.operaton.bpm.extension.keycloak.auth.KeycloakJwtAuthenticationProvider"));
         filterRegistration.setName(AUTHENTICATION_FILTER_NAME);
         filterRegistration.setOrder(AFTER_SPRING_SECURITY_FILTER_CHAIN_ORDER);
-        filterRegistration.addUrlPatterns(camundaWebappPath + API_FILTER_PATTERN);
+        filterRegistration.addUrlPatterns(operatonWebappPath + API_FILTER_PATTERN);
         return filterRegistration;
     }
 
@@ -120,7 +121,7 @@ public class WebAppSecurityConfig {
     public FilterRegistrationBean cockpitConfigurationFilter() {
         return new KeycloakConfigurationFilterRegistrationBean(
                 keycloakCockpitConfiguration,
-                camundaBpmProperties.getWebapp().getApplicationPath()
+                operatonBpmProperties.getWebapp().getApplicationPath()
         );
     }
 
@@ -133,29 +134,29 @@ public class WebAppSecurityConfig {
 ```
 
 The Web Security configuration is responsible for
-* Registering the `KeycloakJwtAuthenticationFilter` with the `KeycloakJwtAuthenticationProvider` acting as a bridge between Keycloak and Camunda.
+* Registering the `KeycloakJwtAuthenticationFilter` wioperatonBpmPropertiesth the `KeycloakJwtAuthenticationProvider` acting as a bridge between Keycloak and Operaton.
 * Registering the `KeycloakConfigurationFilterRegistrationBean` which provides access to the Keycloak server configuration.
 
 Finally you have to configure the Keycloak Server and Client as well as the Spring Security JWT resource server by providing issuer URI as follows:
 
 ```yml
-# Camunda Cockpit JWT Plugin
+# Operaton Cockpit JWT Plugin
 plugin.cockpit.keycloak:
   keycloakUrl: https://<your-keycloak-server>
-  realm: camunda
-  clientId: camunda-jwt
+  realm: operaton
+  clientId: operaton-jwt
 
 # Spring Boot Security OAuth2 SSO
 spring.security:
   oauth2:
     resourceserver:
       jwt:
-        issuer-uri: https://<your-keycloak-server>/realms/camunda
+        issuer-uri: https://<your-keycloak-server>/realms/operaton
 ```
 
-Also for camunda 7.18+ you need to configure CSP header:
+You need to configure CSP header:
+
 ```yml
-#CSP header configuration (Camunda 7.18+)
 camunda.bpm:
   webapp:
     header-security:

@@ -6,8 +6,6 @@
 
 Hi there! We're thrilled that you'd like to contribute to this project. Your help is essential for keeping it great.
 
-Please note that this project is released with a [Contributor Code of Conduct](https://github.com/camunda-community-hub/community/blob/main/CODE_OF_CONDUCT.MD). By participating in this project you agree to abide by its terms.
-
 ## Issues and PRs
 
 If you have suggestions for how this project could be improved, or want to report a bug, open an issue! We'd love all and any contributions. If you have questions, too, we'd love to hear them. You can file issues here: [File issues](https://github.com/camunda-community-hub/camunda-platform-7-keycloak/issues)

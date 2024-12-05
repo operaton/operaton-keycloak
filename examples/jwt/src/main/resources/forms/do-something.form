@@ -1,7 +1,7 @@
 {
   "components": [
     {
-      "text": "# Understand Keycloak Integration\nCongratulations! You have successfully logged into the tasklist.\n\n- Authentication has been done via Keycloak\n- Groups of the current user are extracted from the JWT token\n- This task is assigned to the candidate group `camunda-admin`\n- You see this task because you are a member of this group\n\nPlease complete this task.",
+      "text": "# Understand Keycloak Integration\nCongratulations! You have successfully logged into the tasklist.\n\n- Authentication has been done via Keycloak\n- Groups of the current user are extracted from the JWT token\n- This task is assigned to the candidate group `operaton-admin`\n- You see this task because you are a member of this group\n\nPlease complete this task.",
       "type": "text",
       "id": "Field_0edhcyh"
     }
