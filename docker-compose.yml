@@ -13,4 +13,4 @@ services:
       - "8080:8080"
     command:
       - start-dev
-      - --features admin-fine-grained-authz
+      - --features=admin-fine-grained-authz
