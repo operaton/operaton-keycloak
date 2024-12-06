@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   jboss.keycloak:
     image: quay.io/keycloak/keycloak:26.0.7
@@ -15,4 +13,4 @@ services:
       - "8080:8080"
     command:
       - start-dev
-      - --features admin-fine-grained-authz
+      - --features=admin-fine-grained-authz
