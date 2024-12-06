@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <!-- Attention: to properly separate dependencies of extension and examples, do not define any dependencies/management here! -->
@@ -18,7 +19,6 @@
   <description>A Operaton Identity Provider Plugin for Keycloak</description>
 
 
-
   <properties>
     <version.java>17</version.java>
     <encoding>UTF-8</encoding>
@@ -26,8 +26,8 @@
     <project.build.resourceEncoding>${encoding}</project.build.resourceEncoding>
 
     <!-- versions -->
-	<version.operaton>1.0.0-beta-2</version.operaton>
-	<version.springBoot>3.3.5</version.springBoot>
+    <version.operaton>1.0.0-beta-2</version.operaton>
+    <version.springBoot>3.3.5</version.springBoot>
     <version.commons-codec>1.17.1</version.commons-codec>
 
     <!-- Nexus Staging -->
@@ -55,7 +55,7 @@
     <module>extension-jwt</module>
     <module>examples</module>
   </modules>
-  
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -89,6 +89,7 @@
   </dependencyManagement>
 
   <build>
+    <defaultGoal>verify</defaultGoal>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
