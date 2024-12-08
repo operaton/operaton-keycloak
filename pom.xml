@@ -5,12 +5,6 @@
 
   <!-- Attention: to properly separate dependencies of extension and examples, do not define any dependencies/management here! -->
 
-  <parent>
-    <groupId>org.operaton</groupId>
-    <artifactId>operaton-release-parent</artifactId>
-    <version>1.0.0</version>
-  </parent>
-
   <groupId>org.operaton.bpm.extension</groupId>
   <artifactId>operaton-keycloak-root</artifactId>
   <version>1.0.0-beta-1-SNAPSHOT</version>
@@ -30,9 +24,20 @@
     <version.springBoot>3.3.5</version.springBoot>
     <version.commons-codec>1.17.1</version.commons-codec>
 
-    <!-- Nexus Staging -->
-    <plugin.version.nexus-staging>1.6.13</plugin.version.nexus-staging>
+    <!-- Set to false for each module that must be deployed -->
+    <deploy.skip>true</deploy.skip>
   </properties>
+
+  <url>http://www.operaton.org</url>
+
+  <developers>
+    <developer>
+      <id>operaton.org</id>
+      <name>Operaton Community</name>
+      <organization>operaton.org</organization>
+      <organizationUrl>http://operaton.org</organizationUrl>
+    </developer>
+  </developers>
 
   <licenses>
     <license>
@@ -48,13 +53,16 @@
     <tag>HEAD</tag>
   </scm>
 
-  <modules>
-    <module>extension</module>
-    <module>extension-run</module>
-    <module>extension-all</module>
-    <module>extension-jwt</module>
-    <module>examples</module>
-  </modules>
+  <distributionManagement>
+    <snapshotRepository>
+      <id>local-staging</id>
+      <url>file:${maven.multiModuleProjectDirectory}/target/staging-deploy</url>
+    </snapshotRepository>
+    <repository>
+      <id>local-staging</id>
+      <url>file:${maven.multiModuleProjectDirectory}/target/staging-deploy</url>
+    </repository>
+  </distributionManagement>
 
   <dependencyManagement>
     <dependencies>
@@ -96,7 +104,6 @@
         <artifactId>maven-jar-plugin</artifactId>
         <version>3.3.0</version>
         <configuration>
-          <useDefaultManifestFile>false</useDefaultManifestFile>
           <archive>
             <manifest>
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
@@ -135,12 +142,99 @@
     <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>org.sonatype.plugins</groupId>
-          <artifactId>nexus-staging-maven-plugin</artifactId>
-          <version>1.7.0</version>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>3.1.3</version>
+          <configuration>
+            <skip>${deploy.skip}</skip>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>3.10.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>3.3.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>3.5.1</version>
         </plugin>
       </plugins>
     </pluginManagement>
   </build>
 
+  <profiles>
+    <!-- distro profile is default and builds the complete distribution. -->
+    <profile>
+      <id>distro</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>extension</module>
+        <module>extension-run</module>
+        <module>extension-all</module>
+        <module>extension-jwt</module>
+        <module>examples</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>sonatype-oss-release</id>
+      <properties>
+        <deploy.skip>false</deploy.skip>
+      </properties>
+      <modules>
+        <module>extension</module>
+        <module>extension-run</module>
+        <module>extension-all</module>
+        <module>extension-jwt</module>
+      </modules>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.10.1</version>
+            <configuration>
+              <!-- disable javadoc linter to not fail on incomplete javadoc -->
+              <additionalJOption>-Xdoclint:none</additionalJOption>
+              <additionalJOption>--ignore-source-errors</additionalJOption>
+              <additionalDependencies>
+                <dependency>
+                  <groupId>org.operaton.bpm</groupId>
+                  <artifactId>operaton-engine</artifactId>
+                  <version>${version.operaton}</version>
+                </dependency>
+              </additionalDependencies>
+            </configuration>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

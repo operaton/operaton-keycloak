@@ -15,3 +15,5 @@
 /operaton-db.mv.db
 /.run/operaton-keycloak-root [clean,install].run.xml
 pom.xml.versionsBackup
+out/
+sloc.txt

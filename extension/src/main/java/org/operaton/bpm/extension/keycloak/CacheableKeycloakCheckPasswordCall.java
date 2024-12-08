@@ -16,7 +16,7 @@ public class CacheableKeycloakCheckPasswordCall {
 
 	/**
 	 * @param userId
-	 * @param pwdHash
+	 * @param password
 	 */
 	public CacheableKeycloakCheckPasswordCall(String userId, String password) {
 		super();

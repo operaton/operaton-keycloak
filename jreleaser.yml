@@ -32,13 +32,6 @@ platform:
   replacements:
     aarch_64: aarch64
 
-files:
-  artifacts:
-    - path: 'distro/tomcat/distro/target/operaton-bpm-tomcat-{{projectVersion}}.tar.gz'
-    - path: 'distro/wildfly/distro/target/operaton-bpm-wildfly-{{projectVersion}}.tar.gz'
-    - path: 'distro/sql-script/target/operaton-sql-scripts-{{projectVersion}}.tar.gz'
-    - path: 'distro/webjar/target/operaton-webapp-webjar-{{projectVersion}}.jar'
-
 release: # https://jreleaser.org/guide/latest/reference/release/github.html
   github:
     overwrite: true
@@ -46,7 +39,7 @@ release: # https://jreleaser.org/guide/latest/reference/release/github.html
     owner: operaton
     draft: false
     skipTag: false
-    previousTagName: 1.0.0-beta-1
+    previousTagName: fork-baseline
     releaseName: Release {{tagName}}
     prerelease: # TODO Evaluate JRELEASER_PRERELEASE_ENABLED
       enabled: true
