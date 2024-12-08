@@ -29,7 +29,8 @@ public class KeycloakLoginTestWithCaching extends AbstractKeycloakIdentityProvid
 		return new TestSetup(new TestSuite(KeycloakLoginTestWithCaching.class)) {
 
 			// @BeforeClass
-			protected void setUp() throws Exception {
+			@Override
+			protected void setUp() {
 				ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration
 								.createProcessEngineConfigurationFromResource("operaton.enableLoginCaching.cfg.xml");
 				configureKeycloakIdentityProviderPlugin(config);
@@ -37,7 +38,8 @@ public class KeycloakLoginTestWithCaching extends AbstractKeycloakIdentityProvid
 			}
 
 			// @AfterClass
-			protected void tearDown() throws Exception {
+			@Override
+			protected void tearDown() {
 				PluggableProcessEngineTestCase.cachedProcessEngine.close();
 				PluggableProcessEngineTestCase.cachedProcessEngine = null;
 			}
@@ -162,7 +164,7 @@ public class KeycloakLoginTestWithCaching extends AbstractKeycloakIdentityProvid
 		// non cached query. http requests count should have increased
 		assertEquals(countBefore + 2, CountingHttpRequestInterceptor.getHttpRequestCount());
 		// check cache entries
-		assertEquals(Arrays.asList("operaton@accso.de", "johnfoo@gmail.com"), getCacheEntries());
+		assertEquals(Arrays.asList("johnfoo@gmail.com", "operaton@accso.de"), getCacheEntries());
 
 		// call cache entry
 		assertTrue(identityService.checkPassword("johnfoo@gmail.com", "!§$%&/()=?#'-_.:,;+*~@€"));
@@ -241,7 +243,7 @@ public class KeycloakLoginTestWithCaching extends AbstractKeycloakIdentityProvid
 						.stream()
 						.map(CacheableKeycloakCheckPasswordCall::getUserId)
 						.sorted()
-						.collect(Collectors.toList());
+						.toList();
 	}
 	
 }
