@@ -86,7 +86,7 @@ public class KeycloakGroupQueryTestWithCaching extends AbstractKeycloakIdentityP
 
 		// validate result
 		assertEquals(GROUP_ID_ADMIN, group.getId());
-		assertEquals("camunda-admin", group.getName());
+		assertEquals("operaton-admin", group.getName());
 		assertEquals("SYSTEM", group.getType());
 
 		// non cached query. http request count should have increased
@@ -157,12 +157,12 @@ public class KeycloakGroupQueryTestWithCaching extends AbstractKeycloakIdentityP
 			processEngineConfiguration.setAuthorizationEnabled(true);
 			identityService.setAuthenticatedUserId("johnfoo@gmail.com");
 
-			assertEquals(0, identityService.createGroupQuery().groupMember("camunda@accso.de").count());
+			assertEquals(0, identityService.createGroupQuery().groupMember("operaton@accso.de").count());
 			assertEquals(2, identityService.createGroupQuery().groupMember("johnfoo@gmail.com").count());
 
 			// auth should not be cached and should be performed 
 			// on every query regardless of caching being enabled or not 
-			assertEquals(0, identityService.createGroupQuery().groupMember("camunda@accso.de").count());
+			assertEquals(0, identityService.createGroupQuery().groupMember("operaton@accso.de").count());
 		} finally {
 			processEngineConfiguration.setAuthorizationEnabled(false);
 			identityService.clearAuthentication();

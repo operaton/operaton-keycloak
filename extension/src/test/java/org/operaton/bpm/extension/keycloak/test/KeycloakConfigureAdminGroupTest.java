@@ -56,9 +56,9 @@ public class KeycloakConfigureAdminGroupTest extends AbstractKeycloakIdentityPro
 
 	public void testAdminGroupConfiguration() {
 		// check engine configuration
-		List<String> camundaAdminGroups = ((ProcessEngineConfigurationImpl) processEngine.getProcessEngineConfiguration()).getAdminGroups();
-		assertEquals(2, camundaAdminGroups.size()); // Operaton always adds "operaton-admin" as admin group ID - we want the other ID
-		String adminGroupId = camundaAdminGroups.stream().filter(g -> !Groups.OPERATON_ADMIN.equals(g)).findFirst().get();
+		List<String> operatonAdminGroups = ((ProcessEngineConfigurationImpl) processEngine.getProcessEngineConfiguration()).getAdminGroups();
+		assertEquals(2, operatonAdminGroups.size()); // Operaton always adds "operaton-admin" as admin group ID - we want the other ID
+		String adminGroupId = operatonAdminGroups.stream().filter(g -> !Groups.OPERATON_ADMIN.equals(g)).findFirst().get();
 		
 		// check that authorizations have been created
 		assertTrue(processEngine.getAuthorizationService().createAuthorizationQuery()
@@ -75,12 +75,12 @@ public class KeycloakConfigureAdminGroupTest extends AbstractKeycloakIdentityPro
 		// query user data
 		User user = processEngine.getIdentityService().createUserQuery().memberOfGroup(adminGroupId).singleResult();
 		assertNotNull(user);
-		assertEquals("camunda@accso.de", user.getEmail());
+		assertEquals("operaton@accso.de", user.getEmail());
 		
 		// query groups
 		Group group = processEngine.getIdentityService().createGroupQuery().groupId(adminGroupId).singleResult();
 		assertNotNull(group);
-		assertEquals("camunda-admin", group.getName());
+		assertEquals("operaton-admin", group.getName());
 	}
 
 }

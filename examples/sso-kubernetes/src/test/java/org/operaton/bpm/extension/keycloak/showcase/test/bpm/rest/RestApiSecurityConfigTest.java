@@ -38,8 +38,8 @@ import org.springframework.web.client.RestTemplate;
 @ContextConfiguration(initializers = KeycloakTestcontainer.Initializer.class)
 class RestApiSecurityConfigTest {
 
-	private static final String REST_API_USER = "camunda";
-	private static final String REST_API_PWD = "camunda1!";
+	private static final String REST_API_USER = "operaton";
+	private static final String REST_API_PWD = "operaton!";
 	
 	@Autowired
 	private ProcessEngine processEngine;

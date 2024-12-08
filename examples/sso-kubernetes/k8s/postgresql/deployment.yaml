@@ -20,13 +20,13 @@ spec:
            - containerPort: 5432
            env:
            - name: POSTGRES_DB
-             value: camunda
+             value: operaton
            - name: POSTGRES_USER
-             value: camunda
+             value: operaton
            - name: POSTGRES_PASSWORD
-             value: camunda1!
+             value: operaton1!
            - name: POSTGRES_ROLE
-             value: camunda
+             value: operaton
            readinessProbe:
              tcpSocket:
                port: 5432

@@ -3,7 +3,7 @@ This document describes the installation of the **Keycloak Operaton Identity Pro
 
 ## Operaton Installation on Apache Tomcat
 
-For information on how to install Operaton on Apache Tomcat carefully read and follow the installation reference within the Camunda Docs: [https://docs.camunda.org/manual/latest/installation/full/tomcat/](https://docs.camunda.org/manual/latest/installation/full/tomcat/)
+For information on how to install Operaton on Apache Tomcat carefully read and follow the installation reference within the Operaton Docs: [https://docs.camunda.org/manual/latest/installation/full/tomcat/](https://docs.camunda.org/manual/latest/installation/full/tomcat/)
 
 ## Install the Keycloak Identity Provider Plugin
 
@@ -42,13 +42,13 @@ xsi:schemaLocation="http://www.camunda.org/schema/1.0/BpmPlatform http://www.cam
         <plugin>
         <class>org.operaton.bpm.extension.keycloak.plugin.KeycloakIdentityProviderPlugin</class>
         <properties>
-            <property name="keycloakIssuerUrl">https://somehost:8443/auth/realms/camunda</property>
-            <property name="keycloakAdminUrl">https://somehost:8443/auth/admin/realms/camunda</property>
-            <property name="clientId">camunda-identity-service</property>
+            <property name="keycloakIssuerUrl">https://somehost:8443/auth/realms/operaton</property>
+            <property name="keycloakAdminUrl">https://somehost:8443/auth/admin/realms/operaton</property>
+            <property name="clientId">operaton-identity-service</property>
             <property name="clientSecret">42xx42xx-42xx-42xx-42xx-42xx42xx42xx</property>
             <property name="useUsernameAsOperatonUserId">true</property>
             <property name="useGroupPathAsOperatonGroupId">true</property>
-            <property name="administratorGroupName">camunda-admin</property>
+            <property name="administratorGroupName">operaton-admin</property>
             <property name="disableSSLCertificateValidation">true</property>
         </properties>
         </plugin>
@@ -58,4 +58,4 @@ xsi:schemaLocation="http://www.camunda.org/schema/1.0/BpmPlatform http://www.cam
 </bpm-platform>
 ```
 
-For a full documentation of all configuration properties see the documentation of the [Keycloak Identity Provider Plugin](https://github.com/camunda-community-hub/camunda-platform-7-keycloak) itself.
+For a full documentation of all configuration properties see the documentation of the [Keycloak Identity Provider Plugin](https://github.com/operaton/operaton-keycloak) itself.

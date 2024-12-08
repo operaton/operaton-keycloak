@@ -14,9 +14,9 @@ public class KeycloakTestcontainer {
   private static final Logger log = LoggerFactory.getLogger(KeycloakTestcontainer.class);
 
   static KeycloakContainer keycloakContainer = new KeycloakContainer("quay.io/keycloak/keycloak:24.0.3")
-      .withRealmImportFile("/camunda-realm.json")
-      .withAdminUsername("keycloak")
-      .withAdminPassword("keycloak1!");
+      .withRealmImportFile("/operaton-realm.json")
+      .withAdminUsername("operaton")
+      .withAdminPassword("operaton!");
 
   public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
     @Override

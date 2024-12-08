@@ -29,7 +29,7 @@ public class KeycloakAuthenticationFilter implements Filter {
 	/** This class' logger. */
 	private static final Logger LOG = LoggerFactory.getLogger(KeycloakAuthenticationFilter.class);
 	
-	/** Access to Camunda's IdentityService. */
+	/** Access to Operaton's IdentityService. */
 	private IdentityService identityService;
 	
 	/** Access to the OAuth2 client service. */
@@ -39,7 +39,7 @@ public class KeycloakAuthenticationFilter implements Filter {
 	
 	/**
 	 * Creates a new KeycloakAuthenticationFilter.
-	 * @param identityService access to Camunda's IdentityService
+	 * @param identityService access to Operatons's IdentityService
 	 */
 	public KeycloakAuthenticationFilter(IdentityService identityService, OAuth2AuthorizedClientService clientService, String userNameAttribute) {
 		this.identityService = identityService;

@@ -1,6 +1,6 @@
 ## Install the Keycloak Identity Provider Plugin
 
-In order to install the Keycloak Identity Provider Plugin you have to download the library ``camunda-platform-7-keycloak-run-x.y.z.jar`` and copy it to ``$CAMUNDA_BPM_RUN_ROOT/configuration/userlib``.
+In order to install the Keycloak Identity Provider Plugin you have to download the library ``operaton-keycloak-run-x.y.z.jar`` and copy it to ``$OPERATON_RUN_ROOT/configuration/userlib``.
 
 Please be aware that you must use the provided ``*-run-x.y.z.jar`` (fat jar, packaged with the "**-run**" extension) including transitive dependencies. The additional library is available since version ``2.0.0`` and can be found e.g. on [Maven Central](https://search.maven.org/search?q=g:org.operaton.bpm.extension%20AND%20a:operaton-keycloak-run).
 
@@ -17,18 +17,18 @@ The ``com.google.code.gson`` and ``com.github.ben-manes.caffeine`` dependencies 
 
 ## Configure the Keycloak Identity Provider Plugin
 
-The last step is to edit the ``default.yml`` or ``production.yml`` file inside the folder ``$CAMUNDA_BPM_RUN_ROOT/configuration`` and configure the plugin. A sample configuration looks as follows:
+The last step is to edit the ``default.yml`` or ``production.yml`` file inside the folder ``$OPERATON_RUN_ROOT/configuration`` and configure the plugin. A sample configuration looks as follows:
 
 ```yml
-# Camunda Keycloak Identity Provider Plugin
+# Operaton Keycloak Identity Provider Plugin
 plugin.identity.keycloak:
-  keycloakIssuerUrl: https://localhost:9001/auth/realms/camunda
-  keycloakAdminUrl: https://localhost:9001/auth/admin/realms/camunda
-  clientId: camunda-identity-service
+  keycloakIssuerUrl: https://localhost:9001/auth/realms/operaton
+  keycloakAdminUrl: https://localhost:9001/auth/admin/realms/operaton
+  clientId: operaton-identity-service
   clientSecret: 12345678-abcd-efgh-ijkl-123456789012
   useUsernameAsOperatonUserId: true
   useGroupPathAsOperatonGroupId: true
-  administratorGroupName: camunda-admin
+  administratorGroupName: operaton-admin
   disableSSLCertificateValidation: true
 ```
 
@@ -43,20 +43,20 @@ operaton.bpm:
 
 The Keycloak Identity Provider is a ReadOnly Identity Provider and thus not allowed to create users upon startup.
 
-For a full documentation of all configuration properties see the documentation of the [Keycloak Identity Provider Plugin](https://github.com/camunda-community-hub/camunda-platform-7-keycloak) itself.
+For a full documentation of all configuration properties see the documentation of the [Keycloak Identity Provider Plugin](https://github.com/operaton/operaton-keycloak) itself.
 
 ## Docker Sample Setup
 
 Within the subdirectory `docker` you'll find a basic sample consisting of:
 
-* ``Dockerfile``: custom Docker image consisting of Camunda BPM Run and the Keycloak Identity Provider Plugin. Adapt Camunda and plugin versions to your own needs.
-* ``docker-compose.yml``: simple setup consisting of the custom Camunda Keycloak Docker image and a preconfigured Keycloak instance with the ``camunda-identity-service`` client and a Camunda admin user and group.
+* ``Dockerfile``: custom Docker image consisting of Operaton Run and the Keycloak Identity Provider Plugin. Adapt Operaton and plugin versions to your own needs.
+* ``docker-compose.yml``: simple setup consisting of the custom Operaton Keycloak Docker image and a preconfigured Keycloak instance with the ``operaton-identity-service`` client and a Operaton admin user and group.
 
 Usage:
 
 1. ``docker compose build``
 2. ``docker compose up -d``
-3. Login at ``http://localhost:8080`` using ``camunda`` / ``camunda1!`` and use Cockpit / Tasklist / Admin.
+3. Login at ``http://localhost:8080`` using ``operaton`` / ``operaton1!`` and use Cockpit / Tasklist / Admin.
 4. Keycloak is available under ``https://localhost:9001/auth``. Login with ``keycloak`` / ``keycloak1!``.
 
 **Beware**: This is not production ready, still using a H2 database for each of the instances, but might help you to understand the configuration basics.

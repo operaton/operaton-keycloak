@@ -55,9 +55,9 @@ public class KeycloakConfigureAdminUserIdTest extends AbstractKeycloakIdentityPr
 
 	public void testAdminUserConfiguration() {
 		// check engine configuration
-		List<String> camundaAdminUsers = ((ProcessEngineConfigurationImpl) processEngine.getProcessEngineConfiguration()).getAdminUsers();
-		assertEquals(1, camundaAdminUsers.size());
-		String adminUserId = camundaAdminUsers.get(0);
+		List<String> operatonAdminUsers = ((ProcessEngineConfigurationImpl) processEngine.getProcessEngineConfiguration()).getAdminUsers();
+		assertEquals(1, operatonAdminUsers.size());
+		String adminUserId = operatonAdminUsers.get(0);
 		assertEquals(USER_ID_OPERATON_ADMIN, adminUserId);
 		
 		// check that authorizations have been created
@@ -75,12 +75,12 @@ public class KeycloakConfigureAdminUserIdTest extends AbstractKeycloakIdentityPr
 		// query user data
 		User user = processEngine.getIdentityService().createUserQuery().userId(adminUserId).singleResult();
 		assertNotNull(user);
-		assertEquals("camunda@accso.de", user.getEmail());
+		assertEquals("operaton@accso.de", user.getEmail());
 		
 		// query groups
 		Group group = processEngine.getIdentityService().createGroupQuery().groupMember(adminUserId).singleResult();
 		assertNotNull(group);
-		assertEquals("camunda-admin", group.getName());
+		assertEquals("operaton-admin", group.getName());
 	}
 
 }

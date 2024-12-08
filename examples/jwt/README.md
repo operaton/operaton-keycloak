@@ -1,15 +1,15 @@
 # Operaton - Example for Spring Boot & Keycloak Identity Provider - JWT extension
 
-This is the alternative way, how Keycloak can be configured with client side JWT authentication in Camunda Cockpit.
+This is the alternative way, how Keycloak can be configured with client side JWT authentication in Operaton Cockpit.
 This configuration does not rely on server side and does not require sticky sessions on your environment.
 
-It is based on javascript integration from Keycloak (keycloak.js) and an interceptor for Camunda Cockpit.
+It is based on javascript integration from Keycloak (keycloak.js) and an interceptor for Operaton Cockpit.
 
 **Beware:** this is still in incubation / preview status and might change in the future.
 
 ## Prerequisites
 
-1. Configure Keycloak as described in the main part - [here](https://github.com/camunda-community-hub/camunda-platform-7-keycloak/tree/master/examples#prerequisites-in-your-keycloak-realm)
+1. Configure Keycloak as described in the main part - [here](https://github.com/operaton/operaton-keycloak/tree/master/examples#prerequisites-in-your-keycloak-realm)
 2. Add additional client for UI access - ``operaton-jwt``
 
 You need to set:
@@ -19,7 +19,7 @@ You need to set:
 
 ![Keycloak client for UI](docs/camunda-jwt.PNG)
 
-The setup additionally requires the registration of a group mapper under the `camunda-jwt-dedicated` client scope,
+The setup additionally requires the registration of a group mapper under the `operaton-jwt-dedicated` client scope,
 allowing us to extract groups from the corresponding token claim.
 ![JWT client scopes](docs/camunda-jwt-client-scopes.PNG)
 ![JWT client mappers](docs/camunda-jwt-mappers.PNG)
@@ -27,7 +27,7 @@ allowing us to extract groups from the corresponding token claim.
 
 ## Usage with Operaton Spring Boot
 
-The integration basics are absolutely the same as described in the main part - [here](https://github.com/camunda-community-hub/camunda-platform-7-keycloak/tree/master/examples#usage-with-camunda-spring-boot)
+The integration basics are absolutely the same as described in the main part - [here](https://github.com/operaton/operaton-keycloak/tree/master/examples#usage-with-operaton-spring-boot)
 
 Your dependency for the Keycloak Identity Provider still is:
 
@@ -157,7 +157,7 @@ spring.security:
 You need to configure CSP header:
 
 ```yml
-camunda.bpm:
+operaton.bpm:
   webapp:
     header-security:
       content-security-policy-value: "base-uri 'self';
@@ -173,11 +173,11 @@ camunda.bpm:
 
 Now you are ready for the last step: activate Keycloak on the client side.
 
-### Enabling `keycloak.js` in Camunda Web Applications
+### Enabling `keycloak.js` in Operaton Web Applications
 
-You'll find the custom configuration for Camunda Cockpit UI under ``src/main/resources/META-INF/resources/webjars/camunda``. Rely on this directory as a base directory for the next step. 
+You'll find the custom configuration for Operaton Cockpit UI under ``src/main/resources/META-INF/resources/webjars/operaton``. Rely on this directory as a base directory for the next step. 
 
-To enable the JWT authorization plugin on the client side you have to provide a custom ``config.js`` file, located in the ``app/{admin|cockpit|tasklist|welcome}/scripts/`` directory of the Camunda webapps. It simply configures a custom authentication script:
+To enable the JWT authorization plugin on the client side you have to provide a custom ``config.js`` file, located in the ``app/{admin|cockpit|tasklist|welcome}/scripts/`` directory of the Operaton webapps. It simply configures a custom authentication script:
 
 ```javascript
 export default {

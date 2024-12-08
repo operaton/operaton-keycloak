@@ -3,7 +3,7 @@ This document describes the installation of the **Keycloak Operaton Identity Pro
 
 ## Operaton Installation on JBoss/Wildfly
 
-For information on how to install Operaton on JBoss/Wildfly carefully read and follow the installation reference within the Camunda Docs: [https://docs.camunda.org/manual/latest/installation/full/jboss/](https://docs.camunda.org/manual/latest/installation/full/jboss/)
+For information on how to install Operaton on JBoss/Wildfly carefully read and follow the installation reference within the Operaton Docs: [https://docs.camunda.org/manual/latest/installation/full/jboss/](https://docs.camunda.org/manual/latest/installation/full/jboss/)
 
 ## Install the Keycloak Identity Provider Plugin
 
@@ -29,10 +29,10 @@ To do so, create a directory ``modules/org/operaton/bpm/identity/operaton-identi
 </module>
 ```
 
-Reference this module in the module descriptor of your Operaton Wildfly Subsystem (``modules/org/camunda/bpm/wildfly/camunda-wildfly-subsystem/main/module.xml``) by adding:
+Reference this module in the module descriptor of your Operaton Wildfly Subsystem (``modules/org/operaton/bpm/wildfly/operaton-wildfly-subsystem/main/module.xml``) by adding:
 
 ```xml
-<module xmlns="urn:jboss:module:1.0" name="org.operaton.bpm.wildfly.camunda-wildfly-subsystem">
+<module xmlns="urn:jboss:module:1.0" name="org.operaton.bpm.wildfly.operaton-wildfly-subsystem">
     <resources>
         ...
     </resources>
@@ -92,4 +92,4 @@ The last step is to edit the ``standalone.xml`` configuration file in ``standalo
         </process-engines>
 ```
 
-For a full documentation of all configuration properties see the documentation of the [Keycloak Identity Provider Plugin](https://github.com/camunda-community-hub/camunda-platform-7-keycloak) itself.
+For a full documentation of all configuration properties see the documentation of the [Keycloak Identity Provider Plugin](https://github.com/operaton/opearton-keycloak) itself.

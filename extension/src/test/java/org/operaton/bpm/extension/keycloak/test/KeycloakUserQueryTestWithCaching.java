@@ -82,20 +82,20 @@ public class KeycloakUserQueryTestWithCaching extends AbstractKeycloakIdentityPr
 	public void testCacheEnabledQueryFilterByUserId() {
 		int countBefore = CountingHttpRequestInterceptor.getHttpRequestCount();
 
-		User user = identityService.createUserQuery().userId("camunda@accso.de").singleResult();
+		User user = identityService.createUserQuery().userId("operaton@accso.de").singleResult();
 		assertNotNull(user);
 
 		// validate user
-		assertEquals("camunda@accso.de", user.getId());
+		assertEquals("operaton@accso.de", user.getId());
 		assertEquals("Admin", user.getFirstName());
-		assertEquals("Camunda", user.getLastName());
-		assertEquals("camunda@accso.de", user.getEmail());
+		assertEquals("Operaton", user.getLastName());
+		assertEquals("operaton@accso.de", user.getEmail());
 
 		// non cached query. http request count should have increased
 		assertEquals(countBefore + 1, CountingHttpRequestInterceptor.getHttpRequestCount());
 
 		// run query again
-		assertEquals(user, identityService.createUserQuery().userId("camunda@accso.de").singleResult());
+		assertEquals(user, identityService.createUserQuery().userId("operaton@accso.de").singleResult());
 
 		// request count should be same as before
 		assertEquals(countBefore + 1, CountingHttpRequestInterceptor.getHttpRequestCount());
@@ -153,7 +153,7 @@ public class KeycloakUserQueryTestWithCaching extends AbstractKeycloakIdentityPr
 			identityService.setAuthenticatedUserId("non-existing");
 			assertEquals(0, identityService.createUserQuery().count());
 
-			identityService.setAuthenticatedUserId("camunda@accso.de");
+			identityService.setAuthenticatedUserId("operaton@accso.de");
 			assertEquals(1, identityService.createUserQuery().count());
 
 			// auth should not be cached and should be performed 

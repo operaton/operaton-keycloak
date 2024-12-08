@@ -74,11 +74,11 @@ public class KeycloakGroupQueryTestWithCachingAndCustomCacheExpiry extends Abstr
 
 		GroupQuery query = identityService.createGroupQuery();
 
-		// query camunda-admin at time = 0
-		assertEquals("camunda-admin", queryGroup(query, "camunda-admin").getName());
+		// query operaton-admin at time = 0
+		assertEquals("operaton-admin", queryGroup(query, "operaton-admin").getName());
 
-		// cache contains only camunda-admin at this point
-		assertEquals(Collections.singletonList("camunda-admin"), getCacheEntries());
+		// cache contains only operaton-admin at this point
+		assertEquals(Collections.singletonList("operaton-admin"), getCacheEntries());
 
 		// move clock by 2 minutes
 		PredictableTicker.moveTimeForwardByMinutes(2);
@@ -86,20 +86,20 @@ public class KeycloakGroupQueryTestWithCachingAndCustomCacheExpiry extends Abstr
 		// query cam-read-only after 2 minutes
 		assertEquals("cam-read-only", queryGroup(query, "cam-read-only").getName());
 
-		// cache contains cam-read-only and camunda-admin
-		assertEquals(Arrays.asList("cam-read-only", "camunda-admin"), getCacheEntries());
+		// cache contains cam-read-only and operaton-admin
+		assertEquals(Arrays.asList("cam-read-only", "operaton-admin"), getCacheEntries());
 
 		// move clock by another 2 minutes
 		PredictableTicker.moveTimeForwardByMinutes(2);
 
-		// cache still contains cam-read-only and camunda-admin
-		assertEquals(Arrays.asList("cam-read-only", "camunda-admin"), getCacheEntries());
+		// cache still contains cam-read-only and operaton-admin
+		assertEquals(Arrays.asList("cam-read-only", "operaton-admin"), getCacheEntries());
 
 		// move clock by another 2 minutes
 		PredictableTicker.moveTimeForwardByMinutes(2);
 
-		// camunda-admin was evicted because eviction timeout (5 minutes) has been breached 
-		// it's been 6 minutes since camunda-admin was inserted into cache
+		// operaton-admin was evicted because eviction timeout (5 minutes) has been breached
+		// it's been 6 minutes since operaton-admin was inserted into cache
 		assertEquals(Collections.singletonList("cam-read-only"), getCacheEntries());
 
 		// move clock by another 5 minutes

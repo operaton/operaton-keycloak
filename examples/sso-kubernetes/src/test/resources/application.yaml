@@ -1,14 +1,14 @@
 # Test configuration using spring-boot
 
-camunda.bpm:
+operaton.bpm:
   job-execution.enabled: true
   id-generator: simple
 
 spring.datasource:
-  url: jdbc:h2:mem:camunda-spring-boot-test;DB_CLOSE_ON_EXIT=false
+  url: jdbc:h2:mem:operaton-spring-boot-test;DB_CLOSE_ON_EXIT=false
 
-# Camunda Rest API
+# Operaton Rest API
 rest.security:
   enabled: false
   provider: keycloak
-  required-audience: camunda-rest-api
+  required-audience: operaton-rest-api

@@ -25,11 +25,11 @@ spec:
            - containerPort: 8080
            env:
            - name: JDBC_URL
-             value: jdbc:postgresql://postgres-service:5432/camunda
+             value: jdbc:postgresql://postgres-service:5432/operaton
            - name: JDBC_USER
-             value: camunda
+             value: operaton
            - name: JDBC_PASSWORD
-             value: camunda1!
+             value: operaton1!
            - name: KEYCLOAK_URL_AUTH
              value: http://armstrong02/auth
            - name: KEYCLOAK_URL_TOKEN
@@ -37,19 +37,19 @@ spec:
            - name: KEYCLOAK_URL_PLUGIN
              value: http://keycloak-server-service:8080/auth
            - name: KEYCLOAK_CLIENT_ID
-             value: camunda-identity-service
+             value: operaton-identity-service
            - name: KEYCLOAK_CLIENT_SECRET
              value: 0F0yFyCvv2T901fvMSbKlAd7f8QkyxNg
            livenessProbe:
              httpGet:
-               path: /camunda/actuator/health/liveness
+               path: /operaton/actuator/health/liveness
                port: 8080
              initialDelaySeconds: 60
              periodSeconds: 15
              failureThreshold: 4
            readinessProbe:
              httpGet:
-               path: /camunda/actuator/health/readiness
+               path: /operaton/actuator/health/readiness
                port: 8080
              initialDelaySeconds: 30
              periodSeconds: 5

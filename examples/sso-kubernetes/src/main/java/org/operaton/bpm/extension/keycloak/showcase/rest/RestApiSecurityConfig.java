@@ -18,7 +18,7 @@ import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 /**
- * Optional Security Configuration for Camunda REST Api.
+ * Optional Security Configuration for Operaton REST Api.
  */
 @Configuration
 @ConditionalOnProperty(name = "rest.security.enabled", havingValue = "true", matchIfMissing = true)
@@ -28,7 +28,7 @@ public class RestApiSecurityConfig {
 	@Inject
 	private RestApiSecurityConfigurationProperties configProps;
 	
-	/** Access to Camunda's Identity Service. */
+	/** Access to Operaton's Identity Service. */
 	@Inject
 	private IdentityService identityService;
 	

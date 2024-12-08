@@ -63,26 +63,26 @@ server:
 # https://docs.camunda.org/manual/latest/user-guide/logging/#process-engine
 logging:
    level.root: INFO
-   file: logs/camunda-bpm-run.log
+   file: logs/operaton-bpm-run.log
 
 # datasource configuration is required
 # do not use the H2 databse in production
 # https://docs.camunda.org/manual/latest/user-guide/camunda-bpm-run/#connect-to-a-database
 # https://docs.camunda.org/manual/latest/user-guide/camunda-bpm-run/#database
 spring.datasource:
-  url: jdbc:h2:./camunda-h2-test-production/process-engine;TRACE_LEVEL_FILE=0;DB_CLOSE_ON_EXIT=FALSE
+  url: jdbc:h2:./operaton-h2-test-production/process-engine;TRACE_LEVEL_FILE=0;DB_CLOSE_ON_EXIT=FALSE
   driver-class-name: org.h2.Driver
   username: sa
   password: sa
 
-# Camunda Keycloak Identity Provider Plugin
+# Operaton Keycloak Identity Provider Plugin
 # Externalized Keycloak configuration
 keycloak:
   # Keycloak access for the Identity Provider plugin.
   host: ${KEYCLOAK_HOST}
-  realm: ${KEYCLOAK_REALM:camunda}
-  # Keycloak Camunda Identity Client
-  client.id: ${KEYCLOAK_CLIENT_ID:camunda-identity-service}
+  realm: ${KEYCLOAK_REALM:operaton}
+  # OperatonIdentity Client
+  client.id: ${KEYCLOAK_CLIENT_ID:operaton-identity-service}
   client.secret: ${KEYCLOAK_CLIENT_SECRET}
 
 plugin.identity.keycloak:
@@ -93,5 +93,5 @@ plugin.identity.keycloak:
   useEmailAsOperatonUserId: false
   useUsernameAsOperatonUserId: true
   useGroupPathAsOperatonGroupId: true
-  administratorGroupName: camunda-admin
+  administratorGroupName: operaton-admin
   disableSSLCertificateValidation: true

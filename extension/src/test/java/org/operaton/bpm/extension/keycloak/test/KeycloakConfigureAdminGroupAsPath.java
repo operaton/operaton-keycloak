@@ -56,9 +56,9 @@ public class KeycloakConfigureAdminGroupAsPath extends AbstractKeycloakIdentityP
 
 	public void testAdminGroupConfiguration() {
 		// check engine configuration
-		List<String> camundaAdminGroups = ((ProcessEngineConfigurationImpl) processEngine.getProcessEngineConfiguration()).getAdminGroups();
-		assertEquals(2, camundaAdminGroups.size()); // camunda always adds "camunda-admin" as admin group ID - we want the other ID
-		String adminGroupId = camundaAdminGroups.stream().filter(g -> !Groups.OPERATON_ADMIN.equals(g)).findFirst().get();
+		List<String> operatonAdminGroups = ((ProcessEngineConfigurationImpl) processEngine.getProcessEngineConfiguration()).getAdminGroups();
+		assertEquals(2, operatonAdminGroups.size()); // operaton always adds "operaton-admin" as admin group ID - we want the other ID
+		String adminGroupId = operatonAdminGroups.stream().filter(g -> !Groups.OPERATON_ADMIN.equals(g)).findFirst().get();
 		
 		// check that authorizations have been created
 		assertTrue(processEngine.getAuthorizationService().createAuthorizationQuery()

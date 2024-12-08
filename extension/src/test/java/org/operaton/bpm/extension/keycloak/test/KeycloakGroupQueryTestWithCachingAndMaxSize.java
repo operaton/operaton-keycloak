@@ -76,37 +76,37 @@ public class KeycloakGroupQueryTestWithCachingAndMaxSize extends AbstractKeycloa
 
 		assertEquals(0, countBefore);
 
-		assertEquals("camunda-admin", queryGroup(query, "camunda-admin").getName());
+		assertEquals("operaton-admin", queryGroup(query, "operaton-admin").getName());
 
-		// camunda-admin has not been queried before so http call count should increase by 1
+		// operaton-admin has not been queried before so http call count should increase by 1
 		assertEquals(countBefore + 1, CountingHttpRequestInterceptor.getHttpRequestCount());
 
-		// cache contains only camunda-admin at this point
-		assertEquals(Collections.singletonList("camunda-admin"), getCacheEntries());
+		// cache contains only operaton-admin at this point
+		assertEquals(Collections.singletonList("operaton-admin"), getCacheEntries());
 
 		assertEquals("cam-read-only", queryGroup(query, "cam-read-only").getName());
 
 		// cam-read-only has not been queried before so http call count should increase by 1
 		assertEquals(countBefore + 2, CountingHttpRequestInterceptor.getHttpRequestCount());
 
-		// cache contains cam-read-only and camunda-admin
-		assertEquals(Arrays.asList("cam-read-only", "camunda-admin"), getCacheEntries());
+		// cache contains cam-read-only and operaton-admin
+		assertEquals(Arrays.asList("cam-read-only", "operaton-admin"), getCacheEntries());
 
-		assertEquals("camunda-admin", queryGroup(query, "camunda-admin").getName());
+		assertEquals("operaton-admin", queryGroup(query, "operaton-admin").getName());
 
-		// camunda-admin has already been queried and is still in the cache so count stays same
+		// operaton-admin has already been queried and is still in the cache so count stays same
 		assertEquals(countBefore + 2, CountingHttpRequestInterceptor.getHttpRequestCount());
 
-		// cache still contains cam-read-only and camunda-admin
-		assertEquals(Arrays.asList("cam-read-only", "camunda-admin"), getCacheEntries());
+		// cache still contains cam-read-only and operaton-admin
+		assertEquals(Arrays.asList("cam-read-only", "operaton-admin"), getCacheEntries());
 
 		assertEquals("manager", queryGroup(query, "manager").getName());
 
 		// manager has not been queried before so http call count should increase by 1
 		assertEquals(countBefore + 3, CountingHttpRequestInterceptor.getHttpRequestCount());
 
-		// cam-read-only was evicted because maxSize(2) was breached and it was used fewer times than camunda-admin
-		assertEquals(Arrays.asList("camunda-admin", "manager"), getCacheEntries());
+		// cam-read-only was evicted because maxSize(2) was breached and it was used fewer times than operaton-admin
+		assertEquals(Arrays.asList("operaton-admin", "manager"), getCacheEntries());
 
 		// query cam-read-only again
 		assertEquals("cam-read-only", queryGroup(query, "cam-read-only").getName());
@@ -114,8 +114,8 @@ public class KeycloakGroupQueryTestWithCachingAndMaxSize extends AbstractKeycloa
 		// count should increase because cam-read-only was removed from cache before the query
 		assertEquals(countBefore + 4, CountingHttpRequestInterceptor.getHttpRequestCount());
 
-		// manager was evicted because it was used fewer times than camunda-admin
-		assertEquals(Arrays.asList("cam-read-only", "camunda-admin"), getCacheEntries());
+		// manager was evicted because it was used fewer times than operaton-admin
+		assertEquals(Arrays.asList("cam-read-only", "operaton-admin"), getCacheEntries());
 	}
 
 	private static Group queryGroup(GroupQuery query, String groupName) {

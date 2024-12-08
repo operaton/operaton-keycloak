@@ -1,6 +1,6 @@
 {
   "id" : "f3d84f52-08f7-43b1-b59c-d972ee5fb3ea",
-  "realm" : "camunda",
+  "realm" : "operaton",
   "notBefore" : 0,
   "defaultSignatureAlgorithm" : "RS256",
   "revokeRefreshToken" : false,
@@ -62,7 +62,7 @@
       "attributes" : { }
     }, {
       "id" : "87b9ad0d-c2e2-4fd0-8f0f-ab2ce86da124",
-      "name" : "default-roles-camunda",
+      "name" : "default-roles-operaton",
       "description" : "${role_default-roles}",
       "composite" : true,
       "composites" : {
@@ -246,7 +246,7 @@
       } ],
       "security-admin-console" : [ ],
       "admin-cli" : [ ],
-      "camunda-identity-service" : [ ],
+      "operaton-identity-service" : [ ],
       "account-console" : [ ],
       "broker" : [ {
         "id" : "0f503f71-4f58-4924-8565-34b985ab929d",
@@ -336,8 +336,8 @@
   },
   "groups" : [ {
     "id" : "e731ed96-6bfc-4aff-a319-1090e95ed65a",
-    "name" : "camunda-admin",
-    "path" : "/camunda-admin",
+    "name" : "operaton-admin",
+    "path" : "/operaton-admin",
     "attributes" : { },
     "realmRoles" : [ ],
     "clientRoles" : { },
@@ -345,7 +345,7 @@
   } ],
   "defaultRole" : {
     "id" : "87b9ad0d-c2e2-4fd0-8f0f-ab2ce86da124",
-    "name" : "default-roles-camunda",
+    "name" : "default-roles-operaton",
     "description" : "${role_default-roles}",
     "composite" : true,
     "clientRole" : false,
@@ -383,13 +383,13 @@
   "users" : [ {
     "id" : "eab79174-ee26-46af-87f2-3325a9aa6ace",
     "createdTimestamp" : 1691395025807,
-    "username" : "camunda",
+    "username" : "operaton",
     "enabled" : true,
     "totp" : false,
     "emailVerified" : true,
     "firstName" : "",
     "lastName" : "",
-    "email" : "camunda@invalid.invalid",
+    "email" : "operaton@invalid.invalid",
     "credentials" : [ {
       "id" : "60a88350-08cd-4abd-ab61-c3aae9bad387",
       "type" : "password",
@@ -400,13 +400,13 @@
     } ],
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
-    "realmRoles" : [ "default-roles-camunda" ],
+    "realmRoles" : [ "default-roles-operaton" ],
     "notBefore" : 0,
     "groups" : [ ]
   }, {
     "id" : "79b5a95c-8a9f-47b7-95c2-07af25195bda",
     "createdTimestamp" : 1691394299474,
-    "username" : "camunda-admin",
+    "username" : "operaton-admin",
     "enabled" : true,
     "totp" : false,
     "emailVerified" : false,
@@ -422,21 +422,21 @@
     } ],
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
-    "realmRoles" : [ "default-roles-camunda" ],
+    "realmRoles" : [ "default-roles-operaton" ],
     "notBefore" : 0,
-    "groups" : [ "/camunda-admin" ]
+    "groups" : [ "/operaton-admin" ]
   }, {
     "id" : "93e7447f-5cd9-42d4-ba26-3b69f4ae0a9f",
     "createdTimestamp" : 1691384756615,
-    "username" : "service-account-camunda-identity-service",
+    "username" : "service-account-operaton-identity-service",
     "enabled" : true,
     "totp" : false,
     "emailVerified" : false,
-    "serviceAccountClientId" : "camunda-identity-service",
+    "serviceAccountClientId" : "operaton-identity-service",
     "credentials" : [ ],
     "disableableCredentialTypes" : [ ],
     "requiredActions" : [ ],
-    "realmRoles" : [ "default-roles-camunda" ],
+    "realmRoles" : [ "default-roles-operaton" ],
     "clientRoles" : {
       "realm-management" : [ "view-users", "query-users", "query-groups" ]
     },
@@ -458,12 +458,12 @@
     "clientId" : "account",
     "name" : "${client_account}",
     "rootUrl" : "${authBaseUrl}",
-    "baseUrl" : "/realms/camunda/account/",
+    "baseUrl" : "/realms/operaton/account/",
     "surrogateAuthRequired" : false,
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
     "clientAuthenticatorType" : "client-secret",
-    "redirectUris" : [ "/realms/camunda/account/*" ],
+    "redirectUris" : [ "/realms/operaton/account/*" ],
     "webOrigins" : [ ],
     "notBefore" : 0,
     "bearerOnly" : false,
@@ -488,12 +488,12 @@
     "clientId" : "account-console",
     "name" : "${client_account-console}",
     "rootUrl" : "${authBaseUrl}",
-    "baseUrl" : "/realms/camunda/account/",
+    "baseUrl" : "/realms/operaton/account/",
     "surrogateAuthRequired" : false,
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
     "clientAuthenticatorType" : "client-secret",
-    "redirectUris" : [ "/realms/camunda/account/*" ],
+    "redirectUris" : [ "/realms/operaton/account/*" ],
     "webOrigins" : [ ],
     "notBefore" : 0,
     "bearerOnly" : false,
@@ -576,8 +576,8 @@
     "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
   }, {
     "id" : "2c8d36ec-60a5-4e9e-94ff-73f765f33898",
-    "clientId" : "camunda-identity-service",
-    "name" : "Camunda Identity Service",
+    "clientId" : "operaton-identity-service",
+    "name" : "Operaton Identity Service",
     "description" : "",
     "rootUrl" : "",
     "adminUrl" : "",
@@ -587,7 +587,7 @@
     "alwaysDisplayInConsole" : false,
     "clientAuthenticatorType" : "client-secret",
     "secret" : "GBLb9KSRxmmo81SIGH2BWu3GEtrofvWo",
-    "redirectUris" : [ "http://localhost:8080/camunda/*", "/camunda/*" ],
+    "redirectUris" : [ "http://localhost:8080/operaton/*", "/operaton/*" ],
     "webOrigins" : [ "http://localhost:8080" ],
     "notBefore" : 0,
     "bearerOnly" : false,
@@ -606,7 +606,7 @@
       "client_credentials.use_refresh_token" : "true",
       "tls.client.certificate.bound.access.tokens" : "false",
       "require.pushed.authorization.requests" : "false",
-      "post.logout.redirect.uris" : "http://localhost:8080/camunda/*##/camunda/*",
+      "post.logout.redirect.uris" : "http://localhost:8080/operaton/*##/operaton/*",
       "oauth2.device.authorization.grant.enabled" : "false",
       "backchannel.logout.revoke.offline.tokens" : "false",
       "token.response.type.bearer.lower-case" : "false",
@@ -655,7 +655,7 @@
         "jsonType.label" : "String"
       }
     } ],
-    "defaultClientScopes" : [ "web-origins", "acr", "profile", "roles", "camunda-rest-api", "email" ],
+    "defaultClientScopes" : [ "web-origins", "acr", "profile", "roles", "operaton-rest-api", "email" ],
     "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
   }, {
     "id" : "1355af83-c345-4e57-ab20-4d0fe8e4db88",
@@ -688,12 +688,12 @@
     "clientId" : "security-admin-console",
     "name" : "${client_security-admin-console}",
     "rootUrl" : "${authAdminUrl}",
-    "baseUrl" : "/admin/camunda/console/",
+    "baseUrl" : "/admin/operaton/console/",
     "surrogateAuthRequired" : false,
     "enabled" : true,
     "alwaysDisplayInConsole" : false,
     "clientAuthenticatorType" : "client-secret",
-    "redirectUris" : [ "/admin/camunda/console/*" ],
+    "redirectUris" : [ "/admin/operaton/console/*" ],
     "webOrigins" : [ "+" ],
     "notBefore" : 0,
     "bearerOnly" : false,
@@ -732,8 +732,8 @@
   } ],
   "clientScopes" : [ {
     "id" : "e2a4234a-fdec-40df-a4bb-c9e8e9cda9e4",
-    "name" : "camunda-rest-api",
-    "description" : "Camunda Rest Api Access ",
+    "name" : "operaton-rest-api",
+    "description" : "Operaton Rest Api Access ",
     "protocol" : "openid-connect",
     "attributes" : {
       "include.in.token.scope" : "true",
@@ -743,14 +743,14 @@
     },
     "protocolMappers" : [ {
       "id" : "8579974b-9e7e-409b-90f5-72359708eb3a",
-      "name" : "camunda-rest-api",
+      "name" : "operaton-rest-api",
       "protocol" : "openid-connect",
       "protocolMapper" : "oidc-audience-mapper",
       "consentRequired" : false,
       "config" : {
         "id.token.claim" : "false",
         "access.token.claim" : "true",
-        "included.custom.audience" : "camunda-rest-api"
+        "included.custom.audience" : "operaton-rest-api"
       }
     } ]
   }, {

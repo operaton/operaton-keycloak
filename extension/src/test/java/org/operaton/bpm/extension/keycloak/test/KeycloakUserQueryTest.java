@@ -42,29 +42,29 @@ public class KeycloakUserQueryTest extends AbstractKeycloakIdentityProviderTest 
   }
 
   public void testFilterByUserId() {
-    User user = identityService.createUserQuery().userId("camunda@accso.de").singleResult();
+    User user = identityService.createUserQuery().userId("operaton@accso.de").singleResult();
     assertNotNull(user);
 
     // validate user
-    assertEquals("camunda@accso.de", user.getId());
+    assertEquals("operaton@accso.de", user.getId());
     assertEquals("Admin", user.getFirstName());
-    assertEquals("Camunda", user.getLastName());
-    assertEquals("camunda@accso.de", user.getEmail());
+    assertEquals("Operaton", user.getLastName());
+    assertEquals("operaton@accso.de", user.getEmail());
 
     user = identityService.createUserQuery().userId("non-existing").singleResult();
     assertNull(user);
   }
 
   public void testFilterByUserIdIn() {
-    List<User> users = identityService.createUserQuery().userIdIn("camunda@accso.de", "gunnar.von-der-beck@accso.de").list();
+    List<User> users = identityService.createUserQuery().userIdIn("operaton@accso.de", "gunnar.von-der-beck@accso.de").list();
     assertNotNull(users);
     assertEquals(2, users.size());
 
-    users = identityService.createUserQuery().userIdIn("camunda@accso.de", "non-existing").list();
+    users = identityService.createUserQuery().userIdIn("operaton@accso.de", "non-existing").list();
     assertNotNull(users);
     assertEquals(1, users.size());
 
-    users = identityService.createUserQuery().userIdIn("camunda@accso.de").list();
+    users = identityService.createUserQuery().userIdIn("operaton@accso.de").list();
     assertNotNull(users);
     assertEquals(1, users.size());
   }
@@ -152,7 +152,7 @@ public class KeycloakUserQueryTest extends AbstractKeycloakIdentityProviderTest 
   }
   
   public void testFilterByEmail() throws Exception {
-    User user = identityService.createUserQuery().userEmail("camunda@accso.de").singleResult();
+    User user = identityService.createUserQuery().userEmail("operaton@accso.de").singleResult();
     assertNotNull(user);
 
     user = identityService.createUserQuery().userEmail("non-exist*").singleResult();
@@ -160,9 +160,9 @@ public class KeycloakUserQueryTest extends AbstractKeycloakIdentityProviderTest 
   }
 
   public void testFilterByEmailLike() throws Exception {
-    User user = identityService.createUserQuery().userEmailLike("camunda@*").singleResult();
+    User user = identityService.createUserQuery().userEmailLike("operaton@*").singleResult();
     assertNotNull(user);
-    user = identityService.createUserQuery().userEmailLike("camunda@%").singleResult();
+    user = identityService.createUserQuery().userEmailLike("operaton@%").singleResult();
     assertNotNull(user);
     
     List<User> users = identityService.createUserQuery().userEmailLike("%@accso.de").list();
@@ -258,7 +258,7 @@ public class KeycloakUserQueryTest extends AbstractKeycloakIdentityProviderTest 
       identityService.setAuthenticatedUserId("non-existing");
       assertEquals(0, identityService.createUserQuery().count());
 
-      identityService.setAuthenticatedUserId("camunda@accso.de");
+      identityService.setAuthenticatedUserId("opereaton@accso.de");
       assertEquals(1, identityService.createUserQuery().count());
 
     } finally {

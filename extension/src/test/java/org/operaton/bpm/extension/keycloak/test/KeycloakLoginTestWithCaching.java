@@ -70,12 +70,12 @@ public class KeycloakLoginTestWithCaching extends AbstractKeycloakIdentityProvid
 		int countBefore = CountingHttpRequestInterceptor.getHttpRequestCount();
 
 		// first login
-		assertTrue(identityService.checkPassword("camunda@accso.de", "camunda1!"));
+		assertTrue(identityService.checkPassword("operaton@accso.de", "operaton1!"));
 		// non cached query. http request count should have increased
 		assertEquals(countBefore + 1, CountingHttpRequestInterceptor.getHttpRequestCount());
 		
 		// second login
-		assertTrue(identityService.checkPassword("camunda@accso.de", "camunda1!"));
+		assertTrue(identityService.checkPassword("operaton@accso.de", "operaton1!"));
 		// request count should be same as before
 		assertEquals(countBefore + 1, CountingHttpRequestInterceptor.getHttpRequestCount());
 	}
@@ -84,12 +84,12 @@ public class KeycloakLoginTestWithCaching extends AbstractKeycloakIdentityProvid
 		int countBefore = CountingHttpRequestInterceptor.getHttpRequestCount();
 
 		// first login
-		assertTrue(identityService.checkPassword("Camunda@Accso.de", "camunda1!"));
+		assertTrue(identityService.checkPassword("Operaton@Accso.de", "operaton1!"));
 		// non cached query. http request count should have increased
 		assertEquals(countBefore + 1, CountingHttpRequestInterceptor.getHttpRequestCount());
 
 		// second login
-		assertTrue(identityService.checkPassword("Camunda@Accso.de", "camunda1!"));
+		assertTrue(identityService.checkPassword("Operaton@Accso.de", "operaton1!"));
 		// request count should be same as before
 		assertEquals(countBefore + 1, CountingHttpRequestInterceptor.getHttpRequestCount());
 	}
@@ -98,19 +98,19 @@ public class KeycloakLoginTestWithCaching extends AbstractKeycloakIdentityProvid
 		int countBefore = CountingHttpRequestInterceptor.getHttpRequestCount();
 
 		// failing logins
-		assertFalse(identityService.checkPassword("camunda@accso.de", "c"));
-		assertFalse(identityService.checkPassword("non-existing", "camunda1!"));
+		assertFalse(identityService.checkPassword("operaton@accso.de", "c"));
+		assertFalse(identityService.checkPassword("non-existing", "operaton1!"));
 		// non cached query. http requests count should have increased
 		assertEquals(countBefore + 2, CountingHttpRequestInterceptor.getHttpRequestCount());
 
 		// second failing logins
-		assertFalse(identityService.checkPassword("camunda@accso.de", "c"));
-		assertFalse(identityService.checkPassword("non-existing", "camunda1!"));
+		assertFalse(identityService.checkPassword("operaton@accso.de", "c"));
+		assertFalse(identityService.checkPassword("non-existing", "operaton1!"));
 		// request count should be same as before
 		assertEquals(countBefore + 2, CountingHttpRequestInterceptor.getHttpRequestCount());
 		
 		// third now successful login
-		assertTrue(identityService.checkPassword("camunda@accso.de", "camunda1!"));
+		assertTrue(identityService.checkPassword("operaton@accso.de", "operaton1!"));
 		// request count should have increased due to the different password
 		assertEquals(countBefore + 3, CountingHttpRequestInterceptor.getHttpRequestCount());
 	}
@@ -119,8 +119,8 @@ public class KeycloakLoginTestWithCaching extends AbstractKeycloakIdentityProvid
 		int countBefore = CountingHttpRequestInterceptor.getHttpRequestCount();
 
 		// failing logins
-		assertFalse(identityService.checkPassword(null, "camunda1!"));
-		assertFalse(identityService.checkPassword("camunda@accso.de", null));
+		assertFalse(identityService.checkPassword(null, "operaton1!"));
+		assertFalse(identityService.checkPassword("operaton@accso.de", null));
 		assertFalse(identityService.checkPassword(null, null));
 		// no http requests: missing userId or password - we do not support anonymous logins
 		assertEquals(countBefore, CountingHttpRequestInterceptor.getHttpRequestCount());
@@ -130,8 +130,8 @@ public class KeycloakLoginTestWithCaching extends AbstractKeycloakIdentityProvid
 		int countBefore = CountingHttpRequestInterceptor.getHttpRequestCount();
 
 		// first login
-		assertFalse(identityService.checkPassword("", "camunda1!"));
-		assertFalse(identityService.checkPassword("camunda@accso.de", ""));
+		assertFalse(identityService.checkPassword("", "operaton1!"));
+		assertFalse(identityService.checkPassword("operaton@accso.de", ""));
 		assertFalse(identityService.checkPassword("", ""));
 		// no http request: empty user Id or passwords - we do not support anonymous logins
 		assertEquals(countBefore, CountingHttpRequestInterceptor.getHttpRequestCount());
@@ -157,12 +157,12 @@ public class KeycloakLoginTestWithCaching extends AbstractKeycloakIdentityProvid
 		int countBefore = CountingHttpRequestInterceptor.getHttpRequestCount();
 
 		// first logins
-		assertTrue(identityService.checkPassword("camunda@accso.de", "camunda1!"));
+		assertTrue(identityService.checkPassword("operaton@accso.de", "operaton1!"));
 		assertTrue(identityService.checkPassword("johnfoo@gmail.com", "!§$%&/()=?#'-_.:,;+*~@€"));
 		// non cached query. http requests count should have increased
 		assertEquals(countBefore + 2, CountingHttpRequestInterceptor.getHttpRequestCount());
 		// check cache entries
-		assertEquals(Arrays.asList("camunda@accso.de", "johnfoo@gmail.com"), getCacheEntries());
+		assertEquals(Arrays.asList("operaton@accso.de", "johnfoo@gmail.com"), getCacheEntries());
 
 		// call cache entry
 		assertTrue(identityService.checkPassword("johnfoo@gmail.com", "!§$%&/()=?#'-_.:,;+*~@€"));
@@ -211,7 +211,7 @@ public class KeycloakLoginTestWithCaching extends AbstractKeycloakIdentityProvid
 		// next logins
 		assertTrue(identityService.checkPassword("johnfoo@gmail.com", "!§$%&/()=?#'-_.:,;+*~@€"));
 		assertTrue(identityService.checkPassword("hans.mustermann@tradermail.info", "äöüÄÖÜ"));
-		assertTrue(identityService.checkPassword("camunda@accso.de", "camunda1!"));
+		assertTrue(identityService.checkPassword("operaton@accso.de", "operaton1!"));
 		// request count should be increased by new login only
 		assertEquals(countBefore + 3, CountingHttpRequestInterceptor.getHttpRequestCount());
 
@@ -220,10 +220,10 @@ public class KeycloakLoginTestWithCaching extends AbstractKeycloakIdentityProvid
 	
 		// check cache: only youngest login (with age 2 minutes) should have survived
 		assertEquals(1, getCacheEntries().size());
-		assertTrue(getCacheEntries().contains("camunda@accso.de"));
+		assertTrue(getCacheEntries().contains("operaton@accso.de"));
 		
 		// logins after timeout
-		assertTrue(identityService.checkPassword("camunda@accso.de", "camunda1!"));
+		assertTrue(identityService.checkPassword("operaton@accso.de", "operaton1!"));
 		assertTrue(identityService.checkPassword("johnfoo@gmail.com", "!§$%&/()=?#'-_.:,;+*~@€"));
 		assertTrue(identityService.checkPassword("hans.mustermann@tradermail.info", "äöüÄÖÜ"));
 		// only youngest login cached, others are timed out. http requests count should have increased

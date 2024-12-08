@@ -318,25 +318,25 @@ Keep in mind that Keycloak's `email` attribute might not always be unique, depen
 
 ## Quickstart
 
-As a quickstart into using and configuring the plugin we recommend to have a look at the [Installation on Camunda Platform Run](https://github.com/camunda-community-hub/camunda-platform-7-keycloak/tree/master/examples/run). You'll find a chapter "Docker Sample Setup" at the end of the README. This is a simple starting point.
+As a quickstart into using and configuring the plugin we recommend to have a look at the [Installation on Operaton Run](https://github.com/operaton/operaton-keycloak/tree/master/examples/run). You'll find a chapter "Docker Sample Setup" at the end of the README. This is a simple starting point.
 
 If your intention is a complete SSO setup on Kubernetes you'll be more happy with the next reference.
 
 ## Sample Spring Boot Project with SSO on Kubernetes
 
-A sample project using this plugin including a basic SSO and Kubernetes setup can be found under [Camunda Showcase for Spring Boot & Keycloak Identity Provider](https://github.com/camunda-community-hub/camunda-platform-7-keycloak/tree/master/examples/sso-kubernetes). See directory `examples`.
+A sample project using this plugin including a basic SSO and Kubernetes setup can be found under [Operaton Showcase for Spring Boot & Keycloak Identity Provider](https://github.com/operaton/operaton-keycloak/tree/master/examples/sso-kubernetes). See directory `examples`.
 
 ## Installation on Apache Tomcat with Shared Process Engine
 
-Even if from an architectural point of view Spring Boot is currently the most recommended approach for cloud scenarios, it is of course possible to install the plugin in other Camunda distributions as well. A description on how to install the plugin on an Apache Tomcat full distribution can be found under [Installation on Tomcat](https://github.com/camunda-community-hub/camunda-platform-7-keycloak/tree/master/examples/tomcat). See directory `examples`.
+Even if from an architectural point of view Spring Boot is currently the most recommended approach for cloud scenarios, it is of course possible to install the plugin in other Operaton distributions as well. A description on how to install the plugin on an Apache Tomcat full distribution can be found under [Installation on Tomcat](https://github.com/operaton/operaton-keycloak/tree/master/examples/tomcat). See directory `examples`.
 
-## Installation on Camunda Platform Run
+## Installation on Operaton Run
 
-A description on how to install the plugin on Camunda BPM Run can be found under [Installation on Camunda BPM Run](https://github.com/camunda-community-hub/camunda-platform-7-keycloak/tree/master/examples/run). See directory `examples`.
+A description on how to install the plugin on Operaton Run can be found under [Installation on Operaton Run](https://github.com/operaton/operaton-keycloak/tree/master/examples/run). See directory `examples`.
 
 ## Installation on JBoss/Wildfly
 
-A description on how to install the plugin on a JBoss/Wildfly can be found under [Installation on JBoss/Wildfly](https://github.com/camunda-community-hub/camunda-platform-7-keycloak/tree/master/examples/wildfly). See directory `examples`.
+A description on how to install the plugin on a JBoss/Wildfly can be found under [Installation on JBoss/Wildfly](https://github.com/operaton/operaton-keycloak/tree/master/examples/wildfly). See directory `examples`.
 
 ## Unit testing the plugin
 
@@ -393,8 +393,8 @@ Brought to you by:
 
 ## Resources
 
-* [Issue Tracker](https://github.com/camunda-community-hub/camunda-platform-7-keycloak/issues)
-* [Contributing](https://github.com/camunda-community-hub/camunda-platform-7-keycloak/blob/master/CONTRIBUTING.md)
+* [Issue Tracker](https://github.com/operaton/operaton-keycloak/issues)
+* [Contributing](https://github.com/operaton/operaton-keycloak/blob/master/CONTRIBUTING.md)
 
 ## Maintainer
 

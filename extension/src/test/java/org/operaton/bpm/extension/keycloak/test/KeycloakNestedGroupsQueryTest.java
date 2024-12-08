@@ -45,7 +45,7 @@ public class KeycloakNestedGroupsQueryTest extends AbstractKeycloakIdentityProvi
 				.groupIdIn(GROUP_ID_ADMIN, GROUP_ID_HIERARCHY_CHILD1)
 				.list();
 		assertEquals(2, groups.size());
-		assertEquals("camunda-admin not found", 1, groups.stream().filter(g -> g.getName().equals("camunda-admin")).count());
+		assertEquals("operaton-admin not found", 1, groups.stream().filter(g -> g.getName().equals("operaton-admin")).count());
 		assertEquals("child1 not found", 1, groups.stream().filter(g -> g.getName().equals("child1")).count());
 	}
 
