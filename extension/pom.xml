@@ -4,7 +4,7 @@
 	<parent>
 	  <groupId>org.operaton.bpm.extension</groupId>
 	  <artifactId>operaton-keycloak-root</artifactId>
-		<version>1.0.0-beta-1-SNAPSHOT</version>
+		<version>1.0.0-beta-1</version>
 	</parent>
 
     <artifactId>operaton-keycloak</artifactId>
