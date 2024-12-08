@@ -14,3 +14,4 @@
 /examples/sso-kubernetes/operaton-db.mv.db
 /operaton-db.mv.db
 /.run/operaton-keycloak-root [clean,install].run.xml
+pom.xml.versionsBackup
