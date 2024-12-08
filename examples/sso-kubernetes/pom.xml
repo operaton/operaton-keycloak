@@ -15,8 +15,8 @@
 
 	<properties>
 		<failOnMissingWebXml>false</failOnMissingWebXml>
-
-		<docker.imageName>gunnaraccso/operaton-showcase-keycloak:${version}</docker.imageName>
+		<skipTests>true</skipTests>
+		<docker.imageName>gunnaraccso/camunda-showcase-keycloak:${version}</docker.imageName>
 	</properties>
 
 	<dependencies>
