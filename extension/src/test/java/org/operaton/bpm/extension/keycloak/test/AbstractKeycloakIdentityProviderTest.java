@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
+import dasniko.testcontainers.keycloak.KeycloakContainer;
 import java.nio.charset.StandardCharsets;
 import java.util.ResourceBundle;
 
@@ -16,6 +17,8 @@ import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
 import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
 import org.apache.hc.client5.http.ssl.TrustAllStrategy;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.operaton.bpm.engine.ProcessEngine;
 import org.operaton.bpm.engine.ProcessEngineConfiguration;
 import org.operaton.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
@@ -38,19 +41,22 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
  * Super class for all Identity Provider Tests.
  */
+@Testcontainers
 public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProcessEngineTestCase {
 
 	// Keycloak configuration
 	// - in your maven build set as environment variables in order to override defaults
 	// - if not available defaults will be taken from keycloak-default.properties
-	private static final String KEYCLOAK_URL; // expected format "https://<myhost:myport>/auth
-	private static final String KEYCLOAK_ADMIN_USER;
-	private static final String KEYCLOAK_ADMIN_PASSWORD;
-	private static final Boolean KEYCLOAK_ENFORCE_SUBGROUPS_IN_GROUP_QUERY;
+	private static String KEYCLOAK_URL; // expected format "https://<myhost:myport>/auth
+	private static String KEYCLOAK_ADMIN_USER;
+	private static String KEYCLOAK_ADMIN_PASSWORD;
+	private static Boolean KEYCLOAK_ENFORCE_SUBGROUPS_IN_GROUP_QUERY;
 
 	// ------------------------------------------------------------------------
 	
@@ -79,16 +85,24 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
 	private static final RestTemplate restTemplate = new RestTemplate();
 	
 	protected static String CLIENT_SECRET = null;
-	
+
+	@Container
+	static KeycloakContainer keycloak = new KeycloakContainer("quay.io/keycloak/keycloak:26.0.7");
+
 	// creates Keycloak setup only once per test run
-	static {
+	@BeforeClass
+	public static void initialize () {
 		// read keycloak configuration
 		ResourceBundle defaults = ResourceBundle.getBundle("keycloak-default");
-		KEYCLOAK_URL = getConfigValue(defaults, "keycloak.url").replaceAll("/+$", "");
 		KEYCLOAK_ADMIN_USER = getConfigValue(defaults, "keycloak.admin.user");
 		KEYCLOAK_ADMIN_PASSWORD = getConfigValue(defaults, "keycloak.admin.password");
 		KEYCLOAK_ENFORCE_SUBGROUPS_IN_GROUP_QUERY =
 				Boolean.valueOf(getConfigValue(defaults, "keycloak.enforce.subgroups.in.group.query"));
+		keycloak.withAdminUsername(KEYCLOAK_ADMIN_USER);
+		keycloak.withAdminPassword(KEYCLOAK_ADMIN_PASSWORD);
+
+		keycloak.start();
+		KEYCLOAK_URL = keycloak.getAuthServerUrl();
 
 		// setup 
 		try {
@@ -97,15 +111,6 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to setup keycloak test realm", e);
 		}
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			public void run() {
-				try {
-					tearDownKeycloak();
-				} catch (JSONException e) {
-					throw new RuntimeException("Error tearing down keycloak test realm", e);
-				}
-			}
-		});
 	}
 
 	/**
@@ -167,8 +172,10 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
 	 */
 	protected static KeycloakIdentityProviderPlugin configureKeycloakIdentityProviderPlugin(ProcessEngineConfigurationImpl config) {
 		for (ProcessEnginePlugin p : config.getProcessEnginePlugins()) {
-			if (p instanceof KeycloakIdentityProviderPlugin) {
-				KeycloakIdentityProviderPlugin kcp = (KeycloakIdentityProviderPlugin) p;
+			if (p instanceof KeycloakIdentityProviderPlugin kcp) {
+				if (!keycloak.isCreated()) {
+					initialize();
+				}
 				kcp.setKeycloakAdminUrl(kcp.getKeycloakAdminUrl().replace("http://localhost:9000", KEYCLOAK_URL));
 				kcp.setKeycloakIssuerUrl(kcp.getKeycloakIssuerUrl().replace("http://localhost:9000", KEYCLOAK_URL));
 				kcp.setEnforceSubgroupsInGroupQuery(KEYCLOAK_ENFORCE_SUBGROUPS_IN_GROUP_QUERY);
@@ -272,12 +279,15 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
 	 * Deletes Keycloak test realm
 	 * @throws JSONException in case of errors
 	 */
+	@AfterClass
 	public static void tearDownKeycloak() throws JSONException {
 		LOG.info("Cleaning up Keycloak Test Realm");
 
 		// Delete test realm
 		HttpHeaders headers = authenticateKeycloakAdmin();
 		deleteRealm(headers, "test");
+
+		keycloak.stop();
 	}
 
 	// ------------------------------------------------------------------------
