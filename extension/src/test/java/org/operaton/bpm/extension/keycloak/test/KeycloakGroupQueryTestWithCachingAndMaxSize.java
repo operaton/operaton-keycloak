@@ -106,7 +106,7 @@ public class KeycloakGroupQueryTestWithCachingAndMaxSize extends AbstractKeycloa
 		assertEquals(countBefore + 3, CountingHttpRequestInterceptor.getHttpRequestCount());
 
 		// cam-read-only was evicted because maxSize(2) was breached and it was used fewer times than operaton-admin
-		assertEquals(Arrays.asList("operaton-admin", "manager"), getCacheEntries());
+		assertEquals(Arrays.asList("manager", "operaton-admin"), getCacheEntries());
 
 		// query cam-read-only again
 		assertEquals("cam-read-only", queryGroup(query, "cam-read-only").getName());
