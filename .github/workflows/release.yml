@@ -55,15 +55,6 @@ jobs:
     name: Release Build
     needs: precheck
     runs-on: ubuntu-24.04
-    services:
-      keycloak:
-        image: quay.io/keycloak/keycloak:19.0.3-legacy
-        env:
-          KEYCLOAK_USER: keycloak
-          KEYCLOAK_PASSWORD: keycloak1!
-          DB_VENDOR: h2
-        ports: [ 8443/tcp ]
-        options: --health-cmd "curl -Iks https://localhost:8443" --health-interval 10s --health-timeout 5s --health-retries 5
     outputs:
       output1: ${{steps.upload-release-artifacts.outputs.artifact-id}}
     steps:
@@ -80,9 +71,6 @@ jobs:
           distribution: 'temurin'
 
       - name: Maven Build
-        env:
-          KEYCLOAK_URL: https://localhost:${{ job.services.keycloak.ports[8443] }}/auth
-          KEYCLOAK_ENFORCE_SUBGROUPS_IN_GROUP_QUERY: false
         run: |
           PROJECT_ROOT=$(pwd)
           # Make a verification build. Also the deploy step will need the tomcat distro for building, but we don't want to deploy it.

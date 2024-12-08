@@ -23,6 +23,7 @@
     <version.operaton>1.0.0-beta-2</version.operaton>
     <version.springBoot>3.3.5</version.springBoot>
     <version.commons-codec>1.17.1</version.commons-codec>
+    <version.testcontainers>1.20.4</version.testcontainers>
 
     <!-- Set to false for each module that must be deployed -->
     <deploy.skip>true</deploy.skip>
@@ -92,6 +93,13 @@
         <artifactId>operaton-keycloak-jwt</artifactId>
         <version>${project.version}</version>
         <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers-bom</artifactId>
+        <version>${version.testcontainers}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
