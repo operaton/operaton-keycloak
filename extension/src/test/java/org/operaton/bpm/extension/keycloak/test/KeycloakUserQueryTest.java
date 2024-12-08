@@ -258,7 +258,7 @@ public class KeycloakUserQueryTest extends AbstractKeycloakIdentityProviderTest 
       identityService.setAuthenticatedUserId("non-existing");
       assertEquals(0, identityService.createUserQuery().count());
 
-      identityService.setAuthenticatedUserId("opereaton@accso.de");
+      identityService.setAuthenticatedUserId("operaton@accso.de");
       assertEquals(1, identityService.createUserQuery().count());
 
     } finally {
