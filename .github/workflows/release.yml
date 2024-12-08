@@ -6,11 +6,11 @@ on:
       release_branch:
         description: 'The branch to release from'
         required: true
-        default: 'build/add-release-workflow'
+        default: 'build/4-release-1.0.0-beta-1'
       next_version:
         description: 'The next development version to set (without -SNAPSHOT suffix)'
         required: true
-        default: '1.0.0-beta-4'
+        default: '1.0.0-beta-2'
       dry_run:
         description: 'Dry-Run: Skips remote operations when true'
         type: boolean
@@ -75,21 +75,18 @@ jobs:
           PROJECT_ROOT=$(pwd)
           # Make a verification build. Also the deploy step will need the tomcat distro for building, but we don't want to deploy it.
           ./mvnw \
-            -Pdistro,distro-tomcat,distro-wildfly,distro-webjar,distro-starter,distro-serverless,h2-in-memory \
             install \
             versions:dependency-updates-aggregate-report \
             versions:plugin-updates-aggregate-report \
             -Dsave=true -Ddisplay=false io.github.orhankupusoglu:sloc-maven-plugin:sloc \
             -Dbuildplan.appendOutput=true -Dbuildplan.outputFile=$PROJECT_ROOT/target/reports/buildplan.txt fr.jcgay.maven.plugins:buildplan-maven-plugin:list
           .github/scripts/prepare-reports.sh
-          ./mvnw -Psonatype-oss-release -DskipTests=true -Dskip.frontend.build=true deploy
+          ./mvnw -Psonatype-oss-release -DskipTests=true deploy
           find target -name maven-metadata.* -delete
       - name: Cache build artifacts
         uses: actions/cache@v4
         with:
           path: |
-            distro/**/*.tar.gz
-            distro/webjar/target/operaton-webapp-webjar-*.jar
             ./*/staging-deploy/**
             **/target/reports/**
             **/target/surefire-reports/*.xml
@@ -112,8 +109,6 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            distro/**/*.tar.gz
-            distro/webjar/target/operaton-webapp-webjar-*.jar
             ./*/staging-deploy/**
             **/target/reports/**
             **/target/surefire-reports/*.xml
