@@ -383,12 +383,6 @@ distribution, in case you start Keycloak in Development mode.
 
 That's it. Have a happy Keycloak experience and focus on what really matters: the core processes of your customer.
 
-Brought to you by:
-
-![Accso](doc/ACCSO-Logo.png "https://accso.de/")
-
-[Gunnar von der Beck](https://www.xing.com/profile/Gunnar_vonderBeck/portfolio "XING Profile"), [Accso - Accelerated Solutions GmbH](https://accso.de/ "https://accso.de/")
-
 ------------------------------------------------------------
 
 ## Resources
@@ -396,9 +390,11 @@ Brought to you by:
 * [Issue Tracker](https://github.com/operaton/operaton-keycloak/issues)
 * [Contributing](https://github.com/operaton/operaton-keycloak/blob/master/CONTRIBUTING.md)
 
-## Maintainer
+## Acknowledgement
 
-* [Gunnar von der Beck](https://github.com/VonDerBeck)
+We would like to thank [Gunnar von der Beck](https://www.xing.com/profile/Gunnar_vonderBeck/portfolio) from
+[Accso - Accelerated Solutions GmbH](https://accso.de/) for the idea and work on this plugin - 
+this fork is based on [camunda-platform-7-keycloak](https://github.com/camunda-community-hub/camunda-platform-7-keycloak).
 
 ## License 
 
