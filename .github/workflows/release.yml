@@ -6,7 +6,7 @@ on:
       release_branch:
         description: 'The branch to release from'
         required: true
-        default: 'build/4-release-1.0.0-beta-1'
+        default: 'master'
       next_version:
         description: 'The next development version to set (without -SNAPSHOT suffix)'
         required: true
