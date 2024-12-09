@@ -42,8 +42,9 @@ public class KeycloakConfiguration {
 	 * return subgroups within the result. Generally this has positive effects on performance and in case you do not
 	 * have subgroups you must not take care. On the other hand, if you do use subgroups you'll miss information and get
 	 * inconsistent results.
-	 * <p/>
+	 * <p>
 	 * Set this flag to 'true' in case you use subgroups together with Keycloak 23 or higher.
+	 * </p>
 	 */
 	protected boolean enforceSubgroupsInGroupQuery = false;
 
