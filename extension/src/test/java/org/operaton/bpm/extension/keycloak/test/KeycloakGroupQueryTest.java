@@ -41,8 +41,8 @@ public class KeycloakGroupQueryTest extends AbstractKeycloakIdentityProviderTest
 		assertEquals(3, resultLast.size());
 
 		// unique results
-		assertEquals(0, result.stream().filter(group -> resultNext.contains(group)).count());
-		assertEquals(0, result.stream().filter(group -> resultLast.contains(group)).count());
+		assertEquals(0, result.stream().filter(resultNext::contains).count());
+		assertEquals(0, result.stream().filter(resultLast::contains).count());
 	}
 
 	public void testFilterByGroupId() {
@@ -102,7 +102,7 @@ public class KeycloakGroupQueryTest extends AbstractKeycloakIdentityProviderTest
 
 		assertEquals(2, groups.size());
 		for (Group group : groups) {
-			if (!group.getName().equals("operaton-admin") && !group.getName().equals("manager")) {
+			if (!"operaton-admin".equals(group.getName()) && !"manager".equals(group.getName())) {
 				fail();
 			}
 		}

@@ -32,11 +32,11 @@ import org.springframework.util.StringUtils;
  */
 public class KeycloakIdentityProviderPlugin extends KeycloakConfiguration implements ProcessEnginePlugin {
 
-	private final static KeycloakPluginLogger LOG = KeycloakPluginLogger.INSTANCE;
+	private static final KeycloakPluginLogger LOG = KeycloakPluginLogger.INSTANCE;
 	
 	private boolean authorizationEnabled;
 	
-	private KeycloakIdentityProviderFactory keycloakIdentityProviderFactory = null;
+	private KeycloakIdentityProviderFactory keycloakIdentityProviderFactory;
 
 	/** custom interceptors to modify behaviour of default KeycloakRestTemplate */
 	private List<ClientHttpRequestInterceptor> customHttpRequestInterceptors = Collections.emptyList();
@@ -52,13 +52,13 @@ public class KeycloakIdentityProviderPlugin extends KeycloakConfiguration implem
 
 		if (!StringUtils.isEmpty(administratorGroupName)) {
 			if (processEngineConfiguration.getAdminGroups() == null) {
-				processEngineConfiguration.setAdminGroups(new ArrayList<String>());
+				processEngineConfiguration.setAdminGroups(new ArrayList<>());
 			}
 			// add the configured administrator group to the engine configuration later: needs translation to group ID
 		}
 		if (!StringUtils.isEmpty(administratorUserId)) {
 			if (processEngineConfiguration.getAdminUsers() == null) {
-				processEngineConfiguration.setAdminUsers(new ArrayList<String>());
+				processEngineConfiguration.setAdminUsers(new ArrayList<>());
 			}
 			// add the configured administrator to the engine configuration later: potentially needs translation to user ID
 		}
@@ -163,7 +163,7 @@ public class KeycloakIdentityProviderPlugin extends KeycloakConfiguration implem
 			LOG.missingConfigurationParameter("charset");
 			missing.add("charset");
 		}
-		if (missing.size() > 0) {
+		if (!missing.isEmpty()) {
 			LOG.activationError(getClass().getSimpleName(), processEngineConfiguration.getProcessEngineName(),
 					"missing mandatory configuration parameters " + missing.toString());
 			throw new IllegalStateException("Unable to initialize plugin "

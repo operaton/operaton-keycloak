@@ -20,7 +20,7 @@ import junit.framework.TestSuite;
  */
 public class KeycloakUseUsernameAsUserIdQueryTest extends AbstractKeycloakIdentityProviderTest {
 
-	static List<String> USER_IDS = new ArrayList<String>();
+	static List<String> USER_IDS = new ArrayList<>();
 
 	public static Test suite() {
 	    return new TestSetup(new TestSuite(KeycloakUseUsernameAsUserIdQueryTest.class)) {

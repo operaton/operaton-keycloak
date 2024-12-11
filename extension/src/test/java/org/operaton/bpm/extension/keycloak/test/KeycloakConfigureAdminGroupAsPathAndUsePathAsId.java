@@ -45,9 +45,8 @@ public class KeycloakConfigureAdminGroupAsPathAndUsePathAsId extends AbstractKey
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		// delete all created authorizations
-		processEngine.getAuthorizationService().createAuthorizationQuery().list().forEach(a -> {
-			processEngine.getAuthorizationService().deleteAuthorization(a.getId());
-		});
+		processEngine.getAuthorizationService().createAuthorizationQuery().list().forEach(a ->
+			processEngine.getAuthorizationService().deleteAuthorization(a.getId()));
 	}
 
 	// ------------------------------------------------------------------------

@@ -38,7 +38,7 @@ public class KeycloakUserQueryTest extends AbstractKeycloakIdentityProviderTest 
 	  assertEquals(3, resultNext.size());
 	  
 	  // unique results
-	  assertEquals(0, result.stream().filter(user -> resultNext.contains(user)).count());
+	  assertEquals(0, result.stream().filter(resultNext::contains).count());
   }
 
   public void testFilterByUserId() {

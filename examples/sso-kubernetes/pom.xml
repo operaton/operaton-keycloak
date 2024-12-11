@@ -16,7 +16,7 @@
 	<properties>
 		<failOnMissingWebXml>false</failOnMissingWebXml>
 		<skipTests>true</skipTests>
-		<docker.imageName>gunnaraccso/camunda-showcase-keycloak:${version}</docker.imageName>
+		<docker.imageName>gunnaraccso/camunda-showcase-keycloak:${project.version}</docker.imageName>
 	</properties>
 
 	<dependencies>

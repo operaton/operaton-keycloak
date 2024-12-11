@@ -40,9 +40,8 @@ public class KeycloakUserQueryTestWithCaching extends AbstractKeycloakIdentityPr
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		// delete all created authorizations
-		processEngine.getAuthorizationService().createAuthorizationQuery().list().forEach(a -> {
-			processEngine.getAuthorizationService().deleteAuthorization(a.getId());
-		});
+		processEngine.getAuthorizationService().createAuthorizationQuery().list().forEach(a ->
+			processEngine.getAuthorizationService().deleteAuthorization(a.getId()));
 		this.clearCache();
 		CountingHttpRequestInterceptor.resetCount();
 	}
@@ -125,7 +124,7 @@ public class KeycloakUserQueryTestWithCaching extends AbstractKeycloakIdentityPr
 		assertEquals(3, resultNext.size());
 
 		// unique results
-		assertEquals(0, result.stream().filter(user -> resultNext.contains(user)).count());
+		assertEquals(0, result.stream().filter(resultNext::contains).count());
 	}
 
 	public void testCacheEnabledQueryOrderByUserId() {

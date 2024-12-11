@@ -28,14 +28,14 @@ public class KeycloakAuthenticationFilter implements Filter {
 
 	/** This class' logger. */
 	private static final Logger LOG = LoggerFactory.getLogger(KeycloakAuthenticationFilter.class);
-	
+
 	/** Access to Operaton's IdentityService. */
-	private IdentityService identityService;
+	private final IdentityService identityService;
 	
 	/** Access to the OAuth2 client service. */
 	OAuth2AuthorizedClientService clientService;
 
-	private String userNameAttribute;
+	private final String userNameAttribute;
 	
 	/**
 	 * Creates a new KeycloakAuthenticationFilter.

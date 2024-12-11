@@ -35,8 +35,8 @@ public class KeycloakNestedGroupsQueryTest extends AbstractKeycloakIdentityProvi
 	public void testGroupQueryFilterByUserId() {
 		List<Group> result = identityService.createGroupQuery().groupMember("johnfoo@gmail.com").list();
 		assertEquals(2, result.size());
-		assertEquals("expected johnfoo@gmail.com to member of group child2", 1, result.stream().filter(g -> g.getName().equals("child2")).count());
-		assertEquals("expected johnfoo@gmail.com to member of group subchild1", 1, result.stream().filter(g -> g.getName().equals("subchild1")).count());
+		assertEquals("expected johnfoo@gmail.com to member of group child2", 1, result.stream().filter(g -> "child2".equals(g.getName())).count());
+		assertEquals("expected johnfoo@gmail.com to member of group subchild1", 1, result.stream().filter(g -> "subchild1".equals(g.getName())).count());
 	}
 	
 	
@@ -45,8 +45,8 @@ public class KeycloakNestedGroupsQueryTest extends AbstractKeycloakIdentityProvi
 				.groupIdIn(GROUP_ID_ADMIN, GROUP_ID_HIERARCHY_CHILD1)
 				.list();
 		assertEquals(2, groups.size());
-		assertEquals("operaton-admin not found", 1, groups.stream().filter(g -> g.getName().equals("operaton-admin")).count());
-		assertEquals("child1 not found", 1, groups.stream().filter(g -> g.getName().equals("child1")).count());
+		assertEquals("operaton-admin not found", 1, groups.stream().filter(g -> "operaton-admin".equals(g.getName())).count());
+		assertEquals("child1 not found", 1, groups.stream().filter(g -> "child1".equals(g.getName())).count());
 	}
 
 	public void testGroupQueryFilterByGroupIdInAndUserId() {
@@ -68,14 +68,14 @@ public class KeycloakNestedGroupsQueryTest extends AbstractKeycloakIdentityProvi
 	public void testGroupQueryFilterByGroupNameLike() {
 		List<Group> result = identityService.createGroupQuery().groupNameLike("child*").list();
 		assertEquals(2, result.size());
-		assertEquals("expected group child1 to be included", 1, result.stream().filter(g -> g.getName().equals("child1")).count());
-		assertEquals("expected group child2 to be included", 1, result.stream().filter(g -> g.getName().equals("child2")).count());
+		assertEquals("expected group child1 to be included", 1, result.stream().filter(g -> "child1".equals(g.getName())).count());
+		assertEquals("expected group child2 to be included", 1, result.stream().filter(g -> "child2".equals(g.getName())).count());
 
 		result = identityService.createGroupQuery().groupNameLike("*child*").list();
 		assertEquals(3, result.size());
-		assertEquals("expected group child1 to be included", 1, result.stream().filter(g -> g.getName().equals("child1")).count());
-		assertEquals("expected group child2 to be included", 1, result.stream().filter(g -> g.getName().equals("child2")).count());
-		assertEquals("expected group subchild1 to be included", 1, result.stream().filter(g -> g.getName().equals("subchild1")).count());
+		assertEquals("expected group child1 to be included", 1, result.stream().filter(g -> "child1".equals(g.getName())).count());
+		assertEquals("expected group child2 to be included", 1, result.stream().filter(g -> "child2".equals(g.getName())).count());
+		assertEquals("expected group subchild1 to be included", 1, result.stream().filter(g -> "subchild1".equals(g.getName())).count());
 	}
 	
 	public void testGroupQueryFilterByGroupNameAndGroupNameLike() {
@@ -88,8 +88,8 @@ public class KeycloakNestedGroupsQueryTest extends AbstractKeycloakIdentityProvi
 	public void testGroupQueryFilterByGroupMember() {
 		List<Group> result = identityService.createGroupQuery().groupMember("johnfoo@gmail.com").list();
 		assertEquals(2, result.size());
-		assertEquals("expected johnfoo@gmail.com to member of group child2", 1, result.stream().filter(g -> g.getName().equals("child2")).count());
-		assertEquals("expected johnfoo@gmail.com to member of group subchild1", 1, result.stream().filter(g -> g.getName().equals("subchild1")).count());
+		assertEquals("expected johnfoo@gmail.com to member of group child2", 1, result.stream().filter(g -> "child2".equals(g.getName())).count());
+		assertEquals("expected johnfoo@gmail.com to member of group subchild1", 1, result.stream().filter(g -> "subchild1".equals(g.getName())).count());
 	}
 	
 	public void testUserQueryFilterByMemberOfGroup() {

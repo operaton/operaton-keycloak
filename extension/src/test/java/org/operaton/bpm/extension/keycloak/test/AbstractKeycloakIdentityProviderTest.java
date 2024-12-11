@@ -54,7 +54,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
 
 	// ------------------------------------------------------------------------
 	
-	private final static Logger LOG = BaseLogger.createLogger(
+	private static final Logger LOG = BaseLogger.createLogger(
 		      TestLogger.class, "KEYCLOAK", "org.operaton.bpm.extension.keycloak", "42").getLogger();
 	
 	protected static String GROUP_ID_TEAMLEAD;
@@ -78,7 +78,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
 	
 	private static final RestTemplate restTemplate = new RestTemplate();
 	
-	protected static String CLIENT_SECRET = null;
+	protected static String CLIENT_SECRET;
 	
 	// creates Keycloak setup only once per test run
 	static {
@@ -410,16 +410,18 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
 	    for (int i = 0; i < roleList.length(); i++) {
 	    	JSONObject role = roleList.getJSONObject(i);
 	    	String roleName = role.getString("name");
-	    	if (roleName.equals("query-users")) {
+	    	if ("query-users".equals(roleName)) {
 	    		queryUserRoleId = role.getString("id");
-	    	} else if (roleName.equals("query-groups")) {
+	    	} else if ("query-groups".equals(roleName)) {
 	    		queryGroupRoleId = role.getString("id");
-	    	} else if (roleName.equals("view-users")) {
+	    	} else if ("view-users".equals(roleName)) {
 	    		viewUserRoleId = role.getString("id");
-	    	} else if (roleName.equals("view-clients")) {
+	    	} else if ("view-clients".equals(roleName)) {
 	    		viewClientsRoleId = role.getString("id");
 	    	}
-	    	if (queryUserRoleId != null && queryGroupRoleId != null && viewUserRoleId != null && viewClientsRoleId != null) break;
+			if (queryUserRoleId != null && queryGroupRoleId != null && viewUserRoleId != null && viewClientsRoleId != null) {
+				break;
+			}
 	    }
 	    assertThat(queryUserRoleId, notNullValue());
 	    assertThat(queryGroupRoleId, notNullValue());
@@ -455,9 +457,15 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
 	static String createUser(HttpHeaders headers, String realm, String userName, String firstName, String lastName, String email, String password) throws JSONException {
 		// create user
 		StringBuffer userData = new StringBuffer( "{\"id\":null,\"username\":\""+ userName + "\",\"enabled\":true,\"totp\":false,\"emailVerified\":false,");
-		if (firstName != null) userData.append("\"firstName\":\"" + firstName + "\",");
-		if (lastName != null) userData.append("\"lastName\":\"" + lastName + "\",");
-		if (email != null) userData.append("\"email\":\"" + email + "\",");
+		if (firstName != null) {
+			userData.append("\"firstName\":\"" + firstName + "\",");
+		}
+		if (lastName != null) {
+			userData.append("\"lastName\":\"" + lastName + "\",");
+		}
+		if (email != null) {
+			userData.append("\"email\":\"" + email + "\",");
+		}
 		userData.append("\"disableableCredentialTypes\":[\"password\"],\"requiredActions\":[],\"federatedIdentities\":[],\"notBefore\":0,\"access\":{\"manageGroupMembership\":true,\"view\":true,\"mapRoles\":true,\"impersonate\":true,\"manage\":true}}");
 	    HttpEntity<String> request = new HttpEntity<>(userData.toString(), headers);
 	    ResponseEntity<String> response = restTemplate.postForEntity(KEYCLOAK_URL + "/admin/realms/" + realm + "/users", request, String.class);

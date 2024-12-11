@@ -24,18 +24,18 @@ public class KeycloakConfiguration {
 	/**
 	 * Whether to use the email attribute as Operaton user ID. Activate this when not using SSO.
 	 */
-	protected boolean useEmailAsOperatonUserId = false;
+	protected boolean useEmailAsOperatonUserId;
 
 	/**
 	 * Whether to use the username attribute as Operaton user ID. Set keycloak.principal-attribute=preferred_username*
 	 */
-	protected boolean useUsernameAsOperatonUserId = false;
+	protected boolean useUsernameAsOperatonUserId;
 
 	/**
 	 * Whether to use the group's path as Operaton group ID. Makes sense in case you want to have human readable group IDs
 	 * and e.g. use them in Operaton's authorization configuration.
 	 */
-	protected boolean useGroupPathAsOperatonGroupId = false;
+	protected boolean useGroupPathAsOperatonGroupId;
 
 	/**
 	 * Starting with Keycloak version 23.x the group query without any other search parameters does not automatically
@@ -46,7 +46,7 @@ public class KeycloakConfiguration {
 	 * Set this flag to 'true' in case you use subgroups together with Keycloak 23 or higher.
 	 * </p>
 	 */
-	protected boolean enforceSubgroupsInGroupQuery = false;
+	protected boolean enforceSubgroupsInGroupQuery;
 
 	/** The name of the administrator group.
 	 *
@@ -66,7 +66,7 @@ public class KeycloakConfiguration {
 	protected boolean authorizationCheckEnabled = true;
 
 	/** Disables SSL certificate validation. Useful for testing. */
-	protected boolean disableSSLCertificateValidation = false;
+	protected boolean disableSSLCertificateValidation;
 
 	/** The file path to a truststore file. */
 	protected String truststore;
@@ -84,13 +84,13 @@ public class KeycloakConfiguration {
 	protected Integer maxResultSize = 250;
 
 	/** The optional proxy URI. */
-	protected String proxyUri = null;
+	protected String proxyUri;
 
 	/** The optional proxy user. */
-	protected String proxyUser = null;
+	protected String proxyUser;
 
 	/** The optional proxy password. */
-	protected String proxyPassword = null;
+	protected String proxyPassword;
 
 	/** Determines if queries to Keycloak are cached. default: false */
 	private boolean cacheEnabled;
@@ -111,7 +111,7 @@ public class KeycloakConfiguration {
 	 * Not applicable in case of SSO logins, but useful e.g. in case of massive 
 	 * External Tasks clients using HTTP Basic Auth only.
 	 */
-	private boolean loginCacheEnabled = false;
+	private boolean loginCacheEnabled;
 
 	/**
 	 * Maximum size of the login cache. Least used entries are evicted when this limit is reached. 

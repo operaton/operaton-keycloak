@@ -7,7 +7,7 @@ import java.time.Duration;
 /**
  * Query/Login Cache Configuration as parsed from KeycloakConfiguration.
  */
-public class CacheConfiguration {
+public final class CacheConfiguration {
 
 	private final boolean enabled;
 	private final int maxSize;

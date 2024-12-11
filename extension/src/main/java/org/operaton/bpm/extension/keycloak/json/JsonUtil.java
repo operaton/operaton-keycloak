@@ -107,7 +107,9 @@ public class JsonUtil {
 	 * @throws JsonException in case of errors
 	 */
 	public static JsonObject getJsonObject(JsonObject jsonObject, String memberName) throws JsonException {
-		if (jsonObject == null) return null;
+		if (jsonObject == null) {
+			return null;
+		}
 		try {
 			JsonElement element = jsonObject.get(memberName);
 			return element == null ? null : element.getAsJsonObject();
@@ -124,7 +126,9 @@ public class JsonUtil {
 	 * @throws JsonException in case of errors
 	 */
 	public static JsonArray getJsonArray(JsonObject jsonObject, String memberName) throws JsonException {
-		if (jsonObject == null) return new JsonArray();
+		if (jsonObject == null) {
+			return new JsonArray();
+		}
 		try {
 			JsonElement element = jsonObject.get(memberName);
 			return element == null ? new JsonArray() : element.getAsJsonArray();
