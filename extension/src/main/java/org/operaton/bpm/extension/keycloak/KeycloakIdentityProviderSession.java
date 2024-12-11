@@ -193,7 +193,7 @@ public class KeycloakIdentityProviderSession implements ReadOnlyIdentityProvider
 	@Override
 	public boolean checkPassword(String userId, String password) {
 		return checkPasswordCache.getOrCompute(new CacheableKeycloakCheckPasswordCall(userId, password), 
-				(c) -> this.doCheckPassword(c.getUserId(), password));
+				c -> this.doCheckPassword(c.getUserId(), password));
 	}
 
 	/**

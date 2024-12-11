@@ -143,9 +143,13 @@ public abstract class KeycloakServiceBase {
 	 * @return the truncated list
 	 */
 	protected <T> List<T> truncate(List<T> list, int maxSize) {
-		if (list == null) return list;
+		if (list == null) {
+			return list;
+		}
 		int actualSize = list.size();
-		if (actualSize <=  maxSize) return list;
+		if (actualSize <= maxSize) {
+			return list;
+		}
 		return list.subList(0, maxSize);
 	}
 	

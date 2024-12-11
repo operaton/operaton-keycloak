@@ -73,7 +73,7 @@ public class KeycloakUseGroupPathdAsGroupIdQueryTest extends AbstractKeycloakIde
 		assertEquals(2, groups.size());
 		
 		for (Group group : groups) {
-			if (!group.getId().equals("root/child1/subchild1") && !group.getId().equals("root/child2")) {
+			if (!"root/child1/subchild1".equals(group.getId()) && !"root/child2".equals(group.getId())) {
 				fail();
 			}
 		}
@@ -98,7 +98,7 @@ public class KeycloakUseGroupPathdAsGroupIdQueryTest extends AbstractKeycloakIde
 
 		assertEquals(2, groups.size());
 		for (Group group : groups) {
-			if (!group.getName().equals("operaton-admin") && !group.getName().equals("manager")) {
+			if (!"operaton-admin".equals(group.getName()) && !"manager".equals(group.getName())) {
 				fail();
 			}
 		}
@@ -111,7 +111,7 @@ public class KeycloakUseGroupPathdAsGroupIdQueryTest extends AbstractKeycloakIde
 
 		assertEquals(2, groups.size());
 		for (Group group : groups) {
-			if (!group.getId().equals("root/child1/subchild1") && !group.getId().equals("root/child2")) {
+			if (!"root/child1/subchild1".equals(group.getId()) && !"root/child2".equals(group.getId())) {
 				fail();
 			}
 		}

@@ -221,7 +221,7 @@ public class KeycloakUserService extends KeycloakServiceBase {
 		Stream<User> processed = userList.stream().filter(user -> isValid(query, user, resultLogger));
 
 		// sort users according to query criteria
-		if (query.getOrderingProperties().size() > 0) {
+		if (!query.getOrderingProperties().isEmpty()) {
 			processed = processed.sorted(new UserComparator(query.getOrderingProperties()));
 		}
 
@@ -244,14 +244,30 @@ public class KeycloakUserService extends KeycloakServiceBase {
 		// client side check of further query filters
 		// beware: looks like most attributes are treated as 'like' queries on Keycloak
 		//         and must therefore be seen as a sort of pre-filter only
-		if (!matches(query.getId(), user.getId())) return false;
-		if (!matches(query.getIds(), user.getId())) return false;
-		if (!matches(query.getEmail(), user.getEmail())) return false;
-		if (!matchesLike(query.getEmailLike(), user.getEmail())) return false;
-		if (!matches(query.getFirstName(), user.getFirstName())) return false;
-		if (!matchesLike(query.getFirstNameLike(), user.getFirstName())) return false;
-		if (!matches(query.getLastName(), user.getLastName())) return false;
-		if (!matchesLike(query.getLastNameLike(), user.getLastName())) return false;
+		if (!matches(query.getId(), user.getId())) {
+			return false;
+		}
+		if (!matches(query.getIds(), user.getId())) {
+			return false;
+		}
+		if (!matches(query.getEmail(), user.getEmail())) {
+			return false;
+		}
+		if (!matchesLike(query.getEmailLike(), user.getEmail())) {
+			return false;
+		}
+		if (!matches(query.getFirstName(), user.getFirstName())) {
+			return false;
+		}
+		if (!matchesLike(query.getFirstNameLike(), user.getFirstName())) {
+			return false;
+		}
+		if (!matches(query.getLastName(), user.getLastName())) {
+			return false;
+		}
+		if (!matchesLike(query.getLastNameLike(), user.getLastName())) {
+			return false;
+		}
 
 		if(isAuthenticatedUser(user.getId()) || isAuthorized(READ, USER, user.getId())) {
 			if (KeycloakPluginLogger.INSTANCE.isDebugEnabled()) {
@@ -318,14 +334,14 @@ public class KeycloakUserService extends KeycloakServiceBase {
 
 			ResponseEntity<String> response = restTemplate.exchange(
 					keycloakConfiguration.getKeycloakAdminUrl() + userSearch, HttpMethod.GET, String.class);
-			String result = (keycloakConfiguration.isUseEmailAsOperatonUserId() || keycloakConfiguration.isUseUsernameAsOperatonUserId())
+			String result = keycloakConfiguration.isUseEmailAsOperatonUserId() || keycloakConfiguration.isUseUsernameAsOperatonUserId()
 					? response.getBody()
 					: "[" + response.getBody() + "]";
-			return new ResponseEntity<String>(result, response.getHeaders(), response.getStatusCode());
+			return new ResponseEntity<>(result, response.getHeaders(), response.getStatusCode());
 		} catch (HttpClientErrorException hcee) {
 			if (hcee.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
 				String result = "[]";
-				return new ResponseEntity<String>(result, HttpStatus.OK);
+				return new ResponseEntity<>(result, HttpStatus.OK);
 			}
 			throw hcee;
 		}
@@ -359,10 +375,10 @@ public class KeycloakUserService extends KeycloakServiceBase {
 	 * Helper for client side user ordering.
 	 */
 	private static class UserComparator implements Comparator<User> {
-		private final static int USER_ID = 0;
-		private final static int EMAIL = 1;
-		private final static int FIRST_NAME = 2;
-		private final static int LAST_NAME = 3;
+		private static final int USER_ID = 0;
+		private static final int EMAIL = 1;
+		private static final int FIRST_NAME = 2;
+		private static final int LAST_NAME = 3;
 
 		private final int[] order;
 		private final boolean[] desc;

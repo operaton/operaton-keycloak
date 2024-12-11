@@ -7,7 +7,7 @@ import java.util.Objects;
  * Immutable wrapper over KeycloakUserQuery that can be used as a cache key.
  * Note: keep equals/hashcode in sync with the list of fields
  */
-public class CacheableKeycloakUserQuery {
+public final class CacheableKeycloakUserQuery {
 
 	private final String id;
 	private final String[] ids;
@@ -73,8 +73,12 @@ public class CacheableKeycloakUserQuery {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 		CacheableKeycloakUserQuery that = (CacheableKeycloakUserQuery) o;
 		return Objects.equals(id, that.id) && 
 						Arrays.equals(ids, that.ids) && 

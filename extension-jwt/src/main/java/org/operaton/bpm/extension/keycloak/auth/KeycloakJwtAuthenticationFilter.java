@@ -66,7 +66,9 @@ public class KeycloakJwtAuthenticationFilter extends ContainerBasedAuthenticatio
                 List<String> groups = authenticationResult.getGroups();
                 List<String> tenants = authenticationResult.getTenants();
                 UserAuthentication authentication = this.createAuthentication(engine, authenticatedUser, groups, tenants);
-                if (authentication != null) authentications.addOrReplace(authentication);
+				if (authentication != null) {
+					authentications.addOrReplace(authentication);
+				}
             }
 
             Authentications.setCurrent(authentications);

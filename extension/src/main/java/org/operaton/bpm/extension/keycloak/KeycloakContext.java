@@ -9,9 +9,9 @@ import org.springframework.http.HttpHeaders;
  */
 public class KeycloakContext {
 
-	private HttpHeaders headers;
-	
-	private long expiresAt;
+	private final HttpHeaders headers;
+
+	private final long expiresAt;
 	
 	String refreshToken;
 	

@@ -206,7 +206,7 @@ public class KeycloakGroupService extends KeycloakServiceBase {
 		Stream<Group> processed = groupList.stream().filter(group -> isValid(query, group, resultLogger));
 		
 		// sort groups according to query criteria
-		if (query.getOrderingProperties().size() > 0) {
+		if (!query.getOrderingProperties().isEmpty()) {
 			processed = processed.sorted(new GroupComparator(query.getOrderingProperties()));
 		}
 
@@ -228,11 +228,21 @@ public class KeycloakGroupService extends KeycloakServiceBase {
 	 */
 	private boolean isValid(KeycloakGroupQuery query, Group group, StringBuilder resultLogger) {
 		// client side check of further query filters
-		if (!matches(query.getId(), group.getId())) return false;
-		if (!matches(query.getIds(), group.getId())) return false;
-		if (!matches(query.getName(), group.getName())) return false;
-		if (!matchesLike(query.getNameLike(), group.getName())) return false;
-		if (!matches(query.getType(), group.getType())) return false;
+		if (!matches(query.getId(), group.getId())) {
+			return false;
+		}
+		if (!matches(query.getIds(), group.getId())) {
+			return false;
+		}
+		if (!matches(query.getName(), group.getName())) {
+			return false;
+		}
+		if (!matchesLike(query.getNameLike(), group.getName())) {
+			return false;
+		}
+		if (!matches(query.getType(), group.getType())) {
+			return false;
+		}
 
 		// authenticated user is always allowed to query his own groups
 		// otherwise READ authentication is required
@@ -286,7 +296,9 @@ public class KeycloakGroupService extends KeycloakServiceBase {
 	 * @throws JsonException in case of errors
 	 */
 	private JsonArray flattenSubGroups(JsonArray groups, JsonArray result) throws JsonException {
-		if (groups == null) return result;
+		if (groups == null) {
+			return result;
+		}
 	    for (int i = 0; i < groups.size(); i++) {
 	    	JsonObject group = getJsonObjectAtIndex(groups, i);
 	    	JsonArray subGroups;
@@ -320,11 +332,11 @@ public class KeycloakGroupService extends KeycloakServiceBase {
 			ResponseEntity<String> response = restTemplate.exchange(
 					keycloakConfiguration.getKeycloakAdminUrl() + groupSearch, HttpMethod.GET, String.class);
 			String result = "[" + response.getBody() + "]";
-			return new ResponseEntity<String>(result, response.getHeaders(), response.getStatusCode());
+			return new ResponseEntity<>(result, response.getHeaders(), response.getStatusCode());
 		} catch (HttpClientErrorException hcee) {
 			if (hcee.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
 				String result = "[]";
-				return new ResponseEntity<String>(result, HttpStatus.OK);
+				return new ResponseEntity<>(result, HttpStatus.OK);
 			}
 			throw hcee;
 		}
@@ -381,9 +393,9 @@ public class KeycloakGroupService extends KeycloakServiceBase {
 	 * Helper for client side group ordering.
 	 */
 	private static class GroupComparator implements Comparator<Group> {
-		private final static int GROUP_ID = 0;
-		private final static int NAME = 1;
-		private final static int TYPE = 2;
+		private static final int GROUP_ID = 0;
+		private static final int NAME = 1;
+		private static final int TYPE = 2;
 
 		private final int[] order;
 		private final boolean[] desc;

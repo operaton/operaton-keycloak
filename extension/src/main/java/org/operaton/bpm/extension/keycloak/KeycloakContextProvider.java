@@ -22,7 +22,7 @@ import com.google.gson.JsonObject;
  */
 public class KeycloakContextProvider {
 
-	private final static KeycloakPluginLogger LOG = KeycloakPluginLogger.INSTANCE;
+	private static final KeycloakPluginLogger LOG = KeycloakPluginLogger.INSTANCE;
 
 	protected KeycloakConfiguration keycloakConfiguration;
 	protected KeycloakRestTemplate restTemplate;
@@ -47,7 +47,7 @@ public class KeycloakContextProvider {
 	private KeycloakContext openAuthorizationContext() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_FORM_URLENCODED + ";charset=" + keycloakConfiguration.getCharset());
-		HttpEntity<String> request = new HttpEntity<String>(
+		HttpEntity<String> request = new HttpEntity<>(
 	    		"client_id=" + keycloakConfiguration.getClientId()
 	    		+ "&client_secret=" + keycloakConfiguration.getClientSecret()
 	    		+ "&grant_type=client_credentials",
@@ -84,7 +84,7 @@ public class KeycloakContextProvider {
 	private KeycloakContext refreshToken() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_FORM_URLENCODED + ";charset=" + keycloakConfiguration.getCharset());
-		HttpEntity<String> request = new HttpEntity<String>(
+		HttpEntity<String> request = new HttpEntity<>(
 	    		"client_id=" + keycloakConfiguration.getClientId()
 	    		+ "&client_secret=" + keycloakConfiguration.getClientSecret()
 	    		+ "&refresh_token=" + context.getRefreshToken()
