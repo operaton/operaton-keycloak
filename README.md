@@ -1,7 +1,13 @@
 # Operaton - Keycloak Identity Provider Plugin
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.operaton.bpm.extension/operaton-keycloak/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.operaton.bpm.extension/operaton-keycloak)
- [![Apache License V.2](https://img.shields.io/badge/license-Apache%20V.2-blue.svg)](./LICENSE)
+![build status](https://github.com/operaton/operaton-keycloak/actions/workflows/build.yml/badge.svg?branch=main)
+[![Maven Central Version](https://img.shields.io/maven-central/v/org.operaton.bpm.extension/operaton-keycloak?color=blue&logo=apachemaven)](https://central.sonatype.com/search?q=operaton-keycloak)
+
+[![operaton manual latest](https://img.shields.io/badge/manual-latest-brown.svg)](https://docs.operaton.org/)
+[![License](https://img.shields.io/github/license/operaton/operaton-keycloak?color=blue&logo=apache)](https://github.com/operaton/operaton-keycloak/blob/main/LICENSE)
+
+[![Forum](https://img.shields.io/badge/forum-Operaton-green)](https://forum.operaton.org/)
+[![Slack](https://img.shields.io/badge/chat-Slack-purple)](https://join.slack.com/t/operaton/shared_invite/zt-2v6umjt92-d2DRmsoR1fqDEVlJB5IkNA)
 
 ![Keycloak](doc/keycloak.png "https://www.keycloak.org/") 
 
