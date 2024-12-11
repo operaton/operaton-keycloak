@@ -21,7 +21,7 @@ import org.operaton.bpm.extension.keycloak.KeycloakIdentityProviderFactory;
 import org.operaton.bpm.extension.keycloak.KeycloakIdentityProviderSession;
 import org.operaton.bpm.extension.keycloak.util.KeycloakPluginLogger;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 
 /**
  * <p>{@link ProcessEnginePlugin} providing Keycloak Identity Provider support</p>
@@ -50,13 +50,13 @@ public class KeycloakIdentityProviderPlugin extends KeycloakConfiguration implem
 		
 		authorizationEnabled = processEngineConfiguration.isAuthorizationEnabled();
 
-		if (!StringUtils.isEmpty(administratorGroupName)) {
+		if (!ObjectUtils.isEmpty(administratorGroupName)) {
 			if (processEngineConfiguration.getAdminGroups() == null) {
 				processEngineConfiguration.setAdminGroups(new ArrayList<>());
 			}
 			// add the configured administrator group to the engine configuration later: needs translation to group ID
 		}
-		if (!StringUtils.isEmpty(administratorUserId)) {
+		if (!ObjectUtils.isEmpty(administratorUserId)) {
 			if (processEngineConfiguration.getAdminUsers() == null) {
 				processEngineConfiguration.setAdminUsers(new ArrayList<>());
 			}
@@ -84,7 +84,7 @@ public class KeycloakIdentityProviderPlugin extends KeycloakConfiguration implem
 	public void postProcessEngineBuild(ProcessEngine processEngine) {
 		// always add the configured administrator group to the engine configuration
 		String administratorGroupId = null;
-		if (!StringUtils.isEmpty(administratorGroupName)) {
+		if (!ObjectUtils.isEmpty(administratorGroupName)) {
 			// query the real group ID
 			administratorGroupId = ((KeycloakIdentityProviderSession) keycloakIdentityProviderFactory.openSession()).
 					getKeycloakAdminGroupId(administratorGroupName);
@@ -92,7 +92,7 @@ public class KeycloakIdentityProviderPlugin extends KeycloakConfiguration implem
 		}
 		
 		// always add the configured administrator user to the engine configuration
-		if (!StringUtils.isEmpty(administratorUserId)) {
+		if (!ObjectUtils.isEmpty(administratorUserId)) {
 			// query the real user ID
 			administratorUserId = ((KeycloakIdentityProviderSession) keycloakIdentityProviderFactory.openSession()).
 					getKeycloakAdminUserId(administratorUserId);
@@ -106,7 +106,7 @@ public class KeycloakIdentityProviderPlugin extends KeycloakConfiguration implem
 
 		final AuthorizationService authorizationService = processEngine.getAuthorizationService();
 
-		if (!StringUtils.isEmpty(administratorGroupName)) {
+		if (!ObjectUtils.isEmpty(administratorGroupName)) {
 			// create ADMIN authorizations on all built-in resources for configured admin group
 			for (Resource resource : Resources.values()) {
 				if(authorizationService.createAuthorizationQuery().groupIdIn(administratorGroupId).resourceType(resource).resourceId(ANY).count() == 0) {
@@ -121,7 +121,7 @@ public class KeycloakIdentityProviderPlugin extends KeycloakConfiguration implem
 			}
 		}
 
-		if (!StringUtils.isEmpty(administratorUserId)) {
+		if (!ObjectUtils.isEmpty(administratorUserId)) {
 			// create ADMIN authorizations on all built-in resources for configured admin user
 			for (Resource resource : Resources.values()) {
 				if(authorizationService.createAuthorizationQuery().userIdIn(administratorUserId).resourceType(resource).resourceId(ANY).count() == 0) {
@@ -143,23 +143,23 @@ public class KeycloakIdentityProviderPlugin extends KeycloakConfiguration implem
 	 */
 	private void checkMandatoryConfigurationParameters(ProcessEngineConfigurationImpl processEngineConfiguration) {
 		List<String> missing = new ArrayList<>();
-		if (StringUtils.isEmpty(keycloakIssuerUrl)) {
+		if (ObjectUtils.isEmpty(keycloakIssuerUrl)) {
 			LOG.missingConfigurationParameter("keycloakIssuerUrl");
 			missing.add("keycloakIssuerUrl");
 		}
-		if (StringUtils.isEmpty(keycloakAdminUrl)) {
+		if (ObjectUtils.isEmpty(keycloakAdminUrl)) {
 			LOG.missingConfigurationParameter("keycloakAdminUrl");
 			missing.add("keycloakAdminUrl");
 		}
-		if (StringUtils.isEmpty(clientId)) {
+		if (ObjectUtils.isEmpty(clientId)) {
 			LOG.missingConfigurationParameter("clientId");
 			missing.add("clientId");
 		}
-		if (StringUtils.isEmpty(clientSecret)) {
+		if (ObjectUtils.isEmpty(clientSecret)) {
 			LOG.missingConfigurationParameter("clientSecret");
 			missing.add("clientSecret");
 		}
-		if (StringUtils.isEmpty(charset)) {
+		if (ObjectUtils.isEmpty(charset)) {
 			LOG.missingConfigurationParameter("charset");
 			missing.add("charset");
 		}

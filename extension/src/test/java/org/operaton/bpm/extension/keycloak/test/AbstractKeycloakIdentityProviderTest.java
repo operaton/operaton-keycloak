@@ -39,7 +39,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -125,10 +125,10 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
 		String envVarName = key.toUpperCase().replace('.', '_');
 		// 1.) check for environment variable
 		val = System.getenv(envVarName);
-		if (StringUtils.isEmpty(val)) {
+		if (ObjectUtils.isEmpty(val)) {
 			// 2.) check for system property
 			val = System.getProperty(envVarName);
-			if (StringUtils.isEmpty(val)) { 
+			if (ObjectUtils.isEmpty(val)) { 
 				// 3.) fall back to keycloak-default.properties
 				useDefault = true;
 				val = defaults.getString(key);
@@ -486,7 +486,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
 	    assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
 	    String userId =  new JSONArray(response.getBody()).getJSONObject(0).getString("id");
 	    // set optional password
-	    if (!StringUtils.isEmpty(password)) {
+	    if (!ObjectUtils.isEmpty(password)) {
     	    String pwd = "{\"type\":\"password\",\"value\":\"" + password + "\"}";
     	    response = restTemplate.exchange(keycloakUrl + "/admin/realms/" + realm +"/users/" + userId + "/reset-password",
     				HttpMethod.PUT, new HttpEntity<>(pwd, headers), String.class);
