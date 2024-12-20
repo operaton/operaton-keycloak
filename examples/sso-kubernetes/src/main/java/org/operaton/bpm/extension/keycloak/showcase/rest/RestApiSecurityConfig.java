@@ -1,6 +1,7 @@
 package org.operaton.bpm.extension.keycloak.showcase.rest;
 
 import jakarta.inject.Inject;
+
 import org.operaton.bpm.engine.IdentityService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
@@ -11,7 +12,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
-import org.springframework.security.oauth2.jwt.*;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtDecoders;
+import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
 
@@ -24,72 +29,78 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 @ConditionalOnProperty(name = "rest.security.enabled", havingValue = "true", matchIfMissing = true)
 public class RestApiSecurityConfig {
 
-	/** Configuration for REST Api security. */
-	@Inject
-	private RestApiSecurityConfigurationProperties configProps;
-	
-	/** Access to Operaton's Identity Service. */
-	@Inject
-	private IdentityService identityService;
-	
-	/** Access to Spring Security OAuth2 client service. */
-	@Inject
-	private OAuth2AuthorizedClientService clientService;
+  /**
+   * Configuration for REST Api security.
+   */
+  @Inject
+  private RestApiSecurityConfigurationProperties configProps;
 
-	@Inject
-	private ApplicationContext applicationContext;
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Bean
-	@Order(1)
-	public SecurityFilterChain httpSecurityRest(HttpSecurity http, JwtDecoder jwtDecoder) throws Exception {
-		String jwkSetUri = applicationContext.getEnvironment().getRequiredProperty(
-				"spring.security.oauth2.client.provider." + configProps.getProvider() + ".jwk-set-uri");
+  /**
+   * Access to Operaton's Identity Service.
+   */
+  @Inject
+  private IdentityService identityService;
 
-		return http
-				.securityMatcher(antMatcher("/engine-rest/**"))
-				.csrf(csrf -> csrf.ignoringRequestMatchers(antMatcher("/engine-rest/**")))
-				.authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
-				.oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer
-						.jwt(jwt -> jwt
-								.decoder(jwtDecoder)
-								.jwkSetUri(jwkSetUri)))
-				.addFilterBefore(keycloakAuthenticationFilter(), AuthorizationFilter.class)
-				.build();
-	}
+  /**
+   * Access to Spring Security OAuth2 client service.
+   */
+  @Inject
+  private OAuth2AuthorizedClientService clientService;
 
-	/**
-	 * Create a JWT decoder with issuer and audience claim validation.
-	 * @return the JWT decoder
-	 */
-	@Bean
-	public JwtDecoder jwtDecoder() {
-		String issuerUri = applicationContext.getEnvironment().getRequiredProperty(
-				"spring.security.oauth2.client.provider." + configProps.getProvider() + ".issuer-uri");
-		
-		NimbusJwtDecoder jwtDecoder = JwtDecoders.fromOidcIssuerLocation(issuerUri);
+  @Inject
+  private ApplicationContext applicationContext;
 
-		OAuth2TokenValidator<Jwt> audienceValidator = new AudienceValidator(configProps.getRequiredAudience());
-		OAuth2TokenValidator<Jwt> withIssuer = JwtValidators.createDefaultWithIssuer(issuerUri);
-		OAuth2TokenValidator<Jwt> withAudience = new DelegatingOAuth2TokenValidator<>(withIssuer, audienceValidator);
+  /**
+   * {@inheritDoc}
+   */
+  @Bean
+  @Order(1)
+  public SecurityFilterChain httpSecurityRest(HttpSecurity http, JwtDecoder jwtDecoder) throws Exception {
+    String jwkSetUri = applicationContext.getEnvironment()
+        .getRequiredProperty("spring.security.oauth2.client.provider." + configProps.getProvider() + ".jwk-set-uri");
 
-		jwtDecoder.setJwtValidator(withAudience);
+    return http.securityMatcher(antMatcher("/engine-rest/**"))
+        .csrf(csrf -> csrf.ignoringRequestMatchers(antMatcher("/engine-rest/**")))
+        .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
+        .oauth2ResourceServer(
+            oauth2ResourceServer -> oauth2ResourceServer.jwt(jwt -> jwt.decoder(jwtDecoder).jwkSetUri(jwkSetUri)))
+        .addFilterBefore(keycloakAuthenticationFilter(), AuthorizationFilter.class)
+        .build();
+  }
 
-		return jwtDecoder;
-	}
+  /**
+   * Create a JWT decoder with issuer and audience claim validation.
+   *
+   * @return the JWT decoder
+   */
+  @Bean
+  public JwtDecoder jwtDecoder() {
+    String issuerUri = applicationContext.getEnvironment()
+        .getRequiredProperty("spring.security.oauth2.client.provider." + configProps.getProvider() + ".issuer-uri");
 
-    /**
-     * Creates the REST Api Keycloak Authentication Filter.
-     * @return the filter
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public KeycloakAuthenticationFilter keycloakAuthenticationFilter(){
-		String userNameAttribute = this.applicationContext.getEnvironment().getRequiredProperty(
-			"spring.security.oauth2.client.provider." + this.configProps.getProvider() + ".user-name-attribute");
+    NimbusJwtDecoder jwtDecoder = JwtDecoders.fromOidcIssuerLocation(issuerUri);
 
-    	return new KeycloakAuthenticationFilter(this.identityService, this.clientService, userNameAttribute);
-    }
+    OAuth2TokenValidator<Jwt> audienceValidator = new AudienceValidator(configProps.getRequiredAudience());
+    OAuth2TokenValidator<Jwt> withIssuer = JwtValidators.createDefaultWithIssuer(issuerUri);
+    OAuth2TokenValidator<Jwt> withAudience = new DelegatingOAuth2TokenValidator<>(withIssuer, audienceValidator);
+
+    jwtDecoder.setJwtValidator(withAudience);
+
+    return jwtDecoder;
+  }
+
+  /**
+   * Creates the REST Api Keycloak Authentication Filter.
+   *
+   * @return the filter
+   */
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  public KeycloakAuthenticationFilter keycloakAuthenticationFilter() {
+    String userNameAttribute = this.applicationContext.getEnvironment()
+        .getRequiredProperty(
+            "spring.security.oauth2.client.provider." + this.configProps.getProvider() + ".user-name-attribute");
+
+    return new KeycloakAuthenticationFilter(this.identityService, this.clientService, userNameAttribute);
+  }
 
 }

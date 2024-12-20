@@ -14,71 +14,71 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class RestApiSecurityConfigurationProperties {
 
-	/** 
-	 * rest.security.enabled:
-	 * 
-	 * Rest Security is enabled by default. Switch off by setting this flag to {@code false}.
-	 */
-	private Boolean enabled = true;
+  /**
+   * rest.security.enabled:
+   * <p>
+   * Rest Security is enabled by default. Switch off by setting this flag to {@code false}.
+   */
+  private Boolean enabled = true;
 
-	/** 
-	 * rest.security.provider:
-	 * 
-	 * The name of the spring.security.oauth2.client.provider to use
-	 */
-	@NotEmpty
-	private String provider;
+  /**
+   * rest.security.provider:
+   * <p>
+   * The name of the spring.security.oauth2.client.provider to use
+   */
+  @NotEmpty
+  private String provider;
 
-	/** 
-	 * rest.security.required-audience:
-	 * 
-	 * Required Audience. 
-	 */
-	@NotEmpty
-	private String requiredAudience;
-	
-	// ------------------------------------------------------------------------
+  /**
+   * rest.security.required-audience:
+   * <p>
+   * Required Audience.
+   */
+  @NotEmpty
+  private String requiredAudience;
 
-	/**
-	 * @return the requiredAudience
-	 */
-	public String getRequiredAudience() {
-		return requiredAudience;
-	}
+  // ------------------------------------------------------------------------
 
-	/**
-	 * @param requiredAudience the requiredAudience to set
-	 */
-	public void setRequiredAudience(String requiredAudience) {
-		this.requiredAudience = requiredAudience;
-	}
+  /**
+   * @return the requiredAudience
+   */
+  public String getRequiredAudience() {
+    return requiredAudience;
+  }
 
-	/**
-	 * @return the enabled
-	 */
-	public Boolean getEnabled() {
-		return enabled;
-	}
+  /**
+   * @param requiredAudience the requiredAudience to set
+   */
+  public void setRequiredAudience(String requiredAudience) {
+    this.requiredAudience = requiredAudience;
+  }
 
-	/**
-	 * @param enabled the enabled to set
-	 */
-	public void setEnabled(Boolean enabled) {
-		this.enabled = enabled;
-	}
+  /**
+   * @return the enabled
+   */
+  public Boolean getEnabled() {
+    return enabled;
+  }
 
-	/**
-	 * @return the provider
-	 */
-	public String getProvider() {
-		return provider;
-	}
+  /**
+   * @param enabled the enabled to set
+   */
+  public void setEnabled(Boolean enabled) {
+    this.enabled = enabled;
+  }
 
-	/**
-	 * @param provider the provider to set
-	 */
-	public void setProvider(String provider) {
-		this.provider = provider;
-	} 
+  /**
+   * @return the provider
+   */
+  public String getProvider() {
+    return provider;
+  }
+
+  /**
+   * @param provider the provider to set
+   */
+  public void setProvider(String provider) {
+    this.provider = provider;
+  }
 
 }

@@ -2,15 +2,14 @@ package org.operaton.bpm.extension.keycloak.test;
 
 import java.util.List;
 
+import junit.extensions.TestSetup;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.operaton.bpm.engine.ProcessEngineConfiguration;
 import org.operaton.bpm.engine.identity.Group;
 import org.operaton.bpm.engine.identity.User;
 import org.operaton.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.operaton.bpm.engine.impl.test.PluggableProcessEngineTestCase;
-
-import junit.extensions.TestSetup;
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 /**
  * User query test for the Keycloak identity provider.
@@ -18,161 +17,149 @@ import junit.framework.TestSuite;
  */
 public class KeycloakUseKeycloakIdAsUserIdQueryTest extends AbstractKeycloakIdentityProviderTest {
 
-	public static Test suite() {
-	    return new TestSetup(new TestSuite(KeycloakUseKeycloakIdAsUserIdQueryTest.class)) {
+  public static Test suite() {
+    return new TestSetup(new TestSuite(KeycloakUseKeycloakIdAsUserIdQueryTest.class)) {
 
-	    	// @BeforeClass
-	        protected void setUp() throws Exception {
-	    		ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration
-	    				.createProcessEngineConfigurationFromResource("operaton.useKeycloakIdAsOperatonUserId.cfg.xml");
-	    		configureKeycloakIdentityProviderPlugin(config);
-	    		PluggableProcessEngineTestCase.cachedProcessEngine = config.buildProcessEngine();
-	        }
-	        
-	        // @AfterClass
-	        protected void tearDown() throws Exception {
-	    		PluggableProcessEngineTestCase.cachedProcessEngine.close();
-	    		PluggableProcessEngineTestCase.cachedProcessEngine = null;
-	        }
-	    };
-	}
+      // @BeforeClass
+      protected void setUp() throws Exception {
+        ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration.createProcessEngineConfigurationFromResource(
+            "operaton.useKeycloakIdAsOperatonUserId.cfg.xml");
+        configureKeycloakIdentityProviderPlugin(config);
+        PluggableProcessEngineTestCase.cachedProcessEngine = config.buildProcessEngine();
+      }
 
-	// ------------------------------------------------------------------------
-	// Authorization tests
-	// ------------------------------------------------------------------------
-	
-	public void testKeycloakLoginSuccess() {
-		assertTrue(identityService.checkPassword(USER_ID_OPERATON_ADMIN, "operaton1!"));
-	}
+      // @AfterClass
+      protected void tearDown() throws Exception {
+        PluggableProcessEngineTestCase.cachedProcessEngine.close();
+        PluggableProcessEngineTestCase.cachedProcessEngine = null;
+      }
+    };
+  }
 
-	// ------------------------------------------------------------------------
-	// User Query tests
-	// ------------------------------------------------------------------------
-	
-	public void testUserQueryFilterByUserId() {
-		User user = identityService.createUserQuery().userId(USER_ID_TEAMLEAD).singleResult();
-		assertNotNull(user);
+  // ------------------------------------------------------------------------
+  // Authorization tests
+  // ------------------------------------------------------------------------
 
-		user = identityService.createUserQuery().userId(USER_ID_OPERATON_ADMIN).singleResult();
-		assertNotNull(user);
+  public void testKeycloakLoginSuccess() {
+    assertTrue(identityService.checkPassword(USER_ID_OPERATON_ADMIN, "operaton1!"));
+  }
 
-		// validate user
-		assertEquals(USER_ID_OPERATON_ADMIN, user.getId());
-		assertEquals("Admin", user.getFirstName());
-		assertEquals("Operaton", user.getLastName());
-		assertEquals("operaton@accso.de", user.getEmail());
+  // ------------------------------------------------------------------------
+  // User Query tests
+  // ------------------------------------------------------------------------
 
-		user = identityService.createUserQuery().userId("non-existing").singleResult();
-		assertNull(user);
-	}
+  public void testUserQueryFilterByUserId() {
+    User user = identityService.createUserQuery().userId(USER_ID_TEAMLEAD).singleResult();
+    assertNotNull(user);
 
-	public void testUserQueryFilterByUserIdIn() {
-		List<User> users = identityService.createUserQuery().userIdIn(USER_ID_OPERATON_ADMIN, USER_ID_TEAMLEAD).list();
-		assertNotNull(users);
-		assertEquals(2, users.size());
+    user = identityService.createUserQuery().userId(USER_ID_OPERATON_ADMIN).singleResult();
+    assertNotNull(user);
 
-		users = identityService.createUserQuery().userIdIn(USER_ID_OPERATON_ADMIN, "non-existing").list();
-		assertNotNull(users);
-		assertEquals(1, users.size());
-	}
+    // validate user
+    assertEquals(USER_ID_OPERATON_ADMIN, user.getId());
+    assertEquals("Admin", user.getFirstName());
+    assertEquals("Operaton", user.getLastName());
+    assertEquals("operaton@accso.de", user.getEmail());
 
-	public void testUserQueryFilterByEmail() {
-		User user = identityService.createUserQuery().userEmail("operaton@accso.de").singleResult();
-		assertNotNull(user);
+    user = identityService.createUserQuery().userId("non-existing").singleResult();
+    assertNull(user);
+  }
 
-		// validate user
-		assertEquals(USER_ID_OPERATON_ADMIN, user.getId());
-		assertEquals("Admin", user.getFirstName());
-		assertEquals("Operaton", user.getLastName());
-		assertEquals("operaton@accso.de", user.getEmail());
+  public void testUserQueryFilterByUserIdIn() {
+    List<User> users = identityService.createUserQuery().userIdIn(USER_ID_OPERATON_ADMIN, USER_ID_TEAMLEAD).list();
+    assertNotNull(users);
+    assertEquals(2, users.size());
 
-		user = identityService.createUserQuery().userEmail("non-exist*").singleResult();
-		assertNull(user);
-	}
+    users = identityService.createUserQuery().userIdIn(USER_ID_OPERATON_ADMIN, "non-existing").list();
+    assertNotNull(users);
+    assertEquals(1, users.size());
+  }
 
-	public void testUserQueryFilterByGroupIdAndId() {
-		List<User> result = identityService.createUserQuery()
-				.memberOfGroup(GROUP_ID_ADMIN)
-				.userId(USER_ID_OPERATON_ADMIN)
-				.list();
-		assertEquals(1, result.size());
+  public void testUserQueryFilterByEmail() {
+    User user = identityService.createUserQuery().userEmail("operaton@accso.de").singleResult();
+    assertNotNull(user);
 
-		result = identityService.createUserQuery()
-				.memberOfGroup(GROUP_ID_ADMIN)
-				.userId("non-exist")
-				.list();
-		assertEquals(0, result.size());
+    // validate user
+    assertEquals(USER_ID_OPERATON_ADMIN, user.getId());
+    assertEquals("Admin", user.getFirstName());
+    assertEquals("Operaton", user.getLastName());
+    assertEquals("operaton@accso.de", user.getEmail());
 
-		result = identityService.createUserQuery()
-				.memberOfGroup("non-exist")
-				.userId(USER_ID_OPERATON_ADMIN)
-				.list();
-		assertEquals(0, result.size());
-		
-	}
+    user = identityService.createUserQuery().userEmail("non-exist*").singleResult();
+    assertNull(user);
+  }
 
-	public void testAuthenticatedUserSeesHimself() {
-		try {
-			processEngineConfiguration.setAuthorizationEnabled(true);
+  public void testUserQueryFilterByGroupIdAndId() {
+    List<User> result = identityService.createUserQuery()
+        .memberOfGroup(GROUP_ID_ADMIN)
+        .userId(USER_ID_OPERATON_ADMIN)
+        .list();
+    assertEquals(1, result.size());
 
-			identityService.setAuthenticatedUserId("non-existing");
-			assertEquals(0, identityService.createUserQuery().count());
+    result = identityService.createUserQuery().memberOfGroup(GROUP_ID_ADMIN).userId("non-exist").list();
+    assertEquals(0, result.size());
 
-			identityService.setAuthenticatedUserId(USER_ID_OPERATON_ADMIN);
-			assertEquals(1, identityService.createUserQuery().count());
+    result = identityService.createUserQuery().memberOfGroup("non-exist").userId(USER_ID_OPERATON_ADMIN).list();
+    assertEquals(0, result.size());
 
-		} finally {
-			processEngineConfiguration.setAuthorizationEnabled(false);
-			identityService.clearAuthentication();
-		}
-	}
+  }
 
-	// ------------------------------------------------------------------------
-	// Group query tests
-	// ------------------------------------------------------------------------
+  public void testAuthenticatedUserSeesHimself() {
+    try {
+      processEngineConfiguration.setAuthorizationEnabled(true);
 
-	public void testGroupQueryFilterByUserId() {
-		List<Group> result = identityService.createGroupQuery().groupMember(USER_ID_OPERATON_ADMIN).list();
-		assertEquals(1, result.size());
+      identityService.setAuthenticatedUserId("non-existing");
+      assertEquals(0, identityService.createUserQuery().count());
 
-		result = identityService.createGroupQuery().groupMember("non-exist").list();
-		assertEquals(0, result.size());
-	}
+      identityService.setAuthenticatedUserId(USER_ID_OPERATON_ADMIN);
+      assertEquals(1, identityService.createUserQuery().count());
 
-	public void testFilterByGroupIdAndUserId() {
-		Group group = identityService.createGroupQuery()
-				.groupId(GROUP_ID_ADMIN)
-				.groupMember(USER_ID_OPERATON_ADMIN)
-				.singleResult();
-		assertNotNull(group);
-		assertEquals("operaton-admin", group.getName());
+    } finally {
+      processEngineConfiguration.setAuthorizationEnabled(false);
+      identityService.clearAuthentication();
+    }
+  }
 
-		group = identityService.createGroupQuery()
-				.groupId("non-exist")
-				.groupMember(USER_ID_OPERATON_ADMIN)
-				.singleResult();
-		assertNull(group);
+  // ------------------------------------------------------------------------
+  // Group query tests
+  // ------------------------------------------------------------------------
 
-		group = identityService.createGroupQuery()
-				.groupId(GROUP_ID_ADMIN)
-				.groupMember("non-exist")
-				.singleResult();
-		assertNull(group);
-	}
-	
-	public void testFilterByGroupIdInAndUserId() {
-		Group group = identityService.createGroupQuery()
-				.groupIdIn(GROUP_ID_ADMIN, GROUP_ID_TEAMLEAD)
-				.groupMember(USER_ID_OPERATON_ADMIN)
-				.singleResult();
-		assertNotNull(group);
-		assertEquals("operaton-admin", group.getName());
+  public void testGroupQueryFilterByUserId() {
+    List<Group> result = identityService.createGroupQuery().groupMember(USER_ID_OPERATON_ADMIN).list();
+    assertEquals(1, result.size());
 
-		group = identityService.createGroupQuery()
-				.groupIdIn(GROUP_ID_ADMIN, GROUP_ID_TEAMLEAD)
-				.groupMember("non-exist")
-				.singleResult();
-		assertNull(group);
-	}
-	
+    result = identityService.createGroupQuery().groupMember("non-exist").list();
+    assertEquals(0, result.size());
+  }
+
+  public void testFilterByGroupIdAndUserId() {
+    Group group = identityService.createGroupQuery()
+        .groupId(GROUP_ID_ADMIN)
+        .groupMember(USER_ID_OPERATON_ADMIN)
+        .singleResult();
+    assertNotNull(group);
+    assertEquals("operaton-admin", group.getName());
+
+    group = identityService.createGroupQuery().groupId("non-exist").groupMember(USER_ID_OPERATON_ADMIN).singleResult();
+    assertNull(group);
+
+    group = identityService.createGroupQuery().groupId(GROUP_ID_ADMIN).groupMember("non-exist").singleResult();
+    assertNull(group);
+  }
+
+  public void testFilterByGroupIdInAndUserId() {
+    Group group = identityService.createGroupQuery()
+        .groupIdIn(GROUP_ID_ADMIN, GROUP_ID_TEAMLEAD)
+        .groupMember(USER_ID_OPERATON_ADMIN)
+        .singleResult();
+    assertNotNull(group);
+    assertEquals("operaton-admin", group.getName());
+
+    group = identityService.createGroupQuery()
+        .groupIdIn(GROUP_ID_ADMIN, GROUP_ID_TEAMLEAD)
+        .groupMember("non-exist")
+        .singleResult();
+    assertNull(group);
+  }
+
 }

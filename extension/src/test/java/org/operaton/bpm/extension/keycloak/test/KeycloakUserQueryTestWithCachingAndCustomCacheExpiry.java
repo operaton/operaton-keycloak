@@ -1,5 +1,10 @@
 package org.operaton.bpm.extension.keycloak.test;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import junit.extensions.TestSetup;
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -14,119 +19,115 @@ import org.operaton.bpm.extension.keycloak.test.util.CacheAwareKeycloakIdentityP
 import org.operaton.bpm.extension.keycloak.test.util.CountingHttpRequestInterceptor;
 import org.operaton.bpm.extension.keycloak.test.util.PredictableTicker;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
  * User query test for the Keycloak identity provider with caching enabled and cache duration configured
  */
 public class KeycloakUserQueryTestWithCachingAndCustomCacheExpiry extends AbstractKeycloakIdentityProviderTest {
 
-	public static Test suite() {
-		return new TestSetup(new TestSuite(KeycloakUserQueryTestWithCachingAndCustomCacheExpiry.class)) {
+  public static Test suite() {
+    return new TestSetup(new TestSuite(KeycloakUserQueryTestWithCachingAndCustomCacheExpiry.class)) {
 
-			// @BeforeClass
-			protected void setUp() throws Exception {
-				ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration
-								.createProcessEngineConfigurationFromResource("operaton.enableCachingAndConfigureCacheDuration.cfg.xml");
-				configureKeycloakIdentityProviderPlugin(config);
-				PluggableProcessEngineTestCase.cachedProcessEngine = config.buildProcessEngine();
-			}
+      // @BeforeClass
+      protected void setUp() throws Exception {
+        ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration.createProcessEngineConfigurationFromResource(
+            "operaton.enableCachingAndConfigureCacheDuration.cfg.xml");
+        configureKeycloakIdentityProviderPlugin(config);
+        PluggableProcessEngineTestCase.cachedProcessEngine = config.buildProcessEngine();
+      }
 
-			// @AfterClass
-			protected void tearDown() throws Exception {
-				PluggableProcessEngineTestCase.cachedProcessEngine.close();
-				PluggableProcessEngineTestCase.cachedProcessEngine = null;
-			}
-		};
-	}
+      // @AfterClass
+      protected void tearDown() throws Exception {
+        PluggableProcessEngineTestCase.cachedProcessEngine.close();
+        PluggableProcessEngineTestCase.cachedProcessEngine = null;
+      }
+    };
+  }
 
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
-		// delete all created authorizations
-		processEngine.getAuthorizationService().createAuthorizationQuery().list().forEach(a ->
-			processEngine.getAuthorizationService().deleteAuthorization(a.getId()));
-		this.clearCache();
-		PredictableTicker.reset();
-		CountingHttpRequestInterceptor.resetCount();
-	}
+  @Override
+  protected void tearDown() throws Exception {
+    super.tearDown();
+    // delete all created authorizations
+    processEngine.getAuthorizationService()
+        .createAuthorizationQuery()
+        .list()
+        .forEach(a -> processEngine.getAuthorizationService().deleteAuthorization(a.getId()));
+    this.clearCache();
+    PredictableTicker.reset();
+    CountingHttpRequestInterceptor.resetCount();
+  }
 
-	/**
-	 * clears the query cache so each test can start with a clean slate
-	 */
-	private void clearCache() {
-		processEngineConfiguration.getProcessEnginePlugins()
-						.stream()
-						.filter(KeycloakIdentityProviderPlugin.class::isInstance)
-						.map(KeycloakIdentityProviderPlugin.class::cast)
-						.forEach(KeycloakIdentityProviderPlugin::clearCache);
-	}
+  /**
+   * clears the query cache so each test can start with a clean slate
+   */
+  private void clearCache() {
+    processEngineConfiguration.getProcessEnginePlugins()
+        .stream()
+        .filter(KeycloakIdentityProviderPlugin.class::isInstance)
+        .map(KeycloakIdentityProviderPlugin.class::cast)
+        .forEach(KeycloakIdentityProviderPlugin::clearCache);
+  }
 
-	// ------------------------------------------------------------------------
-	// Test configuration
-	// ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
+  // Test configuration
+  // ------------------------------------------------------------------------
 
-	public void testCacheEntriesEvictedWhenCacheTimeoutIsReached() {
+  public void testCacheEntriesEvictedWhenCacheTimeoutIsReached() {
 
-		UserQuery query = identityService.createUserQuery();
+    UserQuery query = identityService.createUserQuery();
 
-		// query Admin at time = 0
-		assertEquals("Admin", queryUser(query, "Admin").getFirstName());
+    // query Admin at time = 0
+    assertEquals("Admin", queryUser(query, "Admin").getFirstName());
 
-		// cache contains only Admin at this point
-		assertEquals(Collections.singletonList("Admin"), getCacheEntries());
+    // cache contains only Admin at this point
+    assertEquals(Collections.singletonList("Admin"), getCacheEntries());
 
-		// move clock by 2 minutes
-		PredictableTicker.moveTimeForwardByMinutes(2);
+    // move clock by 2 minutes
+    PredictableTicker.moveTimeForwardByMinutes(2);
 
-		// query Identity after 2 minutes
-		assertEquals("Identity", queryUser(query, "Identity").getFirstName());
+    // query Identity after 2 minutes
+    assertEquals("Identity", queryUser(query, "Identity").getFirstName());
 
-		// cache contains Identity and Admin
-		assertEquals(Arrays.asList("Admin", "Identity"), getCacheEntries());
+    // cache contains Identity and Admin
+    assertEquals(Arrays.asList("Admin", "Identity"), getCacheEntries());
 
-		// move clock by another 2 minutes
-		PredictableTicker.moveTimeForwardByMinutes(2);
+    // move clock by another 2 minutes
+    PredictableTicker.moveTimeForwardByMinutes(2);
 
-		// cache still contains Identity and Admin
-		assertEquals(Arrays.asList("Admin", "Identity"), getCacheEntries());
+    // cache still contains Identity and Admin
+    assertEquals(Arrays.asList("Admin", "Identity"), getCacheEntries());
 
-		// move clock by another 2 minutes
-		PredictableTicker.moveTimeForwardByMinutes(2);
+    // move clock by another 2 minutes
+    PredictableTicker.moveTimeForwardByMinutes(2);
 
-		// Admin was evicted because eviction timeout (5 minutes) has been breached 
-		// it's been 6 minutes since Admin was inserted into cache
-		assertEquals(Collections.singletonList("Identity"), getCacheEntries());
+    // Admin was evicted because eviction timeout (5 minutes) has been breached
+    // it's been 6 minutes since Admin was inserted into cache
+    assertEquals(Collections.singletonList("Identity"), getCacheEntries());
 
-		// move clock by another 5 minutes
-		PredictableTicker.moveTimeForwardByMinutes(5);
+    // move clock by another 5 minutes
+    PredictableTicker.moveTimeForwardByMinutes(5);
 
-		// cache is empty. Identity has also been evicted
-		assertEquals(Collections.emptyList(), getCacheEntries());
-	}
+    // cache is empty. Identity has also been evicted
+    assertEquals(Collections.emptyList(), getCacheEntries());
+  }
 
-	private static User queryUser(UserQuery query, String firstName) {
-		User user = query.userFirstName(firstName).singleResult();
-		processPendingCacheEvictions();
-		return user;
-	}
+  private static User queryUser(UserQuery query, String firstName) {
+    User user = query.userFirstName(firstName).singleResult();
+    processPendingCacheEvictions();
+    return user;
+  }
 
-	private static List<String> getCacheEntries() {
-		processPendingCacheEvictions();
-		return CacheAwareKeycloakIdentityProviderPluginForTest.userQueryCache
-						.asMap()
-						.keySet()
-						.stream()
-						.map(CacheableKeycloakUserQuery::getFirstName)
-						.sorted()
-						.collect(Collectors.toList());
-	}
+  private static List<String> getCacheEntries() {
+    processPendingCacheEvictions();
+    return CacheAwareKeycloakIdentityProviderPluginForTest.userQueryCache.asMap()
+        .keySet()
+        .stream()
+        .map(CacheableKeycloakUserQuery::getFirstName)
+        .sorted()
+        .collect(Collectors.toList());
+  }
 
-	private static void processPendingCacheEvictions() {
-		CacheAwareKeycloakIdentityProviderPluginForTest.userQueryCache.cleanUp();
-	}
+  private static void processPendingCacheEvictions() {
+    CacheAwareKeycloakIdentityProviderPluginForTest.userQueryCache.cleanUp();
+  }
 
 }

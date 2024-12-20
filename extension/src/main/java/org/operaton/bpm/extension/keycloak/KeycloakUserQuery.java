@@ -14,44 +14,46 @@ import org.operaton.bpm.engine.impl.interceptor.CommandExecutor;
  */
 public class KeycloakUserQuery extends UserQueryImpl {
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	public KeycloakUserQuery() {
-		super();
-	}
+  public KeycloakUserQuery() {
+    super();
+  }
 
-	public KeycloakUserQuery(CommandExecutor commandExecutor) {
-		super(commandExecutor);
-	}
+  public KeycloakUserQuery(CommandExecutor commandExecutor) {
+    super(commandExecutor);
+  }
 
-	// execute queries /////////////////////////////////////////
+  // execute queries /////////////////////////////////////////
 
-	@Override
-	public long executeCount(CommandContext commandContext) {
-		final KeycloakIdentityProviderSession provider = getKeycloakIdentityProvider(commandContext);
-		return provider.findUserCountByQueryCriteria(this);
-	}
+  @Override
+  public long executeCount(CommandContext commandContext) {
+    final KeycloakIdentityProviderSession provider = getKeycloakIdentityProvider(commandContext);
+    return provider.findUserCountByQueryCriteria(this);
+  }
 
-	@Override
-	public List<User> executeList(CommandContext commandContext, Page page) {
-		final KeycloakIdentityProviderSession provider = getKeycloakIdentityProvider(commandContext);
-		return provider.findUserByQueryCriteria(this);
-	}
+  @Override
+  public List<User> executeList(CommandContext commandContext, Page page) {
+    final KeycloakIdentityProviderSession provider = getKeycloakIdentityProvider(commandContext);
+    return provider.findUserByQueryCriteria(this);
+  }
 
-	protected KeycloakIdentityProviderSession getKeycloakIdentityProvider(CommandContext commandContext) {
-		return (KeycloakIdentityProviderSession) commandContext.getReadOnlyIdentityProvider();
-	}
+  protected KeycloakIdentityProviderSession getKeycloakIdentityProvider(CommandContext commandContext) {
+    return (KeycloakIdentityProviderSession) commandContext.getReadOnlyIdentityProvider();
+  }
 
-	// unimplemented features //////////////////////////////////
+  // unimplemented features //////////////////////////////////
 
-	@Override
-	public UserQuery memberOfTenant(String tenantId) {
-		throw new UnsupportedOperationException("The Keycloak identity provider does currently not support tenant queries.");
-	}
+  @Override
+  public UserQuery memberOfTenant(String tenantId) {
+    throw new UnsupportedOperationException(
+        "The Keycloak identity provider does currently not support tenant queries.");
+  }
 
-	@Override
-	public UserQuery potentialStarter(String procDefId) {
-		throw new UnsupportedOperationException("The Keycloak identity provider does currently not support potential starter queries.");
-	}
+  @Override
+  public UserQuery potentialStarter(String procDefId) {
+    throw new UnsupportedOperationException(
+        "The Keycloak identity provider does currently not support potential starter queries.");
+  }
 
 }

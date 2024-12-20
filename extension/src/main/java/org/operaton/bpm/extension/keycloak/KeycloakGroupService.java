@@ -41,412 +41,427 @@ import static org.operaton.bpm.extension.keycloak.json.JsonUtil.parseAsJsonObjec
  */
 public class KeycloakGroupService extends KeycloakServiceBase {
 
-	/**
-	 * Default constructor.
-	 * 
-	 * @param keycloakConfiguration the Keycloak configuration
-	 * @param restTemplate REST template
-	 * @param keycloakContextProvider Keycloak context provider
-	 */
-	public KeycloakGroupService(KeycloakConfiguration keycloakConfiguration,
-			KeycloakRestTemplate restTemplate, KeycloakContextProvider keycloakContextProvider) {
-		super(keycloakConfiguration, restTemplate, keycloakContextProvider);
-	}
+  /**
+   * Default constructor.
+   *
+   * @param keycloakConfiguration   the Keycloak configuration
+   * @param restTemplate            REST template
+   * @param keycloakContextProvider Keycloak context provider
+   */
+  public KeycloakGroupService(KeycloakConfiguration keycloakConfiguration,
+                              KeycloakRestTemplate restTemplate,
+                              KeycloakContextProvider keycloakContextProvider) {
+    super(keycloakConfiguration, restTemplate, keycloakContextProvider);
+  }
 
-	/**
-	 * Get the group ID of the configured admin group. Enable configuration using group path as well.
-	 * This prevents common configuration pitfalls and makes it consistent to other configuration options
-	 * like the flag 'useGroupPathAsOperatonGroupId'.
-	 * 
-	 * @param configuredAdminGroupName the originally configured admin group name
-	 * @return the corresponding keycloak group ID to use: either internal keycloak ID or path, depending on config
-	 */
-	public String getKeycloakAdminGroupId(String configuredAdminGroupName) {
-		try {
-			// check whether configured admin group can be resolved as path
-			try {
-				ResponseEntity<String> response = restTemplate.exchange(
-						keycloakConfiguration.getKeycloakAdminUrl() + "/group-by-path/" + configuredAdminGroupName, HttpMethod.GET, String.class);
-				if (keycloakConfiguration.isUseGroupPathAsOperatonGroupId()) {
-					return parseAsJsonObjectAndGetMemberAsString(response.getBody(), "path").substring(1); // remove trailing '/'
-				}
-				return parseAsJsonObjectAndGetMemberAsString(response.getBody(), "id");
-			} catch (RestClientException | JsonException ex) {
-				// group not found: fall through
-			}
-			
-			// check whether configured admin group can be resolved as group name
-			try {
-				ResponseEntity<String> response = restTemplate.exchange(
-						keycloakConfiguration.getKeycloakAdminUrl() + "/groups?search=" + configuredAdminGroupName, HttpMethod.GET, String.class);
-				// filter search result for exact group name, including subgroups
-				JsonArray result = flattenSubGroups(parseAsJsonArray(response.getBody()), new JsonArray());
-				JsonArray groups = new JsonArray();
-				for (int i = 0; i < result.size(); i++) {
-					JsonObject keycloakGroup = getJsonObjectAtIndex(result, i);
-					if (getOptJsonString(keycloakGroup, "name").equals(configuredAdminGroupName)) {
-						groups.add(keycloakGroup);
-					}
-				}
-				if (groups.size() == 1) {
-					if (keycloakConfiguration.isUseGroupPathAsOperatonGroupId()) {
-						return getJsonString(getJsonObjectAtIndex(groups, 0), "path").substring(1); // remove trailing '/'
-					}
-					return getJsonString(getJsonObjectAtIndex(groups, 0), "id");
-				} else if (!groups.isEmpty()) {
-					throw new IdentityProviderException("Configured administratorGroupName " + configuredAdminGroupName + " is not unique. Please configure exact group path.");
-				}
-				// groups size == 0: fall through
-			} catch (JsonException je) {
-				// group not found: fall through
-			}
+  /**
+   * Get the group ID of the configured admin group. Enable configuration using group path as well.
+   * This prevents common configuration pitfalls and makes it consistent to other configuration options
+   * like the flag 'useGroupPathAsOperatonGroupId'.
+   *
+   * @param configuredAdminGroupName the originally configured admin group name
+   * @return the corresponding keycloak group ID to use: either internal keycloak ID or path, depending on config
+   */
+  public String getKeycloakAdminGroupId(String configuredAdminGroupName) {
+    try {
+      // check whether configured admin group can be resolved as path
+      try {
+        ResponseEntity<String> response = restTemplate.exchange(
+            keycloakConfiguration.getKeycloakAdminUrl() + "/group-by-path/" + configuredAdminGroupName, HttpMethod.GET,
+            String.class);
+        if (keycloakConfiguration.isUseGroupPathAsOperatonGroupId()) {
+          return parseAsJsonObjectAndGetMemberAsString(response.getBody(), "path").substring(1); // remove trailing '/'
+        }
+        return parseAsJsonObjectAndGetMemberAsString(response.getBody(), "id");
+      } catch (RestClientException | JsonException ex) {
+        // group not found: fall through
+      }
 
-			// keycloak admin group does not exist :-(
-			throw new IdentityProviderException("Configured administratorGroupName " + configuredAdminGroupName + " does not exist.");
-		} catch (RestClientException rce) {
-			throw new IdentityProviderException("Unable to read data of configured administratorGroupName " + configuredAdminGroupName, rce);
-		}
-	}
+      // check whether configured admin group can be resolved as group name
+      try {
+        ResponseEntity<String> response = restTemplate.exchange(
+            keycloakConfiguration.getKeycloakAdminUrl() + "/groups?search=" + configuredAdminGroupName, HttpMethod.GET,
+            String.class);
+        // filter search result for exact group name, including subgroups
+        JsonArray result = flattenSubGroups(parseAsJsonArray(response.getBody()), new JsonArray());
+        JsonArray groups = new JsonArray();
+        for (int i = 0; i < result.size(); i++) {
+          JsonObject keycloakGroup = getJsonObjectAtIndex(result, i);
+          if (getOptJsonString(keycloakGroup, "name").equals(configuredAdminGroupName)) {
+            groups.add(keycloakGroup);
+          }
+        }
+        if (groups.size() == 1) {
+          if (keycloakConfiguration.isUseGroupPathAsOperatonGroupId()) {
+            return getJsonString(getJsonObjectAtIndex(groups, 0), "path").substring(1); // remove trailing '/'
+          }
+          return getJsonString(getJsonObjectAtIndex(groups, 0), "id");
+        } else if (!groups.isEmpty()) {
+          throw new IdentityProviderException("Configured administratorGroupName " + configuredAdminGroupName
+              + " is not unique. Please configure exact group path.");
+        }
+        // groups size == 0: fall through
+      } catch (JsonException je) {
+        // group not found: fall through
+      }
 
-	/**
-	 * Requests groups of a specific user.
-	 * @param query the group query - including a userId criteria
-	 * @return list of matching groups
-	 */
-	public List<Group> requestGroupsByUserId(CacheableKeycloakGroupQuery query) {
-		String userId = query.getUserId();
-		List<Group> groupList = new ArrayList<>();
+      // keycloak admin group does not exist :-(
+      throw new IdentityProviderException(
+          "Configured administratorGroupName " + configuredAdminGroupName + " does not exist.");
+    } catch (RestClientException rce) {
+      throw new IdentityProviderException(
+          "Unable to read data of configured administratorGroupName " + configuredAdminGroupName, rce);
+    }
+  }
 
-		try {
-			//  get Keycloak specific userID
-			String keyCloakID;
-			try {
-				keyCloakID = getKeycloakUserID(userId);
-			} catch (KeycloakUserNotFoundException e) {
-				// user not found: empty search result
-				return Collections.emptyList();
-			}
+  /**
+   * Requests groups of a specific user.
+   *
+   * @param query the group query - including a userId criteria
+   * @return list of matching groups
+   */
+  public List<Group> requestGroupsByUserId(CacheableKeycloakGroupQuery query) {
+    String userId = query.getUserId();
+    List<Group> groupList = new ArrayList<>();
 
-			// get groups of this user
-			ResponseEntity<String> response = restTemplate.exchange(
-					keycloakConfiguration.getKeycloakAdminUrl() + "/users/" + keyCloakID + "/groups?max=" + getMaxQueryResultSize(), 
-					HttpMethod.GET, String.class);
-			if (!response.getStatusCode().equals(HttpStatus.OK)) {
-				throw new IdentityProviderException(
-						"Unable to read user groups from " + keycloakConfiguration.getKeycloakAdminUrl()
-								+ ": HTTP status code " + response.getStatusCode().value());
-			}
+    try {
+      //  get Keycloak specific userID
+      String keyCloakID;
+      try {
+        keyCloakID = getKeycloakUserID(userId);
+      } catch (KeycloakUserNotFoundException e) {
+        // user not found: empty search result
+        return Collections.emptyList();
+      }
 
-			JsonArray searchResult = parseAsJsonArray(response.getBody());
-			for (int i = 0; i < searchResult.size(); i++) {
-				groupList.add(transformGroup(getJsonObjectAtIndex(searchResult, i)));
-			}
+      // get groups of this user
+      ResponseEntity<String> response = restTemplate.exchange(
+          keycloakConfiguration.getKeycloakAdminUrl() + "/users/" + keyCloakID + "/groups?max="
+              + getMaxQueryResultSize(), HttpMethod.GET, String.class);
+      if (!response.getStatusCode().equals(HttpStatus.OK)) {
+        throw new IdentityProviderException(
+            "Unable to read user groups from " + keycloakConfiguration.getKeycloakAdminUrl() + ": HTTP status code "
+                + response.getStatusCode().value());
+      }
 
-		} catch (HttpClientErrorException hcee) {
-			// if userID is unknown server answers with HTTP 404 not found
-			if (hcee.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-				return Collections.emptyList();
-			}
-			throw hcee;
-		} catch (RestClientException | JsonException rce) {
-			throw new IdentityProviderException("Unable to query groups of user " + userId, rce);
-		}
+      JsonArray searchResult = parseAsJsonArray(response.getBody());
+      for (int i = 0; i < searchResult.size(); i++) {
+        groupList.add(transformGroup(getJsonObjectAtIndex(searchResult, i)));
+      }
 
-		return groupList;
-	}
-	
-	/**
-	 * Requests groups.
-	 * @param query the group query - not including a userId criteria
-	 * @return list of matching groups
-	 */
-	public List<Group> requestGroupsWithoutUserId(CacheableKeycloakGroupQuery query) {
-		List<Group> groupList = new ArrayList<>();
+    } catch (HttpClientErrorException hcee) {
+      // if userID is unknown server answers with HTTP 404 not found
+      if (hcee.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+        return Collections.emptyList();
+      }
+      throw hcee;
+    } catch (RestClientException | JsonException rce) {
+      throw new IdentityProviderException("Unable to query groups of user " + userId, rce);
+    }
 
-		try {
-			// get groups according to search criteria
-			ResponseEntity<String> response;
+    return groupList;
+  }
 
-			if (StringUtils.hasLength(query.getId())) {
-				response = requestGroupById(query.getId());
-			} else if (query.getIds() != null && query.getIds().length == 1) {
-				response = requestGroupById(query.getIds()[0]);
-			} else {
-				String groupFilter = createGroupSearchFilter(query); // only pre-filter of names possible
-				response = restTemplate.exchange(keycloakConfiguration.getKeycloakAdminUrl() + "/groups" + groupFilter, HttpMethod.GET, String.class);
-			}
-			if (!response.getStatusCode().equals(HttpStatus.OK)) {
-				throw new IdentityProviderException(
-						"Unable to read groups from " + keycloakConfiguration.getKeycloakAdminUrl()
-								+ ": HTTP status code " + response.getStatusCode().value());
-			}
+  /**
+   * Requests groups.
+   *
+   * @param query the group query - not including a userId criteria
+   * @return list of matching groups
+   */
+  public List<Group> requestGroupsWithoutUserId(CacheableKeycloakGroupQuery query) {
+    List<Group> groupList = new ArrayList<>();
 
-			JsonArray searchResult;
-			if (StringUtils.hasLength(query.getId())) {
-				searchResult = parseAsJsonArray(response.getBody());
-			} else {
-				// for non ID queries search in subgroups as well
-				searchResult = flattenSubGroups(parseAsJsonArray(response.getBody()), new JsonArray());
-			}
-			for (int i = 0; i < searchResult.size(); i++) {
-				groupList.add(transformGroup(getJsonObjectAtIndex(searchResult, i)));
-			}
+    try {
+      // get groups according to search criteria
+      ResponseEntity<String> response;
 
-		} catch (RestClientException | JsonException rce) {
-			throw new IdentityProviderException("Unable to query groups", rce);
-		}
+      if (StringUtils.hasLength(query.getId())) {
+        response = requestGroupById(query.getId());
+      } else if (query.getIds() != null && query.getIds().length == 1) {
+        response = requestGroupById(query.getIds()[0]);
+      } else {
+        String groupFilter = createGroupSearchFilter(query); // only pre-filter of names possible
+        response = restTemplate.exchange(keycloakConfiguration.getKeycloakAdminUrl() + "/groups" + groupFilter,
+            HttpMethod.GET, String.class);
+      }
+      if (!response.getStatusCode().equals(HttpStatus.OK)) {
+        throw new IdentityProviderException(
+            "Unable to read groups from " + keycloakConfiguration.getKeycloakAdminUrl() + ": HTTP status code "
+                + response.getStatusCode().value());
+      }
 
-		return groupList;
-	}
+      JsonArray searchResult;
+      if (StringUtils.hasLength(query.getId())) {
+        searchResult = parseAsJsonArray(response.getBody());
+      } else {
+        // for non ID queries search in subgroups as well
+        searchResult = flattenSubGroups(parseAsJsonArray(response.getBody()), new JsonArray());
+      }
+      for (int i = 0; i < searchResult.size(); i++) {
+        groupList.add(transformGroup(getJsonObjectAtIndex(searchResult, i)));
+      }
 
-	/**
-	 * Post processes a Keycloak query result.
-	 * @param query the original query
-	 * @param groupList the full list of results returned from Keycloak without client side filters
-	 * @param resultLogger the log accumulator
-	 * @return final result with client side filtered, sorted and paginated list of groups
-	 */
-	public List<Group> postProcessResults(KeycloakGroupQuery query, List<Group> groupList, StringBuilder resultLogger) {
-		// apply client side filtering
-		Stream<Group> processed = groupList.stream().filter(group -> isValid(query, group, resultLogger));
-		
-		// sort groups according to query criteria
-		if (!query.getOrderingProperties().isEmpty()) {
-			processed = processed.sorted(new GroupComparator(query.getOrderingProperties()));
-		}
+    } catch (RestClientException | JsonException rce) {
+      throw new IdentityProviderException("Unable to query groups", rce);
+    }
 
-		// paging
-		if ((query.getFirstResult() > 0) || (query.getMaxResults() < Integer.MAX_VALUE)) {
-			processed = processed.skip(query.getFirstResult()).limit(query.getMaxResults());
-		}
+    return groupList;
+  }
 
-		// group queries in Keycloak do not consider the max attribute within the search request
-		return processed.limit(keycloakConfiguration.getMaxResultSize()).toList();
-	}
+  /**
+   * Post processes a Keycloak query result.
+   *
+   * @param query        the original query
+   * @param groupList    the full list of results returned from Keycloak without client side filters
+   * @param resultLogger the log accumulator
+   * @return final result with client side filtered, sorted and paginated list of groups
+   */
+  public List<Group> postProcessResults(KeycloakGroupQuery query, List<Group> groupList, StringBuilder resultLogger) {
+    // apply client side filtering
+    Stream<Group> processed = groupList.stream().filter(group -> isValid(query, group, resultLogger));
 
-	/**
-	 * Post-processing query filter. Checks if a single group is valid.
-	 * @param query the original query
-	 * @param group the group to validate
-	 * @param resultLogger the log accumulator
-	 * @return a boolean indicating if the group is valid for current query
-	 */
-	private boolean isValid(KeycloakGroupQuery query, Group group, StringBuilder resultLogger) {
-		// client side check of further query filters
-		if (!matches(query.getId(), group.getId())) {
-			return false;
-		}
-		if (!matches(query.getIds(), group.getId())) {
-			return false;
-		}
-		if (!matches(query.getName(), group.getName())) {
-			return false;
-		}
-		if (!matchesLike(query.getNameLike(), group.getName())) {
-			return false;
-		}
-		if (!matches(query.getType(), group.getType())) {
-			return false;
-		}
+    // sort groups according to query criteria
+    if (!query.getOrderingProperties().isEmpty()) {
+      processed = processed.sorted(new GroupComparator(query.getOrderingProperties()));
+    }
 
-		// authenticated user is always allowed to query his own groups
-		// otherwise READ authentication is required
-		boolean isAuthenticatedUser = isAuthenticatedUser(query.getUserId());
-		if (isAuthenticatedUser || isAuthorized(READ, GROUP, group.getId())) {
-			if (KeycloakPluginLogger.INSTANCE.isDebugEnabled()) {
-				resultLogger.append(group);
-				resultLogger.append(", ");
-			}
-			return true;
-		}
+    // paging
+    if ((query.getFirstResult() > 0) || (query.getMaxResults() < Integer.MAX_VALUE)) {
+      processed = processed.skip(query.getFirstResult()).limit(query.getMaxResults());
+    }
 
-		return false;
-	}
+    // group queries in Keycloak do not consider the max attribute within the search request
+    return processed.limit(keycloakConfiguration.getMaxResultSize()).toList();
+  }
 
-	/**
-	 * Creates a Keycloak group search filter query
-	 * @param query the group query
-	 * @return request query
-	 */
-	private String createGroupSearchFilter(CacheableKeycloakGroupQuery query) {
-		StringBuilder filter = new StringBuilder();
-		boolean hasSearch = false;
-		if (StringUtils.hasLength(query.getName())) {
-			hasSearch = true;
-			addArgument(filter, "search", query.getName());
-		}
-		if (StringUtils.hasLength(query.getNameLike())) {
-			hasSearch = true;
-			addArgument(filter, "search", query.getNameLike().replaceAll("[%,\\*]", ""));
-		}
-		addArgument(filter, "max", getMaxQueryResultSize());
-		if (!hasSearch && keycloakConfiguration.isEnforceSubgroupsInGroupQuery()) {
-			// fix: include subgroups in query result for Keycloak >= 23
-			addArgument(filter, "q", ":");
-		}
-		if (!filter.isEmpty()) {
-			filter.insert(0, "?");
-			String result = filter.toString();
-			KeycloakPluginLogger.INSTANCE.groupQueryFilter(result);
-			return result;
-		}
-		return "";
-	}
+  /**
+   * Post-processing query filter. Checks if a single group is valid.
+   *
+   * @param query        the original query
+   * @param group        the group to validate
+   * @param resultLogger the log accumulator
+   * @return a boolean indicating if the group is valid for current query
+   */
+  private boolean isValid(KeycloakGroupQuery query, Group group, StringBuilder resultLogger) {
+    // client side check of further query filters
+    if (!matches(query.getId(), group.getId())) {
+      return false;
+    }
+    if (!matches(query.getIds(), group.getId())) {
+      return false;
+    }
+    if (!matches(query.getName(), group.getName())) {
+      return false;
+    }
+    if (!matchesLike(query.getNameLike(), group.getName())) {
+      return false;
+    }
+    if (!matches(query.getType(), group.getType())) {
+      return false;
+    }
 
-	/**
-	 * Converts a result consisting of a potential hierarchy of groups into a flattened list of groups.
-	 * @param groups the original structured hierarchy of groups
-	 * @param result recursive result
-	 * @return flattened list of all groups in this hierarchy
-	 * @throws JsonException in case of errors
-	 */
-	private JsonArray flattenSubGroups(JsonArray groups, JsonArray result) throws JsonException {
-		if (groups == null) {
-			return result;
-		}
-	    for (int i = 0; i < groups.size(); i++) {
-	    	JsonObject group = getJsonObjectAtIndex(groups, i);
-	    	JsonArray subGroups;
-			try {
-				subGroups = getJsonArray(group, "subGroups");
-		    	group.remove("subGroups");
-		    	result.add(group);
-		    	flattenSubGroups(subGroups, result);
-			} catch (JsonException e) {
-				result.add(group);
-			}
-	    }
-	    return result;
-	}
-	
-	/**
-	 * Requests data of single group.
-	 * @param groupId the ID of the requested group
-	 * @return response consisting of a list containing the one group
-	 * @throws RestClientException
-	 */
-	private ResponseEntity<String> requestGroupById(String groupId) throws RestClientException {
-		try {
-			String groupSearch;
-			if (keycloakConfiguration.isUseGroupPathAsOperatonGroupId()) {
-				groupSearch = "/group-by-path/" + groupId;
-			} else {
-				groupSearch = "/groups/" + groupId;
-			}
+    // authenticated user is always allowed to query his own groups
+    // otherwise READ authentication is required
+    boolean isAuthenticatedUser = isAuthenticatedUser(query.getUserId());
+    if (isAuthenticatedUser || isAuthorized(READ, GROUP, group.getId())) {
+      if (KeycloakPluginLogger.INSTANCE.isDebugEnabled()) {
+        resultLogger.append(group);
+        resultLogger.append(", ");
+      }
+      return true;
+    }
 
-			ResponseEntity<String> response = restTemplate.exchange(
-					keycloakConfiguration.getKeycloakAdminUrl() + groupSearch, HttpMethod.GET, String.class);
-			String result = "[" + response.getBody() + "]";
-			return new ResponseEntity<>(result, response.getHeaders(), response.getStatusCode());
-		} catch (HttpClientErrorException hcee) {
-			if (hcee.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-				String result = "[]";
-				return new ResponseEntity<>(result, HttpStatus.OK);
-			}
-			throw hcee;
-		}
-	}
-	
-	/**
-	 * Maps a Keycloak JSON result to a Group object
-	 * @param result the Keycloak JSON result
-	 * @return the Group object
-	 * @throws JsonException in case of errors
-	 */
-	private GroupEntity transformGroup(JsonObject result) throws JsonException {
-		GroupEntity group = new GroupEntity();
-		if (keycloakConfiguration.isUseGroupPathAsOperatonGroupId()) {
-			group.setId(getJsonString(result, "path").substring(1)); // remove trailing '/'
-		} else {
-			group.setId(getJsonString(result, "id"));
-		}
-		group.setName(getJsonString(result, "name"));
-		if (isSystemGroup(result)) {
-			group.setType(Groups.GROUP_TYPE_SYSTEM);
-		} else {
-			group.setType(Groups.GROUP_TYPE_WORKFLOW);
-		}
-		return group;
-	}
+    return false;
+  }
 
-	/**
-	 * Checks whether a Keycloak JSON result represents a SYSTEM group.
-	 * @param result the Keycloak JSON result
-	 * @return {@code true} in case the result is a SYSTEM group.
-	 * @throws JsonException in case of errors
-	 */
-	private boolean isSystemGroup(JsonObject result) throws JsonException {
-		String name = getJsonString(result, "name");
-		if (Groups.OPERATON_ADMIN.equals(name) ||
-				name.equals(keycloakConfiguration.getAdministratorGroupName())) {
-			return true;
-		}
-		try {
-			JsonArray types = getJsonArray(getJsonObject(result, "attributes"), "type");
-			for (int i = 0; i < types.size(); i++) {
-				if (Groups.GROUP_TYPE_SYSTEM.equals(getJsonStringAtIndex(types, i).toUpperCase())) {
-					return true;
-				}
-			}
-		} catch (JsonException ex) {
-			return false;
-		}
-		return false;
-	}
-	
-	/**
-	 * Helper for client side group ordering.
-	 */
-	private static class GroupComparator implements Comparator<Group> {
-		private static final int GROUP_ID = 0;
-		private static final int NAME = 1;
-		private static final int TYPE = 2;
+  /**
+   * Creates a Keycloak group search filter query
+   *
+   * @param query the group query
+   * @return request query
+   */
+  private String createGroupSearchFilter(CacheableKeycloakGroupQuery query) {
+    StringBuilder filter = new StringBuilder();
+    boolean hasSearch = false;
+    if (StringUtils.hasLength(query.getName())) {
+      hasSearch = true;
+      addArgument(filter, "search", query.getName());
+    }
+    if (StringUtils.hasLength(query.getNameLike())) {
+      hasSearch = true;
+      addArgument(filter, "search", query.getNameLike().replaceAll("[%,\\*]", ""));
+    }
+    addArgument(filter, "max", getMaxQueryResultSize());
+    if (!hasSearch && keycloakConfiguration.isEnforceSubgroupsInGroupQuery()) {
+      // fix: include subgroups in query result for Keycloak >= 23
+      addArgument(filter, "q", ":");
+    }
+    if (!filter.isEmpty()) {
+      filter.insert(0, "?");
+      String result = filter.toString();
+      KeycloakPluginLogger.INSTANCE.groupQueryFilter(result);
+      return result;
+    }
+    return "";
+  }
 
-		private final int[] order;
-		private final boolean[] desc;
+  /**
+   * Converts a result consisting of a potential hierarchy of groups into a flattened list of groups.
+   *
+   * @param groups the original structured hierarchy of groups
+   * @param result recursive result
+   * @return flattened list of all groups in this hierarchy
+   * @throws JsonException in case of errors
+   */
+  private JsonArray flattenSubGroups(JsonArray groups, JsonArray result) throws JsonException {
+    if (groups == null) {
+      return result;
+    }
+    for (int i = 0; i < groups.size(); i++) {
+      JsonObject group = getJsonObjectAtIndex(groups, i);
+      JsonArray subGroups;
+      try {
+        subGroups = getJsonArray(group, "subGroups");
+        group.remove("subGroups");
+        result.add(group);
+        flattenSubGroups(subGroups, result);
+      } catch (JsonException e) {
+        result.add(group);
+      }
+    }
+    return result;
+  }
 
-		public GroupComparator(List<QueryOrderingProperty> orderList) {
-			// Prepare query ordering
-			this.order = new int[orderList.size()];
-			this.desc = new boolean[orderList.size()];
-			for (int i = 0; i< orderList.size(); i++) {
-				QueryOrderingProperty qop = orderList.get(i);
-				if (qop.getQueryProperty().equals(GroupQueryProperty.GROUP_ID)) {
-					order[i] = GROUP_ID;
-				} else if (qop.getQueryProperty().equals(GroupQueryProperty.NAME)) {
-					order[i] = NAME;
-				} else if (qop.getQueryProperty().equals(GroupQueryProperty.TYPE)) {
-					order[i] = TYPE;
-				} else {
-					order[i] = -1;
-				}
-				desc[i] = Direction.DESCENDING.equals(qop.getDirection());
-			}
-		}
+  /**
+   * Requests data of single group.
+   *
+   * @param groupId the ID of the requested group
+   * @return response consisting of a list containing the one group
+   * @throws RestClientException
+   */
+  private ResponseEntity<String> requestGroupById(String groupId) throws RestClientException {
+    try {
+      String groupSearch;
+      if (keycloakConfiguration.isUseGroupPathAsOperatonGroupId()) {
+        groupSearch = "/group-by-path/" + groupId;
+      } else {
+        groupSearch = "/groups/" + groupId;
+      }
 
-		@Override
-		public int compare(Group g1, Group g2) {
-			int c = 0;
-			for (int i = 0; i < order.length; i ++) {
-				switch (order[i]) {
-					case GROUP_ID:
-						c = KeycloakServiceBase.compare(g1.getId(), g2.getId());
-						break;
-					case NAME:
-						c = KeycloakServiceBase.compare(g1.getName(), g2.getName());
-						break;
-					case TYPE:
-						c = KeycloakServiceBase.compare(g1.getType(), g2.getType());
-						break;
-					default:
-						// do nothing
-				}
-				if (c != 0) {
-					return desc[i] ? -c : c;
-				}
-			}
-			return c;
-		}
-	}
-	
+      ResponseEntity<String> response = restTemplate.exchange(keycloakConfiguration.getKeycloakAdminUrl() + groupSearch,
+          HttpMethod.GET, String.class);
+      String result = "[" + response.getBody() + "]";
+      return new ResponseEntity<>(result, response.getHeaders(), response.getStatusCode());
+    } catch (HttpClientErrorException hcee) {
+      if (hcee.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+        String result = "[]";
+        return new ResponseEntity<>(result, HttpStatus.OK);
+      }
+      throw hcee;
+    }
+  }
+
+  /**
+   * Maps a Keycloak JSON result to a Group object
+   *
+   * @param result the Keycloak JSON result
+   * @return the Group object
+   * @throws JsonException in case of errors
+   */
+  private GroupEntity transformGroup(JsonObject result) throws JsonException {
+    GroupEntity group = new GroupEntity();
+    if (keycloakConfiguration.isUseGroupPathAsOperatonGroupId()) {
+      group.setId(getJsonString(result, "path").substring(1)); // remove trailing '/'
+    } else {
+      group.setId(getJsonString(result, "id"));
+    }
+    group.setName(getJsonString(result, "name"));
+    if (isSystemGroup(result)) {
+      group.setType(Groups.GROUP_TYPE_SYSTEM);
+    } else {
+      group.setType(Groups.GROUP_TYPE_WORKFLOW);
+    }
+    return group;
+  }
+
+  /**
+   * Checks whether a Keycloak JSON result represents a SYSTEM group.
+   *
+   * @param result the Keycloak JSON result
+   * @return {@code true} in case the result is a SYSTEM group.
+   * @throws JsonException in case of errors
+   */
+  private boolean isSystemGroup(JsonObject result) throws JsonException {
+    String name = getJsonString(result, "name");
+    if (Groups.OPERATON_ADMIN.equals(name) || name.equals(keycloakConfiguration.getAdministratorGroupName())) {
+      return true;
+    }
+    try {
+      JsonArray types = getJsonArray(getJsonObject(result, "attributes"), "type");
+      for (int i = 0; i < types.size(); i++) {
+        if (Groups.GROUP_TYPE_SYSTEM.equals(getJsonStringAtIndex(types, i).toUpperCase())) {
+          return true;
+        }
+      }
+    } catch (JsonException ex) {
+      return false;
+    }
+    return false;
+  }
+
+  /**
+   * Helper for client side group ordering.
+   */
+  private static class GroupComparator implements Comparator<Group> {
+    private static final int GROUP_ID = 0;
+    private static final int NAME = 1;
+    private static final int TYPE = 2;
+
+    private final int[] order;
+    private final boolean[] desc;
+
+    public GroupComparator(List<QueryOrderingProperty> orderList) {
+      // Prepare query ordering
+      this.order = new int[orderList.size()];
+      this.desc = new boolean[orderList.size()];
+      for (int i = 0; i < orderList.size(); i++) {
+        QueryOrderingProperty qop = orderList.get(i);
+        if (qop.getQueryProperty().equals(GroupQueryProperty.GROUP_ID)) {
+          order[i] = GROUP_ID;
+        } else if (qop.getQueryProperty().equals(GroupQueryProperty.NAME)) {
+          order[i] = NAME;
+        } else if (qop.getQueryProperty().equals(GroupQueryProperty.TYPE)) {
+          order[i] = TYPE;
+        } else {
+          order[i] = -1;
+        }
+        desc[i] = Direction.DESCENDING.equals(qop.getDirection());
+      }
+    }
+
+    @Override
+    public int compare(Group g1, Group g2) {
+      int c = 0;
+      for (int i = 0; i < order.length; i++) {
+        switch (order[i]) {
+        case GROUP_ID:
+          c = KeycloakServiceBase.compare(g1.getId(), g2.getId());
+          break;
+        case NAME:
+          c = KeycloakServiceBase.compare(g1.getName(), g2.getName());
+          break;
+        case TYPE:
+          c = KeycloakServiceBase.compare(g1.getType(), g2.getType());
+          break;
+        default:
+          // do nothing
+        }
+        if (c != 0) {
+          return desc[i] ? -c : c;
+        }
+      }
+      return c;
+    }
+  }
+
 }

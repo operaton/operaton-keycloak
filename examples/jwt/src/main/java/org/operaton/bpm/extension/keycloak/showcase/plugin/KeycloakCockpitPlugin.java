@@ -5,6 +5,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties(prefix="plugin.cockpit.keycloak")
+@ConfigurationProperties(prefix = "plugin.cockpit.keycloak")
 public class KeycloakCockpitPlugin extends KeycloakCockpitConfiguration {
 }
