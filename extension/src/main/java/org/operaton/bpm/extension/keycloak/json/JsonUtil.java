@@ -10,7 +10,10 @@ import com.google.gson.JsonObject;
 /**
  * Utility class for JSON parsing / streaming functions.
  */
-public class JsonUtil {
+public final class JsonUtil {
+	private JsonUtil () {
+		// utility class
+	}
 
 	/**
 	 * Parses a given JSON String as JsonObject.
@@ -63,7 +66,7 @@ public class JsonUtil {
 			JsonElement element = jsonObject.get(memberName);
 			return element == null ? null : element.getAsString();
 		} catch (ClassCastException | IllegalStateException ex) {
-			throw new JsonException("Unable to get '" + memberName + "' from JsonObject " + jsonObject.toString(), ex);
+			throw new JsonException("Unable to get '" + memberName + "' from JsonObject " + jsonObject, ex);
 		}
 	}
 
@@ -79,7 +82,7 @@ public class JsonUtil {
 			JsonElement element = jsonObject.get(memberName);
 			return element == null ? "" : element.getAsString();
 		} catch (ClassCastException | IllegalStateException ex) {
-			throw new JsonException("Unable to get '" + memberName + "' from JsonObject " + jsonObject.toString(), ex);
+			throw new JsonException("Unable to get '" + memberName + "' from JsonObject " + jsonObject, ex);
 		}
 	}
 
@@ -95,7 +98,7 @@ public class JsonUtil {
 			JsonElement element = jsonObject.get(memberName);
 			return element == null ? null : element.getAsLong();
 		} catch (ClassCastException | IllegalStateException ex) {
-			throw new JsonException("Unable to get '" + memberName + "' from JsonObject " + jsonObject.toString(), ex);
+			throw new JsonException("Unable to get '" + memberName + "' from JsonObject " + jsonObject, ex);
 		}
 	}
 
@@ -114,7 +117,7 @@ public class JsonUtil {
 			JsonElement element = jsonObject.get(memberName);
 			return element == null ? null : element.getAsJsonObject();
 		} catch (ClassCastException | IllegalStateException ex) {
-			throw new JsonException("Unable to get '" + memberName + "' from JsonObject " + jsonObject.toString(), ex);
+			throw new JsonException("Unable to get '" + memberName + "' from JsonObject " + jsonObject, ex);
 		}
 	}
 
@@ -133,7 +136,7 @@ public class JsonUtil {
 			JsonElement element = jsonObject.get(memberName);
 			return element == null ? new JsonArray() : element.getAsJsonArray();
 		} catch (ClassCastException | IllegalStateException ex) {
-			throw new JsonException("Unable to get '" + memberName + "' from JsonObject " + jsonObject.toString(), ex);
+			throw new JsonException("Unable to get '" + memberName + "' from JsonObject " + jsonObject, ex);
 		}
 	}
 
@@ -148,7 +151,7 @@ public class JsonUtil {
 		try {
 			return jsonArray.get(i).getAsJsonObject();
 		} catch (IndexOutOfBoundsException | IllegalStateException ex) {
-			throw new JsonException("Unable to get index " + i + " from JsonArray " + jsonArray.toString(), ex);
+			throw new JsonException("Unable to get index " + i + " from JsonArray " + jsonArray, ex);
 		}
 	}
 	
@@ -163,7 +166,7 @@ public class JsonUtil {
 		try {
 			return jsonArray.get(i).getAsString();
 		} catch (IndexOutOfBoundsException | ClassCastException | IllegalStateException ex) {
-			throw new JsonException("Unable to get index " + i + " from JsonArray " + jsonArray.toString(), ex);
+			throw new JsonException("Unable to get index " + i + " from JsonArray " + jsonArray, ex);
 		}
 	}
 

@@ -165,11 +165,11 @@ public class KeycloakIdentityProviderPlugin extends KeycloakConfiguration implem
 		}
 		if (!missing.isEmpty()) {
 			LOG.activationError(getClass().getSimpleName(), processEngineConfiguration.getProcessEngineName(),
-					"missing mandatory configuration parameters " + missing.toString());
+					"missing mandatory configuration parameters " + missing);
 			throw new IllegalStateException("Unable to initialize plugin "
 											+ getClass().getSimpleName() 
 											+ ": - missing mandatory configuration parameters: " 
-											+ missing.toString());
+											+ missing);
 		}
 		if (isUseEmailAsOperatonUserId() && isUseUsernameAsOperatonUserId()) {
 			LOG.activationError(getClass().getSimpleName(), processEngineConfiguration.getProcessEngineName(),

@@ -69,7 +69,8 @@ public abstract class KeycloakServiceBase {
 		
 		try {
 			URI uri = UriComponentsBuilder
-					.fromUriString(keycloakConfiguration.getKeycloakAdminUrl() + userSearch + URLEncoder.encode(userId, StandardCharsets.UTF_8.name()))
+					.fromUriString(keycloakConfiguration.getKeycloakAdminUrl() + userSearch + URLEncoder.encode(userId,
+              StandardCharsets.UTF_8))
 					.build(true)
 					.toUri();
 			ResponseEntity<String> response = restTemplate.exchange(
@@ -94,10 +95,7 @@ public abstract class KeycloakServiceBase {
 					? " not found - email unknown" 
 					: " not found - username unknown"), je);
 		}
-		catch (UnsupportedEncodingException e) {
-			throw new KeycloakUserNotFoundException(userId + " not encodable", e);
-		}
-	}
+  }
 	
 	/**
 	 * Gets the Keycloak internal ID of a group.

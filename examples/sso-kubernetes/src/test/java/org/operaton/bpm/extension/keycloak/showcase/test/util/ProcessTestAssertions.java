@@ -163,7 +163,7 @@ public abstract class ProcessTestAssertions {
 	 */
 	public static final class JobAssert extends ProcessTestAssertions.WaitAssert {
 
-		private String jobActivityId;
+		private final String jobActivityId;
 
 		/**
 		 * Constructs a new JobAssert.
@@ -224,7 +224,7 @@ public abstract class ProcessTestAssertions {
 	 * Helper class bridgin Historic ProcessInstances and ProcessInstances.
 	 */
 	private static final class ProcessInstanceBridge implements ProcessInstance {
-		private HistoricProcessInstance hpi;
+		private final HistoricProcessInstance hpi;
 
 		public ProcessInstanceBridge(HistoricProcessInstance hpi) {
 			this.hpi = hpi;
