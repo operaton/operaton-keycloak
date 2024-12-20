@@ -58,7 +58,7 @@ public class KeycloakContextProvider {
 					.postForEntity(keycloakConfiguration.getKeycloakIssuerUrl() + "/protocol/openid-connect/token", request, String.class);
 			if (!response.getStatusCode().equals(HttpStatus.OK)) {
 				throw new IdentityProviderException("Could not connect to " + keycloakConfiguration.getKeycloakIssuerUrl()
-						+ ": HTTP status code " + response.getStatusCodeValue());
+						+ ": HTTP status code " + response.getStatusCode().value());
 			}
 
 			JsonObject json = parseAsJsonObject(response.getBody());
@@ -96,7 +96,7 @@ public class KeycloakContextProvider {
 					.postForEntity(keycloakConfiguration.getKeycloakIssuerUrl() + "/protocol/openid-connect/token", request, String.class);
 			if (!response.getStatusCode().equals(HttpStatus.OK)) {
 				throw new IdentityProviderException("Could not connect to " + keycloakConfiguration.getKeycloakIssuerUrl()
-						+ ": HTTP status code " + response.getStatusCodeValue());
+						+ ": HTTP status code " + response.getStatusCode().value());
 			}
 
 			JsonObject json = parseAsJsonObject(response.getBody());
