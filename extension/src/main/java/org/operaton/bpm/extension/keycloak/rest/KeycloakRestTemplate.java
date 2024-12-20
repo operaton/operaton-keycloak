@@ -20,8 +20,8 @@ public class KeycloakRestTemplate extends org.springframework.web.client.RestTem
 	 * Execute the HTTP method to the given URI template (using a Keycloak default request entity to the request) and returns the response as ResponseEntity. 
 	 * URI Template variables are expanded using the given URI variables, if any.
  	 * @param url the URL
-	 * @param method the HTTP method (GET, POST, etc)
-	 * @param responseType the type to convert the response to, or {@code Void.class} for no body
+	 * @param method the HTTP method (GET, POST, etc.)
+	 * @param responseType the type to convert the response to, or {@code Void.class} for nobody
 	 * @param uriVariables the variables to expand in the template
 	 * @return the response as entity
 	 * @throws RestClientException in case of any errors

@@ -58,7 +58,7 @@ class ProcessLocalTest {
 	private LoggerDelegate loggerTask;
 	
 	/**
-	 * Setup the test case.
+	 * Set up the test case.
 	 */
 	@BeforeEach
 	public void setup() {

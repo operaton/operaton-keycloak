@@ -44,7 +44,7 @@ public final class JsonUtil {
 	}
 
 	/**
-	 * Parses a given JSON String as JsonObject and returns the String value of one of it's members.
+	 * Parses a given JSON String as JsonObject and returns the String value of one of its members.
 	 * @param jsonString the JSON string
 	 * @param memberName the name of the member to return
 	 * @return the String value of the member or {@code null} if no such member exists

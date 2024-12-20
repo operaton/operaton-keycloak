@@ -16,7 +16,7 @@ We'd also love PRs. If you're thinking of a large PR, we advise opening up an is
 
 1. [Fork][fork] and clone the repository.
 1. Carefully study the [README.md](https://github.com/operaton/operaton-keycloak#readme)
-1. Setup a local Keycloak Server for your unit tests - see README.md -> [Unit testing the plugin](https://github.com/operaton/operaton-keycloak#unit-testing-the-plugin)
+1. Set up a local Keycloak Server for your unit tests - see README.md -> [Unit testing the plugin](https://github.com/operaton/operaton-keycloak#unit-testing-the-plugin)
 1. Run maven: `mvn clean install`.
 1. Make sure the unit tests have passed on your machine.
 1. Create a new branch: `git checkout -b my-branch-name`.

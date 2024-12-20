@@ -20,7 +20,7 @@ public final class CacheConfiguration {
 	}
 
 	/**
-	 * Creates a new query cache configuration out of the overal Keycloak configuration.
+	 * Creates a new query cache configuration out of the overall Keycloak configuration.
 	 * @param keycloakConfiguration the Keycloak Identity Provider configuration.
 	 * @return the resulting query cache configuration
 	 */
@@ -30,7 +30,7 @@ public final class CacheConfiguration {
 	}
 
 	/**
-	 * Creates a new login cache configuration out of the overal Keycloak configuration.
+	 * Creates a new login cache configuration out of the overall Keycloak configuration.
 	 * @param keycloakConfiguration the Keycloak Identity Provider configuration.
 	 * @return the resulting login cache configuration
 	 */

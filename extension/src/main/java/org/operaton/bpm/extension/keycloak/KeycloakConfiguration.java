@@ -410,7 +410,7 @@ public class KeycloakConfiguration {
 	}
 
 	/**
-	 * @param cacheEnabled boolean indicating whether or not caching is enabled
+	 * @param cacheEnabled boolean indicating regardless of whether caching is enabled
 	 */
 	public void setCacheEnabled(boolean cacheEnabled) {
 		this.cacheEnabled = cacheEnabled;

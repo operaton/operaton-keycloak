@@ -16,12 +16,12 @@ Keycloak&trade; (<https://www.keycloak.org/>) is an Open Source Identity and Acc
 Operaton (<https://operaton.org>) is perfectly suited to carry out BPM projects in the cloud. Identity management in the cloud, however, often differs from classical approaches. Operaton already provides a generic sample for Single Sign On when using Spring Boot. See <https://github.com/camunda-consulting/code/tree/master/snippets/springboot-security-sso>.
 Specific instructions on how to use Spring Boots OAuth2 SSO in combination with this Keycloak Identity Provider Plugin can be found below.
 
-**Why this plugin?** SSO is sufficient in case you only want authentication but have no further advanced security roles. If one needs to use Operatons IdentityService APIs or wants to see actual Users and Groups show up in Cockpit, a custom IdentityProvider needs to be implemented as well.
+**Why this plugin?** SSO is sufficient in case you only want authentication but have no further advanced security roles. If one needs to use Operaton's IdentityService APIs or wants to see actual Users and Groups show up in Cockpit, a custom IdentityProvider needs to be implemented as well.
 
 This plugin provides the basis for using Keycloak as Identity Management solution and will provide a ReadOnlyIdentityProvider. What you will get is a fully integrated solution for using Keycloak as an Identity Provider in Operaton receiving users and groups from Keycloak. The authorization of these users and groups for Operaton resources itself remains within Operaton. This plugin allows the usage of Keycloak as Identity Provider even without SSO.
   
 **Beware: in case you want to use Keycloak's advanced login capabilities for social connections you must configure SSO as well.**
-Password grant exchanges are only supported for Keycloak's internally managed users and users of an LDAP / Keberos User federation. Hence without SSO you will only be able to login with users managed by such connections.
+Password grant exchanges are only supported for Keycloak's internally managed users and users of an LDAP / Keberos User federation. Hence, without SSO you will only be able to log in with users managed by such connections.
 
 Current version: `1.0.0-beta-1`<br >
 Latest tests with: Keycloak `25.0.4`, `19.0.3-legacy`, Operaton `1.0.0-beta-2`
@@ -45,7 +45,7 @@ Known limitations:
     ![IdentityServiceSettings](doc/identity-service_settings.png "Identity Service Settings")
    Please be aware, that beginning with Keycloak 18, you do not only have to configure a valid redirect URL, but
    a valid post logout redirect URL as well. To keep things easy values can be the same.
-3. Since Keycloak 20, user queries require an 'openid' scope for OIDC clients. To enable this, create an 'openid' scope under client scopes and add add this the `operaton-identity-service` client.
+3. Since Keycloak 20, user queries require an 'openid' scope for OIDC clients. To enable this, create an 'openid' scope under client scopes and add this the `operaton-identity-service` client.
 ![openid-client-scope.png](doc/openid-clientscope.png "Client scopes") 
 4. In order to use refresh tokens set the "Use Refresh Tokens For Client Credentials Grant" option within the "OpenID Connect Compatibility Modes" section (available in newer Keycloak versions):
 
@@ -100,7 +100,7 @@ plugin.identity.keycloak:
   administratorGroupName: operaton-admin
 ```
 
-Hint: the engine must **not** create a user upon startup - the plugin is a *ReadOnly*IdentityProvider. Hence you must **not** configure an `admin-user` for `operaton.bpm` in your `application.yaml`. The following configuration will likely cause errors upon startup: 
+Hint: the engine must **not** create a user upon startup - the plugin is a *ReadOnly*IdentityProvider. Hence, you must **not** configure an `admin-user` for `operaton.bpm` in your `application.yaml`. The following configuration will likely cause errors upon startup: 
 
 ```yml
 operaton.bpm:
@@ -142,7 +142,7 @@ A list of configuration options can be found below:
 
 ## Caching options
 
-This is a ReadOnlyIdentityProvider which translates all queries against the Operaton IdentityService in REST queries against Keycloak. Under high load it makes sense to not request the same things again and again, especially since the data of users and groups do not change every second. Therefore this plugin provides an optional cache feature.
+This is a ReadOnlyIdentityProvider which translates all queries against the Operaton IdentityService in REST queries against Keycloak. Under high load it makes sense to not request the same things again and again, especially since the data of users and groups do not change every second. Therefore, this plugin provides an optional cache feature.
 
 ### User and group query caching
 
@@ -158,7 +158,7 @@ Besides caching of user and group queries there is another scenario where cachin
 
 ### Login caching
 
-Imagine a setup with lots of External Task Clients using HTTP Basic Auth against the Operaton REST API (e.g. set `operaton.bpm.run.auth.enabled: true` when using Operaton Run). Your External Task Clients then might trigger the IdentityProvider's `checkPassword` function at high frequency. This function requests a token from Keycloak each time it is called. In case of a successful response the login is treated as valid. High frequency then means requesting lots of tokens - in the worst case all for the same user and before an already delivered token has timed out. Therefore this plugin provides an optional login cache feature as well.
+Imagine a setup with lots of External Task Clients using HTTP Basic Auth against the Operaton REST API (e.g. set `operaton.bpm.run.auth.enabled: true` when using Operaton Run). Your External Task Clients then might trigger the IdentityProvider's `checkPassword` function at high frequency. This function requests a token from Keycloak each time it is called. In case of a successful response the login is treated as valid. High frequency then means requesting lots of tokens - in the worst case all for the same user and before an already delivered token has timed out. Therefore, this plugin provides an optional login cache feature as well.
 
 In order to activate the login cache you have the following options available:
 
@@ -174,7 +174,7 @@ On the downside this feature bypasses the password grant exchange function of Ke
 
 In this part, we’ll discuss how to activate SSO – Single Sign On – for the Operaton Web App using Spring Boot and Spring Security 5.2.x OAuth 2.0 Client capabilities in combination with this plugin and Keycloak as authorization server.
 
-In order to setup Spring Boot's OAuth2 security add the following Maven dependencies to your project:
+In order to set up Spring Boot's OAuth2 security add the following Maven dependencies to your project:
 
 ```xml
 <dependency>
@@ -187,7 +187,7 @@ In order to setup Spring Boot's OAuth2 security add the following Maven dependen
 </dependency>
 ```
 
-What we need is a bridge between Spring Security and Operaton. Hence insert a KeycloakAuthenticationProvider as follows:
+What we need is a bridge between Spring Security and Operaton. Hence, insert a KeycloakAuthenticationProvider as follows:
 
 ```java
 /**
@@ -286,7 +286,7 @@ public class WebAppSecurityConfig {
 }
 ```
 
-Finally configure Spring Security with your Keycloak Single Page Web App `client-id` and `client-secret` in `application.yaml` as follows:
+Finally, configure Spring Security with your Keycloak Single Page Web App `client-id` and `client-secret` in `application.yaml` as follows:
 
 ```yml
 # Spring Boot Security OAuth2 SSO
@@ -374,12 +374,12 @@ For details see documentation on [Running Keycloak in a container](https://www.k
 
 Running unit tests from Maven requires configuring the details of a running Keycloak server. This can be achieved by setting the following environment variables:
 
-| *Environment Variable*                      | *Description*                                                                                                        |
-|---------------------------------------------|----------------------------------------------------------------------------------------------------------------------|
-| `KEYCLOAK_URL`                              | Keycloak server URL.<br />Default value: `http://localhost:8080/auth`                                                |
-| `KEYCLOAK_ADMIN_USER`                       | The admin user of the Keycloak server.<br />Default value: `keycloak`                                                |
-| `KEYCLOAK_ADMIN_PASSWORD`                   | The admin password of the Keycloak server.<br />Default value: `keycloak1!`                                          |
-| `KEYCLOAK_ENFORCE_SUBGROUPS_IN_GROUP_QUERY` | Wether to enforce subgroup results in group queries when testing with Keycloak >= `23.0.0`<br />Default value: `true`|
+| *Environment Variable*                      | *Description*                                                                                                          |
+|---------------------------------------------|------------------------------------------------------------------------------------------------------------------------|
+| `KEYCLOAK_URL`                              | Keycloak server URL.<br />Default value: `http://localhost:8080/auth`                                                  |
+| `KEYCLOAK_ADMIN_USER`                       | The admin user of the Keycloak server.<br />Default value: `keycloak`                                                  |
+| `KEYCLOAK_ADMIN_PASSWORD`                   | The admin password of the Keycloak server.<br />Default value: `keycloak1!`                                            |
+| `KEYCLOAK_ENFORCE_SUBGROUPS_IN_GROUP_QUERY` | Whether to enforce subgroup results in group queries when testing with Keycloak >= `23.0.0`<br />Default value: `true` |
 
 In case you choose Keycloak in the new Quarkus distribution, please be aware that `/auth` has been removed from the default context path.
 Hence, it is required to change the `KEYCLOAK_URL` for the tests. Tests run successfully against the Quarkus
