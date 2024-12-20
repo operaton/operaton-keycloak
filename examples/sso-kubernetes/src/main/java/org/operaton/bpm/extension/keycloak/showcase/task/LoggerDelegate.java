@@ -17,7 +17,7 @@ public class LoggerDelegate implements JavaDelegate {
  
   private static final Logger LOGGER = Logger.getLogger(LoggerDelegate.class.getName());
   
-  public void execute(DelegateExecution execution) throws Exception {
+  public void execute(DelegateExecution execution) {
 
     LOGGER.info("\n\n  ... LoggerDelegate invoked by "
             + "processDefinitionId=" + execution.getProcessDefinitionId()

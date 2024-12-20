@@ -2,7 +2,6 @@ package org.operaton.bpm.extension.keycloak.showcase.sso;
 
 import java.io.IOException;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -48,7 +47,7 @@ public class KeycloakLogoutHandler implements LogoutSuccessHandler {
 	 */
 	@Override
 	public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
-			throws IOException, ServletException {
+			throws IOException {
 		if (!ObjectUtils.isEmpty(oauth2UserLogoutUri)) {
 			// Calculate redirect URI for Keycloak, something like http://<host:port>/operaton
 			String requestUrl = request.getRequestURL().toString();

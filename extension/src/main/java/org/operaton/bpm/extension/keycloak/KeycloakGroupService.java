@@ -1,15 +1,13 @@
 package org.operaton.bpm.extension.keycloak;
 
-import static org.operaton.bpm.engine.authorization.Permissions.READ;
-import static org.operaton.bpm.engine.authorization.Resources.GROUP;
-import static org.operaton.bpm.extension.keycloak.json.JsonUtil.*;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import org.operaton.bpm.engine.authorization.Groups;
 import org.operaton.bpm.engine.identity.Group;
 import org.operaton.bpm.engine.impl.Direction;
@@ -27,8 +25,16 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import static org.operaton.bpm.engine.authorization.Permissions.READ;
+import static org.operaton.bpm.engine.authorization.Resources.GROUP;
+import static org.operaton.bpm.extension.keycloak.json.JsonUtil.getJsonArray;
+import static org.operaton.bpm.extension.keycloak.json.JsonUtil.getJsonObject;
+import static org.operaton.bpm.extension.keycloak.json.JsonUtil.getJsonObjectAtIndex;
+import static org.operaton.bpm.extension.keycloak.json.JsonUtil.getJsonString;
+import static org.operaton.bpm.extension.keycloak.json.JsonUtil.getJsonStringAtIndex;
+import static org.operaton.bpm.extension.keycloak.json.JsonUtil.getOptJsonString;
+import static org.operaton.bpm.extension.keycloak.json.JsonUtil.parseAsJsonArray;
+import static org.operaton.bpm.extension.keycloak.json.JsonUtil.parseAsJsonObjectAndGetMemberAsString;
 
 /**
  * Implementation of group queries against Keycloak's REST API.
@@ -87,7 +93,7 @@ public class KeycloakGroupService extends KeycloakServiceBase {
 						return getJsonString(getJsonObjectAtIndex(groups, 0), "path").substring(1); // remove trailing '/'
 					}
 					return getJsonString(getJsonObjectAtIndex(groups, 0), "id");
-				} else if (groups.size() > 0) {
+				} else if (!groups.isEmpty()) {
 					throw new IdentityProviderException("Configured administratorGroupName " + configuredAdminGroupName + " is not unique. Please configure exact group path.");
 				}
 				// groups size == 0: fall through
@@ -278,7 +284,7 @@ public class KeycloakGroupService extends KeycloakServiceBase {
 			// fix: include subgroups in query result for Keycloak >= 23
 			addArgument(filter, "q", ":");
 		}
-		if (filter.length() > 0) {
+		if (!filter.isEmpty()) {
 			filter.insert(0, "?");
 			String result = filter.toString();
 			KeycloakPluginLogger.INSTANCE.groupQueryFilter(result);

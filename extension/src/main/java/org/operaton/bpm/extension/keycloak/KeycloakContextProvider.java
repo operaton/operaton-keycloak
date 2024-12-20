@@ -1,7 +1,6 @@
 package org.operaton.bpm.extension.keycloak;
 
-import static org.operaton.bpm.extension.keycloak.json.JsonUtil.*;
-
+import com.google.gson.JsonObject;
 import org.operaton.bpm.engine.impl.identity.IdentityProviderException;
 import org.operaton.bpm.extension.keycloak.json.JsonException;
 import org.operaton.bpm.extension.keycloak.rest.KeycloakRestTemplate;
@@ -13,7 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 
-import com.google.gson.JsonObject;
+import static org.operaton.bpm.extension.keycloak.json.JsonUtil.getJsonLong;
+import static org.operaton.bpm.extension.keycloak.json.JsonUtil.getJsonString;
+import static org.operaton.bpm.extension.keycloak.json.JsonUtil.parseAsJsonObject;
 
 /**
  * Keycloak context provider. 
@@ -68,12 +69,9 @@ public class KeycloakContextProvider {
 			long expiresInMillis = getJsonLong(json, "expires_in") * 1000;
 			return new KeycloakContext(accessToken, tokenType, expiresInMillis, refreshToken, keycloakConfiguration.getCharset());
 
-		} catch (RestClientException rce) {
-			LOG.requestTokenFailed(rce);
-			throw new IdentityProviderException("Unable to get access token from Keycloak server", rce);
-		} catch (JsonException je) {
-			LOG.requestTokenFailed(je);
-			throw new IdentityProviderException("Unable to get access token from Keycloak server", je);
+		} catch (RestClientException | JsonException exception) {
+			LOG.requestTokenFailed(exception);
+			throw new IdentityProviderException("Unable to get access token from Keycloak server", exception);
 		}
 	}
 

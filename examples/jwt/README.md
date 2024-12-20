@@ -84,7 +84,7 @@ public class WebAppSecurityConfig {
     private KeycloakCockpitConfiguration keycloakCockpitConfiguration;
 
     @Bean
-    public SecurityFilterChain httpSecurity(HttpSecurity http) throws Exception {
+    public SecurityFilterChain httpSecurity(HttpSecurity http) {
         String path = operatonBpmProperties.getWebapp().getApplicationPath();
         return http
                 .csrf(csrf -> csrf

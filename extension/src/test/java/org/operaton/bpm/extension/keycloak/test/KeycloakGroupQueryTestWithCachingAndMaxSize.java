@@ -1,5 +1,9 @@
 package org.operaton.bpm.extension.keycloak.test;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import junit.extensions.TestSetup;
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -13,11 +17,6 @@ import org.operaton.bpm.extension.keycloak.plugin.KeycloakIdentityProviderPlugin
 import org.operaton.bpm.extension.keycloak.test.util.CacheAwareKeycloakIdentityProviderPluginForTest;
 import org.operaton.bpm.extension.keycloak.test.util.CountingHttpRequestInterceptor;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
  * Tests group queries with caching enabled and max size configured
  */
@@ -27,7 +26,7 @@ public class KeycloakGroupQueryTestWithCachingAndMaxSize extends AbstractKeycloa
 		return new TestSetup(new TestSuite(KeycloakGroupQueryTestWithCachingAndMaxSize.class)) {
 
 			// @BeforeClass
-			protected void setUp() throws Exception {
+			protected void setUp() {
 				ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration
 								.createProcessEngineConfigurationFromResource("operaton.enableCachingAndConfigureMaxCacheSize.cfg.xml");
 				configureKeycloakIdentityProviderPlugin(config);
@@ -35,7 +34,7 @@ public class KeycloakGroupQueryTestWithCachingAndMaxSize extends AbstractKeycloa
 			}
 
 			// @AfterClass
-			protected void tearDown() throws Exception {
+			protected void tearDown() {
 				PluggableProcessEngineTestCase.cachedProcessEngine.close();
 				PluggableProcessEngineTestCase.cachedProcessEngine = null;
 			}
