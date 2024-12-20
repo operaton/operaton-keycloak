@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.operaton.bpm.engine.authorization.Groups;
@@ -129,7 +128,7 @@ public class KeycloakGroupService extends KeycloakServiceBase {
 			if (!response.getStatusCode().equals(HttpStatus.OK)) {
 				throw new IdentityProviderException(
 						"Unable to read user groups from " + keycloakConfiguration.getKeycloakAdminUrl()
-								+ ": HTTP status code " + response.getStatusCodeValue());
+								+ ": HTTP status code " + response.getStatusCode().value());
 			}
 
 			JsonArray searchResult = parseAsJsonArray(response.getBody());
@@ -173,7 +172,7 @@ public class KeycloakGroupService extends KeycloakServiceBase {
 			if (!response.getStatusCode().equals(HttpStatus.OK)) {
 				throw new IdentityProviderException(
 						"Unable to read groups from " + keycloakConfiguration.getKeycloakAdminUrl()
-								+ ": HTTP status code " + response.getStatusCodeValue());
+								+ ": HTTP status code " + response.getStatusCode().value());
 			}
 
 			JsonArray searchResult;
@@ -216,7 +215,7 @@ public class KeycloakGroupService extends KeycloakServiceBase {
 		}
 
 		// group queries in Keycloak do not consider the max attribute within the search request
-		return processed.limit(keycloakConfiguration.getMaxResultSize()).collect(Collectors.toList());
+		return processed.limit(keycloakConfiguration.getMaxResultSize()).toList();
 	}
 
 	/**

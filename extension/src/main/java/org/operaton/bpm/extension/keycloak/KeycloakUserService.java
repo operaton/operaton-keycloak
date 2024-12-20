@@ -35,6 +35,10 @@ import com.google.gson.JsonObject;
  */
 public class KeycloakUserService extends KeycloakServiceBase {
 
+	public static final String MEMBER_EMAIL = "email";
+	public static final String MEMBER_USERNAME = "username";
+	public static final String MEMBER_ID = "id";
+
 	/**
 	 * Default constructor.
 	 * 
@@ -62,12 +66,12 @@ public class KeycloakUserService extends KeycloakServiceBase {
 				ResponseEntity<String> response = restTemplate.exchange(
 						keycloakConfiguration.getKeycloakAdminUrl() + "/users/" + configuredAdminUserId, HttpMethod.GET, String.class);
 				if (keycloakConfiguration.isUseEmailAsOperatonUserId()) {
-					return parseAsJsonObjectAndGetMemberAsString(response.getBody(), "email");
+					return parseAsJsonObjectAndGetMemberAsString(response.getBody(), MEMBER_EMAIL);
 				}
 				if (keycloakConfiguration.isUseUsernameAsOperatonUserId()) {
-					return parseAsJsonObjectAndGetMemberAsString(response.getBody(), "username");
+					return parseAsJsonObjectAndGetMemberAsString(response.getBody(), MEMBER_USERNAME);
 				}
-				return parseAsJsonObjectAndGetMemberAsString(response.getBody(), "id");
+				return parseAsJsonObjectAndGetMemberAsString(response.getBody(), MEMBER_ID);
 			} catch (RestClientException | JsonException ex) {
 				// user ID not found: fall through
 			}
@@ -84,15 +88,15 @@ public class KeycloakUserService extends KeycloakServiceBase {
 			try {
 				ResponseEntity<String> response = restTemplate.exchange(
 						keycloakConfiguration.getKeycloakAdminUrl() + "/users?exact=true&username=" + configuredAdminUserId, HttpMethod.GET, String.class);
-				JsonObject user = findFirst(parseAsJsonArray(response.getBody()), "username", configuredAdminUserId);
+				JsonObject user = findFirst(parseAsJsonArray(response.getBody()), MEMBER_USERNAME, configuredAdminUserId);
 				if (user != null) {
 					if (keycloakConfiguration.isUseEmailAsOperatonUserId()) {
-						return getJsonString(user, "email");
+						return getJsonString(user, MEMBER_EMAIL);
 					}
 					if (keycloakConfiguration.isUseUsernameAsOperatonUserId()) {
-						return getJsonString(user, "username");
+						return getJsonString(user, MEMBER_USERNAME);
 					}
-					return getJsonString(user, "id");
+					return getJsonString(user, MEMBER_ID);
 				}
 			} catch (JsonException je) {
 				// username not found: fall through
@@ -130,18 +134,18 @@ public class KeycloakUserService extends KeycloakServiceBase {
 			if (!response.getStatusCode().equals(HttpStatus.OK)) {
 				throw new IdentityProviderException(
 						"Unable to read group members from " + keycloakConfiguration.getKeycloakAdminUrl()
-								+ ": HTTP status code " + response.getStatusCodeValue());
+								+ ": HTTP status code " + response.getStatusCode().value());
 			}
 
 			JsonArray searchResult = parseAsJsonArray(response.getBody());
 			for (int i = 0; i < searchResult.size(); i++) {
 				JsonObject keycloakUser = getJsonObjectAtIndex(searchResult, i);
 				if (keycloakConfiguration.isUseEmailAsOperatonUserId() &&
-						!StringUtils.hasLength(getJsonString(keycloakUser, "email"))) {
+						!StringUtils.hasLength(getJsonString(keycloakUser, MEMBER_EMAIL))) {
 					continue;
 				}
 				if (keycloakConfiguration.isUseUsernameAsOperatonUserId() &&
-						!StringUtils.hasLength(getJsonString(keycloakUser, "username"))) {
+						!StringUtils.hasLength(getJsonString(keycloakUser, MEMBER_USERNAME))) {
 					continue;
 				}
 				userList.add(transformUser(keycloakUser));
@@ -184,18 +188,18 @@ public class KeycloakUserService extends KeycloakServiceBase {
 			if (!response.getStatusCode().equals(HttpStatus.OK)) {
 				throw new IdentityProviderException(
 						"Unable to read users from " + keycloakConfiguration.getKeycloakAdminUrl()
-								+ ": HTTP status code " + response.getStatusCodeValue());
+								+ ": HTTP status code " + response.getStatusCode().value());
 			}
 
 			JsonArray searchResult = parseAsJsonArray(response.getBody());
 			for (int i = 0; i < searchResult.size(); i++) {
 				JsonObject keycloakUser = getJsonObjectAtIndex(searchResult, i);
 				if (keycloakConfiguration.isUseEmailAsOperatonUserId() &&
-						!StringUtils.hasLength(getJsonString(keycloakUser, "email"))) {
+						!StringUtils.hasLength(getJsonString(keycloakUser, MEMBER_EMAIL))) {
 					continue;
 				}
 				if (keycloakConfiguration.isUseUsernameAsOperatonUserId() &&
-						!StringUtils.hasLength(getJsonString(keycloakUser, "username"))) {
+						!StringUtils.hasLength(getJsonString(keycloakUser, MEMBER_USERNAME))) {
 					continue;
 				}
 
@@ -230,7 +234,7 @@ public class KeycloakUserService extends KeycloakServiceBase {
 			processed = processed.skip(query.getFirstResult()).limit(query.getMaxResults());
 		}
 
-		return processed.collect(Collectors.toList());
+		return processed.toList();
 	}
 
 	/**
@@ -288,10 +292,10 @@ public class KeycloakUserService extends KeycloakServiceBase {
 	private String createUserSearchFilter(CacheableKeycloakUserQuery query) {
 		StringBuilder filter = new StringBuilder();
 		if (StringUtils.hasLength(query.getEmail())) {
-			addArgument(filter, "email", query.getEmail());
+			addArgument(filter, MEMBER_EMAIL, query.getEmail());
 		}
 		if (StringUtils.hasLength(query.getEmailLike())) {
-			addArgument(filter, "email", query.getEmailLike().replaceAll("[%,\\*]", ""));
+			addArgument(filter, MEMBER_EMAIL, query.getEmailLike().replaceAll("[%,\\*]", ""));
 		}
 		if (StringUtils.hasLength(query.getFirstName())) {
 			addArgument(filter, "firstName", query.getFirstName());
@@ -356,18 +360,18 @@ public class KeycloakUserService extends KeycloakServiceBase {
 	private UserEntity transformUser(JsonObject result) throws JsonException {
 		UserEntity user = new UserEntity();
 		if (keycloakConfiguration.isUseEmailAsOperatonUserId()) {
-			user.setId(getJsonString(result, "email"));
+			user.setId(getJsonString(result, MEMBER_EMAIL));
 		} else if (keycloakConfiguration.isUseUsernameAsOperatonUserId()) {
-			user.setId(getJsonString(result, "username"));
+			user.setId(getJsonString(result, MEMBER_USERNAME));
 		} else {
-			user.setId(getJsonString(result, "id"));
+			user.setId(getJsonString(result, MEMBER_ID));
 		}
 		user.setFirstName(getJsonString(result, "firstName"));
 		user.setLastName(getJsonString(result, "lastName"));
 		if (!StringUtils.hasLength(user.getFirstName()) && !StringUtils.hasLength(user.getLastName())) {
-			user.setFirstName(getJsonString(result, "username"));
+			user.setFirstName(getJsonString(result, MEMBER_USERNAME));
 		}
-		user.setEmail(getJsonString(result, "email"));
+		user.setEmail(getJsonString(result, MEMBER_EMAIL));
 		return user;
 	}
 

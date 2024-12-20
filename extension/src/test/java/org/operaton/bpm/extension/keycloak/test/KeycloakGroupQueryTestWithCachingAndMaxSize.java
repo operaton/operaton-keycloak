@@ -130,6 +130,6 @@ public class KeycloakGroupQueryTestWithCachingAndMaxSize extends AbstractKeycloa
 						.stream()
 						.map(CacheableKeycloakGroupQuery::getName)
 						.sorted()
-						.collect(Collectors.toList());
+						.toList();
 	}
 }

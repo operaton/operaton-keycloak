@@ -25,6 +25,7 @@ public class KeycloakConfigureAdminUserIdAsMailTest extends AbstractKeycloakIden
 	    return new TestSetup(new TestSuite(KeycloakConfigureAdminUserIdAsMailTest.class)) {
 
 	    	// @BeforeClass
+					@Override
 	        protected void setUp() throws Exception {
 	    		ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration
 	    				.createProcessEngineConfigurationFromResource("operaton.configureAdminUserIdAsMail.cfg.xml");
@@ -33,6 +34,7 @@ public class KeycloakConfigureAdminUserIdAsMailTest extends AbstractKeycloakIden
 	        }
 	        
 	        // @AfterClass
+					@Override
 	        protected void tearDown() throws Exception {
 	    		PluggableProcessEngineTestCase.cachedProcessEngine.close();
 	    		PluggableProcessEngineTestCase.cachedProcessEngine = null;

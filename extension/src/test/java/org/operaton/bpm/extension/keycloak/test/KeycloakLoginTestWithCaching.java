@@ -3,7 +3,6 @@ package org.operaton.bpm.extension.keycloak.test;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.operaton.bpm.engine.ProcessEngineConfiguration;
 import org.operaton.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;

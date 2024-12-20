@@ -122,7 +122,7 @@ public class KeycloakGroupQueryTestWithCachingAndCustomCacheExpiry extends Abstr
 						.stream()
 						.map(CacheableKeycloakGroupQuery::getName)
 						.sorted()
-						.collect(Collectors.toList());
+						.toList();
 	}
 
 	private static void processPendingCacheEvictions() {
