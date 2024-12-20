@@ -1,158 +1,161 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.operaton.bpm.extension.examples</groupId>
-        <artifactId>operaton-keycloak-examples</artifactId>
-        <version>1.0.0-beta-2-SNAPSHOT</version>
-    </parent>
+  <parent>
+    <groupId>org.operaton.bpm.extension.examples</groupId>
+    <artifactId>operaton-keycloak-examples</artifactId>
+    <version>1.0.0-beta-2-SNAPSHOT</version>
+  </parent>
 
-    <artifactId>operaton-keycloak-examples-jwt</artifactId>
+  <artifactId>operaton-keycloak-examples-jwt</artifactId>
 
-    <name>Operaton - engine plugins - identity - keycloak - jwt example - showcase</name>
-    <description>Showcase for using Operaton Keycloak Identity Provider with JWT auth</description>
+  <name>Operaton - engine plugins - identity - keycloak - jwt example - showcase</name>
+  <description>Showcase for using Operaton Keycloak Identity Provider with JWT auth</description>
 
-    <properties>
-        <failOnMissingWebXml>false</failOnMissingWebXml>
-    </properties>
+  <properties>
+    <failOnMissingWebXml>false</failOnMissingWebXml>
+  </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.operaton.bpm.springboot</groupId>
-            <artifactId>operaton-bpm-spring-boot-starter-webapp</artifactId>
-        </dependency>
+  <dependencies>
+    <dependency>
+      <groupId>org.operaton.bpm.springboot</groupId>
+      <artifactId>operaton-bpm-spring-boot-starter-webapp</artifactId>
+    </dependency>
 
-        <!-- Spring Security -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
-        </dependency>
+    <!-- Spring Security -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+    </dependency>
 
-        <!-- Keycloak Identity Prover Plugin  -->
-        <dependency>
-            <groupId>org.operaton.bpm.extension</groupId>
-            <artifactId>operaton-keycloak</artifactId>
-        </dependency>
+    <!-- Keycloak Identity Prover Plugin  -->
+    <dependency>
+      <groupId>org.operaton.bpm.extension</groupId>
+      <artifactId>operaton-keycloak</artifactId>
+    </dependency>
 
-        <dependency>
-            <groupId>org.operaton.bpm.extension</groupId>
-            <artifactId>operaton-keycloak-jwt</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.operaton.bpm.extension</groupId>
+      <artifactId>operaton-keycloak-jwt</artifactId>
+    </dependency>
 
-        <!-- Database -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jdbc</artifactId>
-        </dependency>
+    <!-- Database -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-jdbc</artifactId>
+    </dependency>
 
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+    </dependency>
 
 
-        <!-- Monitoring dependencies -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
+    <!-- Monitoring dependencies -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
 
-        <dependency>
-            <groupId>jakarta.xml.bind</groupId>
-            <artifactId>jakarta.xml.bind-api</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+    </dependency>
 
-        <!-- Test dependencies -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.operaton.bpm</groupId>
-            <artifactId>operaton-bpm-assert</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.operaton.bpm</groupId>
-            <artifactId>operaton-bpm-junit5</artifactId>
-            <version>1.0.0-beta-2</version>
-            <scope>test</scope>
-        </dependency>
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.operaton.bpm</groupId>
+      <artifactId>operaton-bpm-assert</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.operaton.bpm</groupId>
+      <artifactId>operaton-bpm-junit5</artifactId>
+      <version>1.0.0-beta-2</version>
+      <scope>test</scope>
+    </dependency>
 
-        <!-- java util logging => slf4j -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jul-to-slf4j</artifactId>
-            <scope>test</scope>
-        </dependency>
+    <!-- java util logging => slf4j -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jul-to-slf4j</artifactId>
+      <scope>test</scope>
+    </dependency>
 
-        <!-- Add your own dependencies here, if in compile scope, they are added
-            to the jar -->
+    <!-- Add your own dependencies here, if in compile scope, they are added
+        to the jar -->
 
-    </dependencies>
+  </dependencies>
 
-    <build>
-        <finalName>${project.artifactId}</finalName>
+  <build>
+    <finalName>${project.artifactId}</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>${version.springBoot}</version>
+        <configuration>
+          <layout>ZIP</layout>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.1.1</version>
+        <configuration>
+          <mainClass>
+            org.operaton.bpm.extension.keycloak.org.operaton.bpm.extension.keycloak.showcase.OperatonApplication
+          </mainClass>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>default</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <dependencies>
+      </dependencies>
+      <build>
         <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${version.springBoot}</version>
-                <configuration>
-                    <layout>ZIP</layout>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.1.1</version>
-                <configuration>
-                    <mainClass>org.operaton.bpm.extension.keycloak.org.operaton.bpm.extension.keycloak.showcase.OperatonApplication</mainClass>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
-    <profiles>
-        <profile>
-            <id>default</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>3.2.3</version>
+            <configuration>
+            </configuration>
             <dependencies>
+              <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>5.10.1</version>
+              </dependency>
             </dependencies>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>3.2.3</version>
-                        <configuration>
-                        </configuration>
-                        <dependencies>
-                            <dependency>
-                                <groupId>org.junit.jupiter</groupId>
-                                <artifactId>junit-jupiter-engine</artifactId>
-                                <version>5.10.1</version>
-                            </dependency>
-                        </dependencies>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
 
-    </profiles>
+  </profiles>
 </project>
