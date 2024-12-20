@@ -88,7 +88,7 @@ class ProcessLocalTest {
 	 */
 	@Test
 	@Deployment(resources = PROCESS_RESOURCE)
-	public void testParsingAndDeployment() {
+	void testParsingAndDeployment() {
 		// nothing is done here, as we just want to check for exceptions during
 		// deployment
 	}
@@ -98,7 +98,7 @@ class ProcessLocalTest {
 	 */
 	@Test
 	@Deployment(resources = PROCESS_RESOURCE)
-	public void testApprovedPath() throws Exception {
+	void testApprovedPath() throws Exception {
 		// start process
 		ProcessInstance pi = runtimeService().startProcessInstanceByKey(PROCESS_DEFINITION_KEY,
 				withVariables(Variable.NAME, "Demo"));
@@ -127,7 +127,7 @@ class ProcessLocalTest {
 	 */
 	@Test
 	@Deployment(resources = PROCESS_RESOURCE)
-	public void testNotApprovedPath() throws Exception {
+	void testNotApprovedPath() throws Exception {
 		// start process
 		ProcessInstance pi = runtimeService().startProcessInstanceByKey(PROCESS_DEFINITION_KEY,
 				withVariables(Variable.NAME, "Demo"));
@@ -145,7 +145,5 @@ class ProcessLocalTest {
 
 		// verify mocks
 		verify(loggerTask, times(0)).execute(any(DelegateExecution.class));
-	
 	}
-
 }

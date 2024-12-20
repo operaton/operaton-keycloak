@@ -44,7 +44,7 @@ class RestApiSecurityConfigTest {
 	@Autowired
 	private ProcessEngine processEngine;
 	
-	private  RestTemplate restTemplate = new RestTemplate();
+	private final RestTemplate restTemplate = new RestTemplate();
 
 	@Value("${spring.security.oauth2.client.provider.keycloak.token-uri}")
 	private String accessTokenUri;

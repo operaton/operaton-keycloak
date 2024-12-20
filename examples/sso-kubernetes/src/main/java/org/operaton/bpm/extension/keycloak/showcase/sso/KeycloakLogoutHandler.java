@@ -27,7 +27,7 @@ public class KeycloakLogoutHandler implements LogoutSuccessHandler {
 	private static final Logger LOG = LoggerFactory.getLogger(KeycloakLogoutHandler.class);
 	
 	/** Redirect strategy. */
-	private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+	private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 	
 	/** Keycloak's logout URI. */
 	private String oauth2UserLogoutUri;
