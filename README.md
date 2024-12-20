@@ -1,6 +1,8 @@
 # Operaton - Keycloak Identity Provider Plugin
 
 ![build status](https://github.com/operaton/operaton-keycloak/actions/workflows/build.yml/badge.svg?branch=main)
+[![sonarqube](https://img.shields.io/sonar/quality_gate/operaton_operaton-keycloak?server=https%3A%2F%2Fsonarcloud.io&logo=sonarcloud
+)](https://sonarcloud.io/project/overview?id=operaton_operaton-keycloak)
 [![Maven Central Version](https://img.shields.io/maven-central/v/org.operaton.bpm.extension/operaton-keycloak?color=blue&logo=apachemaven)](https://central.sonatype.com/search?q=operaton-keycloak)
 
 [![operaton manual latest](https://img.shields.io/badge/manual-latest-brown.svg)](https://docs.operaton.org/)
@@ -239,7 +241,7 @@ public class WebAppSecurityConfig {
 
     @Bean
     @Order(2)
-    public SecurityFilterChain httpSecurity(HttpSecurity http) throws Exception {
+    public SecurityFilterChain httpSecurity(HttpSecurity http) {
         return http
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers(antMatcher("/api/**"), antMatcher("/engine-rest/**")))

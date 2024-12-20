@@ -2,6 +2,9 @@ package org.operaton.bpm.extension.keycloak.test;
 
 import java.util.List;
 
+import junit.extensions.TestSetup;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.operaton.bpm.engine.ProcessEngineConfiguration;
 import org.operaton.bpm.engine.authorization.Authorization;
 import org.operaton.bpm.engine.authorization.Permissions;
@@ -10,10 +13,6 @@ import org.operaton.bpm.engine.identity.Group;
 import org.operaton.bpm.engine.identity.User;
 import org.operaton.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.operaton.bpm.engine.impl.test.PluggableProcessEngineTestCase;
-
-import junit.extensions.TestSetup;
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 /**
  * Admin user configuration test for the Keycloak identity provider.
@@ -26,7 +25,7 @@ public class KeycloakConfigureAdminUserIdAsMailTest extends AbstractKeycloakIden
 
 	    	// @BeforeClass
 					@Override
-	        protected void setUp() throws Exception {
+	        protected void setUp() {
 	    		ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration
 	    				.createProcessEngineConfigurationFromResource("operaton.configureAdminUserIdAsMail.cfg.xml");
 	    		configureKeycloakIdentityProviderPlugin(config);
@@ -35,7 +34,7 @@ public class KeycloakConfigureAdminUserIdAsMailTest extends AbstractKeycloakIden
 	        
 	        // @AfterClass
 					@Override
-	        protected void tearDown() throws Exception {
+	        protected void tearDown() {
 	    		PluggableProcessEngineTestCase.cachedProcessEngine.close();
 	    		PluggableProcessEngineTestCase.cachedProcessEngine = null;
 	        }

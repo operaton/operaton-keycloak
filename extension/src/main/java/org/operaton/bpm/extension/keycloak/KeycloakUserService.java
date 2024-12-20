@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.operaton.bpm.engine.identity.User;
@@ -310,7 +309,7 @@ public class KeycloakUserService extends KeycloakServiceBase {
 			addArgument(filter, "lastName", query.getLastNameLike().replaceAll("[%,\\*]", ""));
 		}
 		addArgument(filter, "max", getMaxQueryResultSize());
-		if (filter.length() > 0) {
+		if (!filter.isEmpty()) {
 			filter.insert(0, "?");
 			String result = filter.toString();
 			KeycloakPluginLogger.INSTANCE.userQueryFilter(result);

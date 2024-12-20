@@ -1,5 +1,25 @@
 package org.operaton.bpm.extension.keycloak.showcase.test.bpm.local;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.operaton.bpm.engine.delegate.DelegateExecution;
+import org.operaton.bpm.engine.runtime.ProcessInstance;
+import org.operaton.bpm.engine.task.Task;
+import org.operaton.bpm.engine.test.Deployment;
+import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
+import org.operaton.bpm.engine.test.mock.Mocks;
+import org.operaton.bpm.extension.keycloak.showcase.ProcessConstants.Variable;
+import org.operaton.bpm.extension.keycloak.showcase.task.LoggerDelegate;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.operaton.bpm.engine.test.assertions.bpmn.AbstractAssertions.init;
 import static org.operaton.bpm.engine.test.assertions.bpmn.BpmnAwareTests.assertThat;
 import static org.operaton.bpm.engine.test.assertions.bpmn.BpmnAwareTests.complete;
@@ -8,26 +28,6 @@ import static org.operaton.bpm.engine.test.assertions.bpmn.BpmnAwareTests.job;
 import static org.operaton.bpm.engine.test.assertions.bpmn.BpmnAwareTests.runtimeService;
 import static org.operaton.bpm.engine.test.assertions.bpmn.BpmnAwareTests.task;
 import static org.operaton.bpm.engine.test.assertions.bpmn.BpmnAwareTests.withVariables;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
-import org.operaton.bpm.engine.delegate.DelegateExecution;
-import org.operaton.bpm.engine.runtime.ProcessInstance;
-import org.operaton.bpm.engine.task.Task;
-import org.operaton.bpm.engine.test.Deployment;
-import org.operaton.bpm.engine.test.mock.Mocks;
-import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
-import org.operaton.bpm.extension.keycloak.showcase.ProcessConstants.Variable;
-import org.operaton.bpm.extension.keycloak.showcase.task.LoggerDelegate;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 /**
  * Sample process unit test covering exactly the process itself with absolutely everything else mocked.
@@ -47,7 +47,7 @@ class ProcessLocalTest {
 	 * Access to the process engine.
 	 */
 	@RegisterExtension
-	ProcessEngineExtension extension = ProcessEngineExtension.builder()
+	static ProcessEngineExtension extension = ProcessEngineExtension.builder()
 	  .configurationResource("operaton.local.cfg.xml")
 	  .build();
 	

@@ -1,5 +1,9 @@
 package org.operaton.bpm.extension.keycloak.test;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import junit.extensions.TestSetup;
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -14,11 +18,6 @@ import org.operaton.bpm.extension.keycloak.test.util.CacheAwareKeycloakIdentityP
 import org.operaton.bpm.extension.keycloak.test.util.CountingHttpRequestInterceptor;
 import org.operaton.bpm.extension.keycloak.test.util.PredictableTicker;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
  * Tests group queries with caching enabled and cache duration configured
  */
@@ -28,7 +27,7 @@ public class KeycloakGroupQueryTestWithCachingAndCustomCacheExpiry extends Abstr
 		return new TestSetup(new TestSuite(KeycloakGroupQueryTestWithCachingAndCustomCacheExpiry.class)) {
 
 			// @BeforeClass
-			protected void setUp() throws Exception {
+			protected void setUp() {
 				ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration
 								.createProcessEngineConfigurationFromResource("operaton.enableCachingAndConfigureCacheDuration.cfg.xml");
 				configureKeycloakIdentityProviderPlugin(config);
@@ -36,7 +35,7 @@ public class KeycloakGroupQueryTestWithCachingAndCustomCacheExpiry extends Abstr
 			}
 
 			// @AfterClass
-			protected void tearDown() throws Exception {
+			protected void tearDown() {
 				PluggableProcessEngineTestCase.cachedProcessEngine.close();
 				PluggableProcessEngineTestCase.cachedProcessEngine = null;
 			}

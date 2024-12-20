@@ -1,16 +1,11 @@
 package org.operaton.bpm.extension.keycloak.showcase.test.bpm.rest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.operaton.bpm.engine.test.assertions.bpmn.AbstractAssertions.init;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import org.apache.ibatis.logging.LogFactory;
-import org.operaton.bpm.engine.ProcessEngine;
-import org.operaton.bpm.extension.keycloak.showcase.test.KeycloakTestcontainer;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.operaton.bpm.engine.ProcessEngine;
+import org.operaton.bpm.extension.keycloak.showcase.test.KeycloakTestcontainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,6 +23,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.operaton.bpm.engine.test.assertions.bpmn.AbstractAssertions.init;
 
 /**
  * Tests the security of the engine's REST interface.
@@ -92,7 +92,7 @@ class RestApiSecurityConfigTest {
 	}
 	
 	@Test
-	void testUnSecuredRestApi_Denied() throws Exception {
+	void testUnSecuredRestApi_Denied() {
 		HttpHeaders headers = new HttpHeaders();
 		try {
 			restTemplate.exchange(getEngineRestUrl("engine"), 
