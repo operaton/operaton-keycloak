@@ -5,7 +5,7 @@ import java.util.function.Function;
 /**
  * The interface for query cache implementations.
  *
- * @param <K> The type of key used to lookup the cache
+ * @param <K> The type of key used to look up the cache
  * @param <V> The cached or computed value corresponding to the provided key
  */
 public interface QueryCache<K, V> {
@@ -13,7 +13,7 @@ public interface QueryCache<K, V> {
   /**
    * Gets the cached value if present or computes, stores and returns the computed value.
    *
-   * @param key         The key to lookup the cache with
+   * @param key         The key to look up the cache with
    * @param computation the computation to perform if no entries are present for requested key
    * @return the value corresponding to the provided key
    */

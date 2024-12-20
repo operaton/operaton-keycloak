@@ -2,9 +2,9 @@
 
 ## What it does
 
-This is a basic showcase for a Operaton Spring Boot application using the [Keycloak Identity Provider Plugin](https://github.com/operaton/operaton-keycloak) in combination with the OAuth 2.0 Client and Resource Server implementation of Spring Security.
+This is a basic showcase for an Operaton Spring Boot application using the [Keycloak Identity Provider Plugin](https://github.com/operaton/operaton-keycloak) in combination with the OAuth 2.0 Client and Resource Server implementation of Spring Security.
 
-You will not only login using Keycloak (or if configured using your preferred social identity provider)
+You will not only log in using Keycloak (or if configured using your preferred social identity provider)
 
 ![Keycloak-Login](docs/Keycloak-Login.PNG) 
 
@@ -84,7 +84,7 @@ services:
 
 The image ``gunnaraccso/keycloak.server`` has been derived from the original ``quay.io/keycloak/keycloak`` docker image. It additionally includes a basic test setup matching the test configuration of this project. The image exists only for demonstration purposes. Do not use in production. For original Keycloak docker images see [Keycloak Docker images](https://quay.io/repository/keycloak/keycloak?tab=tags&tag=latest).
 
-The only thing you have to adapt for local tests is the **Redirect URI** of the Camuna Identity Service Client. Login at the [Keycloak Admin Console](https://localhost:9001/auth/admin/master/console/#/) using user/password as configured above and add ``http://localhost:8080/operaton/*`` as Valid Redirect URI configuration to the Operaton Identity Service client:
+The only thing you have to adapt for local tests is the **Redirect URI** of the Operaton Identity Service Client. Login at the [Keycloak Admin Console](https://localhost:9001/auth/admin/master/console/#/) using user/password as configured above and add ``http://localhost:8080/operaton/*`` as Valid Redirect URI configuration to the Operaton Identity Service client:
 
 ![Keycloak-RedirectURI](docs/Keycloak-RedirectURI.PNG) 
 
@@ -92,7 +92,7 @@ Beginning with Keycloak 18, you do not only have to configure a valid redirect U
 a valid post logout redirect URL as well. To keep things easy values can be the same:
 ![Keycloak-PostLogoutRedirectURI](docs/Keycloak-PostLogoutRedirectURI.PNG)
 
-For further details on how to setup a Keycloak Operaton Identity Service Client see documentation of [Keycloak Identity Provider Plugin](https://github.com/operaton/operaton-keycloak). The optional setup for securing Operaton's REST Api is described in the chapters below.
+For further details on how to set up a Keycloak Operaton Identity Service Client see documentation of [Keycloak Identity Provider Plugin](https://github.com/operaton/operaton-keycloak). The optional setup for securing Operaton's REST Api is described in the chapters below.
 
 ### Keycloak Identity Provider Plugin
 
@@ -199,10 +199,10 @@ To induce keycloak to include the expected audience claim in delivered tokens, w
 We need to add a mapper with type ``Audience`` and configure the required audience ``operaton-rest-api``
 ![KeycloakClientScopeMapper](docs/Keycloak-Client-Scope-Mapper.PNG)
 
-Finally we assign the created Client Scope to our existing Operaton-Identity-Service used for authentication:
+Finally, we assign the created Client Scope to our existing Operaton-Identity-Service used for authentication:
 ![KeycloakClientScopeAssignment](docs/Keycloak-Client-Scope-Assignment.PNG)
 
-This ensures, that only users authenticated at the Operaton-Identity-Service are allowed to access Operton's REST API. Fine grained configuration of the authorization rights can be achieved by adding rules to Operaton's Authorization configuration.
+This ensures, that only users authenticated at the Operaton-Identity-Service are allowed to access Operaton's REST API. Fine-grained configuration of the authorization rights can be achieved by adding rules to Operaton's Authorization configuration.
 
 The security implementation snippets for the REST Api part can be found in package ``org.operaton.bpm.extension.keycloak.showcase.rest``. 
 
@@ -240,11 +240,11 @@ public void doFilter(ServletRequest request, ServletResponse response, FilterCha
 
 The REST API URL for this example is `http://localhost:8080/operaton/engine-rest`. Every request requires a JWT token from Keycloak.
 
-A unit test checking the REST Api security is provided in class ``RestApiSecurityConfigTest``. Please be aware that the unit test requires a running Keycloak Server including the setup described above. Therefore it is ignored as standard.
+A unit test checking the REST Api security is provided in class ``RestApiSecurityConfigTest``. Please be aware that the unit test requires a running Keycloak Server including the setup described above. Therefore, it is ignored as standard.
 
 ### Logging out from Cockpit
 
-Doing a SSO logout (assuming that this is desired) using the Operaton Cockpit's logout menu button requires us to send a logout request to Keycloak. In order to achieve this we have to replace the original logout functionality, then delegate the logout to our own logout handler which in turn redirects the logout request to Keycloak.
+Doing an SSO logout (assuming that this is desired) using the Operaton Cockpit's logout menu button requires us to send a logout request to Keycloak. In order to achieve this we have to replace the original logout functionality, then delegate the logout to our own logout handler which in turn redirects the logout request to Keycloak.
 
 #### Replacing the original logout
 
@@ -312,7 +312,7 @@ public SecurityFilterChain httpSecurity(HttpSecurity http) throws Exception {
 The handler itself (see ``sso.org.operaton.bpm.extension.keycloak.showcase.KeycloakLogoutHandler``) takes care of sending an appropriate redirect to Keycloak. The redirect URI will look similar to
 ``http://<keycloak-server>/realms/operaton/protocol/openid-connect/logout?redirect_uri=http://<operaton-server>/operaton``.
 
-So the logout button now redirects to the Keycloak logout URL which then redirects back to the Operaton Cockpit. Because we're not authenticated any more, Spring Security will then start a new authentication flow.
+So the logout button now redirects to the Keycloak logout URL which then redirects back to the Operaton Cockpit. Because we're not authenticated anymore, Spring Security will then start a new authentication flow.
 
 #### Logout URL for Keycloak versions < 18.0.0
 

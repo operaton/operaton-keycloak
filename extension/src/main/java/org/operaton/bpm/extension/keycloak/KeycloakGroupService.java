@@ -220,7 +220,7 @@ public class KeycloakGroupService extends KeycloakServiceBase {
 	}
 
 	/**
-	 * Post processing query filter. Checks if a single group is valid.
+	 * Post-processing query filter. Checks if a single group is valid.
 	 * @param query the original query
 	 * @param group the group to validate
 	 * @param resultLogger the log accumulator
@@ -259,7 +259,7 @@ public class KeycloakGroupService extends KeycloakServiceBase {
 	}
 
 	/**
-	 * Creates an Keycloak group search filter query
+	 * Creates a Keycloak group search filter query
 	 * @param query the group query
 	 * @return request query
 	 */

@@ -234,7 +234,7 @@ public class KeycloakUserService extends KeycloakServiceBase {
 	}
 
 	/**
-	 * Post processing query filter. Checks if a single user is valid.
+	 * Post-processing query filter. Checks if a single user is valid.
 	 * @param query the original query
 	 * @param user the user to validate
 	 * @param resultLogger the log accumulator
@@ -281,7 +281,7 @@ public class KeycloakUserService extends KeycloakServiceBase {
 	}
 
 	/**
-	 * Creates an Keycloak user search filter query
+	 * Creates a Keycloak user search filter query
 	 * @param query the user query
 	 * @return request query
 	 */

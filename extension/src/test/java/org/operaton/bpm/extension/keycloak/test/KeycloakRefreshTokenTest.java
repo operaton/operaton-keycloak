@@ -21,9 +21,9 @@ public class KeycloakRefreshTokenTest extends AbstractKeycloakIdentityProviderTe
 	    assertEquals(5, identityService.createUserQuery().count());
 
 	    // expire current token (the dirty way)
-	    KeycloakIdentityProviderFactory sessionFacory = (KeycloakIdentityProviderFactory) 
+	    KeycloakIdentityProviderFactory sessionFactory = (KeycloakIdentityProviderFactory)
 	    		((ProcessEngineConfigurationImpl) processEngine.getProcessEngineConfiguration()).getIdentityProviderSessionFactory();
-	    KeycloakContextProvider keycloakContextProvider = getProtectedField(sessionFacory, "keycloakContextProvider");
+	    KeycloakContextProvider keycloakContextProvider = getProtectedField(sessionFactory, "keycloakContextProvider");
 	    KeycloakContext ctx = getProtectedField(keycloakContextProvider, "context");
 	    Field expiresField = KeycloakContext.class.getDeclaredField("expiresAt");
 	    expiresField.setAccessible(true);

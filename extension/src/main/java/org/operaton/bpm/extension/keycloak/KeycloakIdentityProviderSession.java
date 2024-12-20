@@ -200,7 +200,7 @@ public class KeycloakIdentityProviderSession implements ReadOnlyIdentityProvider
 	 * Checks the password of a user without using the cache.
 	 * @param userId the user ID
 	 * @param password the password
-	 * @return {@code true}, if user is allowed to login
+	 * @return {@code true}, if user is allowed to log in
 	 */
 	private boolean doCheckPassword(String userId, String password) {
 
@@ -326,7 +326,7 @@ public class KeycloakIdentityProviderSession implements ReadOnlyIdentityProvider
 	}
 
 	/**
-	 * find groups meeting given group query criteria (with cache lookup and post processing).
+	 * find groups meeting given group query criteria (with cache lookup and post-processing).
 	 * @param groupQuery the group query
 	 * @return list of matching groups
 	 */
@@ -351,7 +351,7 @@ public class KeycloakIdentityProviderSession implements ReadOnlyIdentityProvider
 	}
 
 	/**
-	 * find all groups meeting given group query criteria (without cache lookup or post processing).
+	 * find all groups meeting given group query criteria (without cache lookup or post-processing).
 	 * @param groupQuery the group query
 	 * @return list of matching groups
 	 */

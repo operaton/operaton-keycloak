@@ -54,9 +54,9 @@ public class KeycloakConfigureAdminUserIdAsMailTest extends AbstractKeycloakIden
 
 	public void testAdminUserConfiguration() {
 		// check engine configuration
-		List<String> opereatonAdminUsers = ((ProcessEngineConfigurationImpl) processEngine.getProcessEngineConfiguration()).getAdminUsers();
-		assertEquals(1, opereatonAdminUsers.size());
-		String adminUserId = opereatonAdminUsers.get(0);
+		List<String> operatonAdminUsers = ((ProcessEngineConfigurationImpl) processEngine.getProcessEngineConfiguration()).getAdminUsers();
+		assertEquals(1, operatonAdminUsers.size());
+		String adminUserId = operatonAdminUsers.get(0);
 		assertEquals("operaton@accso.de", adminUserId);
 		
 		// check that authorizations have been created

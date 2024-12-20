@@ -51,7 +51,7 @@ First of all we need an additional dependency which does most of the magic:
     </dependency>
 ```
 
-In order to setup Spring Boot's OAuth2 security add the following Maven dependencies to your project:
+In order to set up Spring Boot's OAuth2 security add the following Maven dependencies to your project:
 
 ```xml
 <dependency>
@@ -137,7 +137,7 @@ The Web Security configuration is responsible for
 * Registering the `KeycloakJwtAuthenticationFilter` wioperatonBpmPropertiesth the `KeycloakJwtAuthenticationProvider` acting as a bridge between Keycloak and Operaton.
 * Registering the `KeycloakConfigurationFilterRegistrationBean` which provides access to the Keycloak server configuration.
 
-Finally you have to configure the Keycloak Server and Client as well as the Spring Security JWT resource server by providing issuer URI as follows:
+Finally, you have to configure the Keycloak Server and Client as well as the Spring Security JWT resource server by providing issuer URI as follows:
 
 ```yml
 # Operaton Cockpit JWT Plugin

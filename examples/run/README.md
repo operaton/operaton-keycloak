@@ -50,7 +50,7 @@ For a full documentation of all configuration properties see the documentation o
 Within the subdirectory `docker` you'll find a basic sample consisting of:
 
 * ``Dockerfile``: custom Docker image consisting of Operaton Run and the Keycloak Identity Provider Plugin. Adapt Operaton and plugin versions to your own needs.
-* ``docker-compose.yml``: simple setup consisting of the custom Operaton Keycloak Docker image and a preconfigured Keycloak instance with the ``operaton-identity-service`` client and a Operaton admin user and group.
+* ``docker-compose.yml``: simple setup consisting of the custom Operaton Keycloak Docker image and a preconfigured Keycloak instance with the ``operaton-identity-service`` client and an Operaton admin user and group.
 
 Usage:
 
@@ -59,4 +59,4 @@ Usage:
 3. Login at ``http://localhost:8080`` using ``operaton`` / ``operaton1!`` and use Cockpit / Tasklist / Admin.
 4. Keycloak is available under ``https://localhost:9001/auth``. Login with ``keycloak`` / ``keycloak1!``.
 
-**Beware**: This is not production ready, still using a H2 database for each of the instances, but might help you to understand the configuration basics.
+**Beware**: This is not production ready, still using an H2 database for each of the instances, but might help you to understand the configuration basics.

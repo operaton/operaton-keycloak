@@ -39,7 +39,7 @@ public class KeycloakAuthenticationFilter implements Filter {
 	
 	/**
 	 * Creates a new KeycloakAuthenticationFilter.
-	 * @param identityService access to Operatons's IdentityService
+	 * @param identityService access to Operaton's IdentityService
 	 */
 	public KeycloakAuthenticationFilter(IdentityService identityService, OAuth2AuthorizedClientService clientService, String userNameAttribute) {
 		this.identityService = identityService;

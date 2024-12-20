@@ -17,7 +17,7 @@ public class CaffeineCache<K, V> implements QueryCache<K, V> {
 
 	/**
 	 * Creates a new Caffeine backed cache.
-	 * @param config the cach configuration
+	 * @param config the cache configuration
 	 */
 	public CaffeineCache(CacheConfiguration config) {
 		this(config, Ticker.systemTicker());

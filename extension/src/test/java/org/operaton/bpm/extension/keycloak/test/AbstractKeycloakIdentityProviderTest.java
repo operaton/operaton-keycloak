@@ -150,7 +150,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
 	/**
 	 * Initializes the process engine using standard configuration operaton.cfg.xml, but
 	 * replaces the KeyCloakProvider's client secret with the actual test setup.
-	 * Furthermore it uses a new database for each test class.
+	 * Furthermore, it uses a new database for each test class.
 	 * @return the process engine
 	 */
 	private ProcessEngine getOrInitializeCachedProcessEngine() {
@@ -320,7 +320,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
 	
 	/**
 	 * Authenticates towards the admin REST interface as Keycloak Admin using username/password.
-	 * @return HttpHeaders including the Authorization header / acces token
+	 * @return HttpHeaders including the Authorization header / access token
 	 * @throws JSONException in case of errors
 	 */
 	protected static HttpHeaders authenticateKeycloakAdmin() throws JSONException {
@@ -348,7 +348,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
 	
 	/**
 	 * Creates a new Keycloak realm.
-	 * @param headers HttpHeaders including the Authorization header / acces token
+	 * @param headers HttpHeaders including the Authorization header / access token
 	 * @param realm the realm name
 	 */
 	private static void createRealm(HttpHeaders headers, String realm) {
@@ -361,7 +361,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
 	
 	/**
 	 * Deletes a Keycloak realm.
-	 * @param headers HttpHeaders including the Authorization header / acces token
+	 * @param headers HttpHeaders including the Authorization header / access token
 	 * @param realm the realm name
 	 */
 	private static void deleteRealm(HttpHeaders headers, String realm) {
@@ -372,7 +372,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
 	
 	/**
 	 * Creates a new Keycloak client including access rights for querying users and groups using the REST API.
-	 * @param headers HttpHeaders including the Authorization header / acces token
+	 * @param headers HttpHeaders including the Authorization header / access token
 	 * @param realm the realm name
 	 * @param clientId the client ID
 	 * @param redirectUri valid redirect URI
@@ -455,7 +455,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
 	
 	/**
 	 * Creates a user.
-	 * @param headers HttpHeaders including the Authorization header / acces token
+	 * @param headers HttpHeaders including the Authorization header / access token
 	 * @param realm the realm name
 	 * @param userName the username
 	 * @param firstName the first name
@@ -498,7 +498,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
 	
 	/**
 	 * Deletes a user.
-	 * @param headers HttpHeaders including the Authorization header / acces token
+	 * @param headers HttpHeaders including the Authorization header / access token
 	 * @param realm the realm name
 	 * @param userId the user ID
 	 */
@@ -510,7 +510,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
 	
 	/**
 	 * Creates a group.
-	 * @param headers HttpHeaders including the Authorization header / acces token
+	 * @param headers HttpHeaders including the Authorization header / access token
 	 * @param realm the realm name
 	 * @param groupName the name of the group
 	 * @param isSystemGroup {@code true} in case of system groups, {@code false} for workflow groups
@@ -524,7 +524,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
 	
 	/**
 	 * Creates a child group
-	 * @param headers HttpHeaders including the Authorization header / acces token
+	 * @param headers HttpHeaders including the Authorization header / access token
 	 * @param realm the realm name
 	 * @param groupName the name of the group
 	 * @param isSystemGroup {@code true} in case of system groups, {@code false} for workflow groups
@@ -553,7 +553,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
 
 	/**
 	 * Deletes a group.
-	 * @param headers HttpHeaders including the Authorization header / acces token
+	 * @param headers HttpHeaders including the Authorization header / access token
 	 * @param realm the realm name
 	 * @param groupId the group ID
 	 */
