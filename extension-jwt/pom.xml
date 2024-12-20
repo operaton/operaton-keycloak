@@ -1,80 +1,82 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-	  <groupId>org.operaton.bpm.extension</groupId>
-	  <artifactId>operaton-keycloak-root</artifactId>
-		<version>1.0.0-beta-2-SNAPSHOT</version>
-	</parent>
+  <parent>
+    <groupId>org.operaton.bpm.extension</groupId>
+    <artifactId>operaton-keycloak-root</artifactId>
+    <version>1.0.0-beta-2-SNAPSHOT</version>
+  </parent>
 
-    <artifactId>operaton-keycloak-jwt</artifactId>
+  <artifactId>operaton-keycloak-jwt</artifactId>
 
-	<packaging>jar</packaging>
-    <name>Operaton - engine plugins - identity - keycloak - jwt extension</name>
-	<description>A Operaton Identity Provider Plugin for Keycloak - JWT addon</description>
+  <packaging>jar</packaging>
+  <name>Operaton - engine plugins - identity - keycloak - jwt extension</name>
+  <description>A Operaton Identity Provider Plugin for Keycloak - JWT addon</description>
 
-	<properties>
-		<maven.compiler.source>${version.java}</maven.compiler.source>
-		<maven.compiler.target>${version.java}</maven.compiler.target>
-		<failOnMissingWebXml>false</failOnMissingWebXml>
-	</properties>
+  <properties>
+    <maven.compiler.source>${version.java}</maven.compiler.source>
+    <maven.compiler.target>${version.java}</maven.compiler.target>
+    <failOnMissingWebXml>false</failOnMissingWebXml>
+  </properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.operaton.bpm</groupId>
-			<artifactId>operaton-engine</artifactId>
-			<scope>provided</scope>
-		</dependency>
+  <dependencies>
+    <dependency>
+      <groupId>org.operaton.bpm</groupId>
+      <artifactId>operaton-engine</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
-			<scope>provided</scope>
-		</dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
-		<dependency>
-			<groupId>org.operaton.bpm.springboot</groupId>
-			<artifactId>operaton-bpm-spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
- 		
-		<dependency>
-	        <groupId>com.h2database</groupId>
-	        <artifactId>h2</artifactId>
-			<scope>test</scope>
-		</dependency>
-        <dependency>
-            <groupId>org.operaton.bpm.webapp</groupId>
-            <artifactId>operaton-webapp-jakarta</artifactId>
-			<classifier>classes</classifier>
-			<scope>provided</scope>
-        </dependency>
+    <dependency>
+      <groupId>org.operaton.bpm.springboot</groupId>
+      <artifactId>operaton-bpm-spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
 
-		<dependency>
-			<groupId>jakarta.servlet</groupId>
-			<artifactId>jakarta.servlet-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>test</scope>
+    </dependency>
 
-    </dependencies>
+    <dependency>
+      <groupId>org.operaton.bpm.webapp</groupId>
+      <artifactId>operaton-webapp-jakarta</artifactId>
+      <classifier>classes</classifier>
+      <scope>provided</scope>
+    </dependency>
 
-	<build>
-		<testResources>
-			<testResource>
-				<directory>src/test/resources</directory>
-				<filtering>true</filtering>
-			</testResource>
-		</testResources>
-		<plugins>
-			<plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<failIfNoTests>false</failIfNoTests>
-					<trimStackTrace>false</trimStackTrace>
-					<redirectTestOutputToFile>true</redirectTestOutputToFile>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <failIfNoTests>false</failIfNoTests>
+          <trimStackTrace>false</trimStackTrace>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

@@ -35,7 +35,7 @@ import org.mockito.MockitoAnnotations;
  * With this type of test you can identify errors in the BPM process itself early and before 
  * integrating with more complex business logic.
  */
-public class ProcessLocalTest {
+class ProcessLocalTest {
 
 	/** BPMN 2 file to the process under test. */
 	private static final String PROCESS_RESOURCE = "processes/process.bpmn";
