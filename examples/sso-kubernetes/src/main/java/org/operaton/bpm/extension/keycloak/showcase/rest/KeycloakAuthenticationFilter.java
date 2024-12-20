@@ -26,68 +26,77 @@ import org.springframework.util.StringUtils;
  */
 public class KeycloakAuthenticationFilter implements Filter {
 
-	/** This class' logger. */
-	private static final Logger LOG = LoggerFactory.getLogger(KeycloakAuthenticationFilter.class);
+  /**
+   * This class' logger.
+   */
+  private static final Logger LOG = LoggerFactory.getLogger(KeycloakAuthenticationFilter.class);
 
-	/** Access to Operaton's IdentityService. */
-	private final IdentityService identityService;
-	
-	/** Access to the OAuth2 client service. */
-	OAuth2AuthorizedClientService clientService;
+  /**
+   * Access to Operaton's IdentityService.
+   */
+  private final IdentityService identityService;
 
-	private final String userNameAttribute;
-	
-	/**
-	 * Creates a new KeycloakAuthenticationFilter.
-	 * @param identityService access to Operaton's IdentityService
-	 */
-	public KeycloakAuthenticationFilter(IdentityService identityService, OAuth2AuthorizedClientService clientService, String userNameAttribute) {
-		this.identityService = identityService;
-		this.clientService = clientService;
-		this.userNameAttribute = userNameAttribute;
-	}
+  /**
+   * Access to the OAuth2 client service.
+   */
+  OAuth2AuthorizedClientService clientService;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-			throws IOException, ServletException {
+  private final String userNameAttribute;
 
-	    // Extract user-name-attribute of the JWT / OAuth2 token
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String userId = null;
-		if (authentication instanceof JwtAuthenticationToken jwtAuthenticationToken) {
-			userId = jwtAuthenticationToken.getTokenAttributes().get(userNameAttribute).toString();
-		} else if (authentication.getPrincipal() instanceof OidcUser oidcUser) {
-			userId = oidcUser.getName();
-		} else {
-			throw new AccessDeniedException("Invalid authentication request token");
-		}
-        if (!StringUtils.hasLength(userId)) {
-        	throw new AccessDeniedException("Unable to extract user-name-attribute from token");
-        }
+  /**
+   * Creates a new KeycloakAuthenticationFilter.
+   *
+   * @param identityService access to Operaton's IdentityService
+   */
+  public KeycloakAuthenticationFilter(IdentityService identityService,
+                                      OAuth2AuthorizedClientService clientService,
+                                      String userNameAttribute) {
+    this.identityService = identityService;
+    this.clientService = clientService;
+    this.userNameAttribute = userNameAttribute;
+  }
 
-        LOG.debug("Extracted userId from bearer token: {}", userId);
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+      throws IOException, ServletException {
 
-        try {
-        	identityService.setAuthentication(userId, getUserGroups(userId));
-        	chain.doFilter(request, response);
-        } finally {
-        	identityService.clearAuthentication();
-        }
-	}
-
-    /**
-     * Queries the groups of a given user.
-     * @param userId the user's ID
-     * @return list of groups the user belongs to
-     */
-    private List<String> getUserGroups(String userId){
-        List<String> groupIds = new ArrayList<>();
-        // query groups using KeycloakIdentityProvider plugin
-        identityService.createGroupQuery().groupMember(userId).list()
-        	.forEach( g -> groupIds.add(g.getId()));
-        return groupIds;
+    // Extract user-name-attribute of the JWT / OAuth2 token
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String userId = null;
+    if (authentication instanceof JwtAuthenticationToken jwtAuthenticationToken) {
+      userId = jwtAuthenticationToken.getTokenAttributes().get(userNameAttribute).toString();
+    } else if (authentication.getPrincipal() instanceof OidcUser oidcUser) {
+      userId = oidcUser.getName();
+    } else {
+      throw new AccessDeniedException("Invalid authentication request token");
     }
+    if (!StringUtils.hasLength(userId)) {
+      throw new AccessDeniedException("Unable to extract user-name-attribute from token");
+    }
+
+    LOG.debug("Extracted userId from bearer token: {}", userId);
+
+    try {
+      identityService.setAuthentication(userId, getUserGroups(userId));
+      chain.doFilter(request, response);
+    } finally {
+      identityService.clearAuthentication();
+    }
+  }
+
+  /**
+   * Queries the groups of a given user.
+   *
+   * @param userId the user's ID
+   * @return list of groups the user belongs to
+   */
+  private List<String> getUserGroups(String userId) {
+    List<String> groupIds = new ArrayList<>();
+    // query groups using KeycloakIdentityProvider plugin
+    identityService.createGroupQuery().groupMember(userId).list().forEach(g -> groupIds.add(g.getId()));
+    return groupIds;
+  }
 }

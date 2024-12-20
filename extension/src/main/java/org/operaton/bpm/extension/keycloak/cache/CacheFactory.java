@@ -7,7 +7,7 @@ public class CacheFactory {
 
   /**
    * Creates implementations of QueryCache based on the provided configuration.
-   * 
+   *
    * @param configuration the configuration defining the caching behavior
    * @return The created QueryCache implementation
    */

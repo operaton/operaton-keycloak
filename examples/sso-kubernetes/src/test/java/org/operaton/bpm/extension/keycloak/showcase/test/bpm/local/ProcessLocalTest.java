@@ -32,118 +32,122 @@ import static org.operaton.bpm.engine.test.assertions.bpmn.BpmnAwareTests.withVa
 /**
  * Sample process unit test covering exactly the process itself with absolutely everything else mocked.
  * <p>
- * With this type of test you can identify errors in the BPM process itself early and before 
+ * With this type of test you can identify errors in the BPM process itself early and before
  * integrating with more complex business logic.
  */
 class ProcessLocalTest {
 
-	/** BPMN 2 file to the process under test. */
-	private static final String PROCESS_RESOURCE = "processes/process.bpmn";
-	
-	/** The process definition key of the process under test. */
-	private static final String PROCESS_DEFINITION_KEY = "operaton.showcase";
+  /**
+   * BPMN 2 file to the process under test.
+   */
+  private static final String PROCESS_RESOURCE = "processes/process.bpmn";
 
-	/**
-	 * Access to the process engine.
-	 */
-	@RegisterExtension
-	static ProcessEngineExtension extension = ProcessEngineExtension.builder()
-	  .configurationResource("operaton.local.cfg.xml")
-	  .build();
-	
-	/**
-	 * Mock for the sample service task.
-	 */
-	@Mock
-	private LoggerDelegate loggerTask;
-	
-	/**
-	 * Set up the test case.
-	 */
-	@BeforeEach
-	public void setup() {
-		// Initialize and register mocks
-		MockitoAnnotations.openMocks(this);
-		Mocks.register("logger", loggerTask);
+  /**
+   * The process definition key of the process under test.
+   */
+  private static final String PROCESS_DEFINITION_KEY = "operaton.showcase";
 
-		// Initialize BPM Assert
-		init(extension.getProcessEngine());
-	}
+  /**
+   * Access to the process engine.
+   */
+  @RegisterExtension
+  static ProcessEngineExtension extension = ProcessEngineExtension.builder()
+      .configurationResource("operaton.local.cfg.xml")
+      .build();
 
-	/**
-	 * Tear down test case.
-	 */
-	@AfterEach
-	public void tearDown() {
-		// Reset mocks
-		reset(loggerTask);
-	}
+  /**
+   * Mock for the sample service task.
+   */
+  @Mock
+  private LoggerDelegate loggerTask;
 
-	// ---------------------------------------------------------------------------
-	// Tests
-	// ---------------------------------------------------------------------------
+  /**
+   * Set up the test case.
+   */
+  @BeforeEach
+  public void setup() {
+    // Initialize and register mocks
+    MockitoAnnotations.openMocks(this);
+    Mocks.register("logger", loggerTask);
 
-	/**
-	 * Just tests if the process definition is deployable.
-	 */
-	@Test
-	@Deployment(resources = PROCESS_RESOURCE)
-	void testParsingAndDeployment() {
-		// nothing is done here, as we just want to check for exceptions during
-		// deployment
-	}
+    // Initialize BPM Assert
+    init(extension.getProcessEngine());
+  }
 
-	/**
-	 * Test the happy (approved) path.
-	 */
-	@Test
-	@Deployment(resources = PROCESS_RESOURCE)
-	void testApprovedPath() throws Exception {
-		// start process
-		ProcessInstance pi = runtimeService().startProcessInstanceByKey(PROCESS_DEFINITION_KEY,
-				withVariables(Variable.NAME, "Demo"));
-		assertThat(pi).isStarted();
+  /**
+   * Tear down test case.
+   */
+  @AfterEach
+  public void tearDown() {
+    // Reset mocks
+    reset(loggerTask);
+  }
 
-		// check user task and approve user
-		assertThat(pi).isWaitingAt("ApproveUser");
-		Task task = task();
-		assertNotNull(task, "User task expected");
-		complete(task, withVariables("approved", Boolean.TRUE));
+  // ---------------------------------------------------------------------------
+  // Tests
+  // ---------------------------------------------------------------------------
 
-		// check service task (asynchronous continuation)
-		execute(job());
-		assertThat(pi).hasPassed("ServiceTask_Logger");
+  /**
+   * Just tests if the process definition is deployable.
+   */
+  @Test
+  @Deployment(resources = PROCESS_RESOURCE)
+  void testParsingAndDeployment() {
+    // nothing is done here, as we just want to check for exceptions during
+    // deployment
+  }
 
-		// check corresponding process end
-		assertThat(pi).hasPassed("END_APPROVED");
-		assertThat(pi).isEnded();
+  /**
+   * Test the happy (approved) path.
+   */
+  @Test
+  @Deployment(resources = PROCESS_RESOURCE)
+  void testApprovedPath() throws Exception {
+    // start process
+    ProcessInstance pi = runtimeService().startProcessInstanceByKey(PROCESS_DEFINITION_KEY,
+        withVariables(Variable.NAME, "Demo"));
+    assertThat(pi).isStarted();
 
-		// verify mocks
-		verify(loggerTask, times(1)).execute(any(DelegateExecution.class));
-	}
+    // check user task and approve user
+    assertThat(pi).isWaitingAt("ApproveUser");
+    Task task = task();
+    assertNotNull(task, "User task expected");
+    complete(task, withVariables("approved", Boolean.TRUE));
 
-	/**
-	 * Test the not approved path.
-	 */
-	@Test
-	@Deployment(resources = PROCESS_RESOURCE)
-	void testNotApprovedPath() throws Exception {
-		// start process
-		ProcessInstance pi = runtimeService().startProcessInstanceByKey(PROCESS_DEFINITION_KEY,
-				withVariables(Variable.NAME, "Demo"));
-		assertThat(pi).isStarted();
+    // check service task (asynchronous continuation)
+    execute(job());
+    assertThat(pi).hasPassed("ServiceTask_Logger");
 
-		// check user task and do not approve user
-		assertThat(pi).isWaitingAt("ApproveUser");
-		Task task = task();
-		assertNotNull(task, "User task expected");
-		complete(task, withVariables("approved", Boolean.FALSE));
+    // check corresponding process end
+    assertThat(pi).hasPassed("END_APPROVED");
+    assertThat(pi).isEnded();
 
-		// check corresponding process end
-		assertThat(pi).hasPassed("END_NOT_APPROVED");
-		assertThat(pi).isEnded();
+    // verify mocks
+    verify(loggerTask, times(1)).execute(any(DelegateExecution.class));
+  }
 
-		// verify mocks
-		verify(loggerTask, times(0)).execute(any(DelegateExecution.class));
-	}
+  /**
+   * Test the not approved path.
+   */
+  @Test
+  @Deployment(resources = PROCESS_RESOURCE)
+  void testNotApprovedPath() throws Exception {
+    // start process
+    ProcessInstance pi = runtimeService().startProcessInstanceByKey(PROCESS_DEFINITION_KEY,
+        withVariables(Variable.NAME, "Demo"));
+    assertThat(pi).isStarted();
+
+    // check user task and do not approve user
+    assertThat(pi).isWaitingAt("ApproveUser");
+    Task task = task();
+    assertNotNull(task, "User task expected");
+    complete(task, withVariables("approved", Boolean.FALSE));
+
+    // check corresponding process end
+    assertThat(pi).hasPassed("END_NOT_APPROVED");
+    assertThat(pi).isEnded();
+
+    // verify mocks
+    verify(loggerTask, times(0)).execute(any(DelegateExecution.class));
+  }
 }

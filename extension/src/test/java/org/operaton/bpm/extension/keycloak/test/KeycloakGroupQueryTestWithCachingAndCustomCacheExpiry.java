@@ -23,108 +23,109 @@ import org.operaton.bpm.extension.keycloak.test.util.PredictableTicker;
  */
 public class KeycloakGroupQueryTestWithCachingAndCustomCacheExpiry extends AbstractKeycloakIdentityProviderTest {
 
-	public static Test suite() {
-		return new TestSetup(new TestSuite(KeycloakGroupQueryTestWithCachingAndCustomCacheExpiry.class)) {
+  public static Test suite() {
+    return new TestSetup(new TestSuite(KeycloakGroupQueryTestWithCachingAndCustomCacheExpiry.class)) {
 
-			// @BeforeClass
-			protected void setUp() {
-				ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration
-								.createProcessEngineConfigurationFromResource("operaton.enableCachingAndConfigureCacheDuration.cfg.xml");
-				configureKeycloakIdentityProviderPlugin(config);
-				PluggableProcessEngineTestCase.cachedProcessEngine = config.buildProcessEngine();
-			}
+      // @BeforeClass
+      protected void setUp() {
+        ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration.createProcessEngineConfigurationFromResource(
+            "operaton.enableCachingAndConfigureCacheDuration.cfg.xml");
+        configureKeycloakIdentityProviderPlugin(config);
+        PluggableProcessEngineTestCase.cachedProcessEngine = config.buildProcessEngine();
+      }
 
-			// @AfterClass
-			protected void tearDown() {
-				PluggableProcessEngineTestCase.cachedProcessEngine.close();
-				PluggableProcessEngineTestCase.cachedProcessEngine = null;
-			}
-		};
-	}
+      // @AfterClass
+      protected void tearDown() {
+        PluggableProcessEngineTestCase.cachedProcessEngine.close();
+        PluggableProcessEngineTestCase.cachedProcessEngine = null;
+      }
+    };
+  }
 
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
-		// delete all created authorizations
-		processEngine.getAuthorizationService().createAuthorizationQuery().list().forEach(a ->
-			processEngine.getAuthorizationService().deleteAuthorization(a.getId()));
-		this.clearCache();
-		PredictableTicker.reset();
-		CountingHttpRequestInterceptor.resetCount();
-	}
+  @Override
+  protected void tearDown() throws Exception {
+    super.tearDown();
+    // delete all created authorizations
+    processEngine.getAuthorizationService()
+        .createAuthorizationQuery()
+        .list()
+        .forEach(a -> processEngine.getAuthorizationService().deleteAuthorization(a.getId()));
+    this.clearCache();
+    PredictableTicker.reset();
+    CountingHttpRequestInterceptor.resetCount();
+  }
 
-	/**
-	 * clears the query cache so each test can start with a clean slate
-	 */
-	private void clearCache() {
-		processEngineConfiguration.getProcessEnginePlugins()
-						.stream()
-						.filter(KeycloakIdentityProviderPlugin.class::isInstance)
-						.map(KeycloakIdentityProviderPlugin.class::cast)
-						.forEach(KeycloakIdentityProviderPlugin::clearCache);
-	}
+  /**
+   * clears the query cache so each test can start with a clean slate
+   */
+  private void clearCache() {
+    processEngineConfiguration.getProcessEnginePlugins()
+        .stream()
+        .filter(KeycloakIdentityProviderPlugin.class::isInstance)
+        .map(KeycloakIdentityProviderPlugin.class::cast)
+        .forEach(KeycloakIdentityProviderPlugin::clearCache);
+  }
 
-	// ------------------------------------------------------------------------
-	// Test configuration
-	// ------------------------------------------------------------------------
+  // ------------------------------------------------------------------------
+  // Test configuration
+  // ------------------------------------------------------------------------
 
-	public void testCacheEntriesEvictedWhenCacheTimeoutIsReached() {
+  public void testCacheEntriesEvictedWhenCacheTimeoutIsReached() {
 
-		GroupQuery query = identityService.createGroupQuery();
+    GroupQuery query = identityService.createGroupQuery();
 
-		// query operaton-admin at time = 0
-		assertEquals("operaton-admin", queryGroup(query, "operaton-admin").getName());
+    // query operaton-admin at time = 0
+    assertEquals("operaton-admin", queryGroup(query, "operaton-admin").getName());
 
-		// cache contains only operaton-admin at this point
-		assertEquals(Collections.singletonList("operaton-admin"), getCacheEntries());
+    // cache contains only operaton-admin at this point
+    assertEquals(Collections.singletonList("operaton-admin"), getCacheEntries());
 
-		// move clock by 2 minutes
-		PredictableTicker.moveTimeForwardByMinutes(2);
+    // move clock by 2 minutes
+    PredictableTicker.moveTimeForwardByMinutes(2);
 
-		// query cam-read-only after 2 minutes
-		assertEquals("cam-read-only", queryGroup(query, "cam-read-only").getName());
+    // query cam-read-only after 2 minutes
+    assertEquals("cam-read-only", queryGroup(query, "cam-read-only").getName());
 
-		// cache contains cam-read-only and operaton-admin
-		assertEquals(Arrays.asList("cam-read-only", "operaton-admin"), getCacheEntries());
+    // cache contains cam-read-only and operaton-admin
+    assertEquals(Arrays.asList("cam-read-only", "operaton-admin"), getCacheEntries());
 
-		// move clock by another 2 minutes
-		PredictableTicker.moveTimeForwardByMinutes(2);
+    // move clock by another 2 minutes
+    PredictableTicker.moveTimeForwardByMinutes(2);
 
-		// cache still contains cam-read-only and operaton-admin
-		assertEquals(Arrays.asList("cam-read-only", "operaton-admin"), getCacheEntries());
+    // cache still contains cam-read-only and operaton-admin
+    assertEquals(Arrays.asList("cam-read-only", "operaton-admin"), getCacheEntries());
 
-		// move clock by another 2 minutes
-		PredictableTicker.moveTimeForwardByMinutes(2);
+    // move clock by another 2 minutes
+    PredictableTicker.moveTimeForwardByMinutes(2);
 
-		// operaton-admin was evicted because eviction timeout (5 minutes) has been breached
-		// it's been 6 minutes since operaton-admin was inserted into cache
-		assertEquals(Collections.singletonList("cam-read-only"), getCacheEntries());
+    // operaton-admin was evicted because eviction timeout (5 minutes) has been breached
+    // it's been 6 minutes since operaton-admin was inserted into cache
+    assertEquals(Collections.singletonList("cam-read-only"), getCacheEntries());
 
-		// move clock by another 5 minutes
-		PredictableTicker.moveTimeForwardByMinutes(5);
+    // move clock by another 5 minutes
+    PredictableTicker.moveTimeForwardByMinutes(5);
 
-		// cache is empty. cam-read-only has also been evicted
-		assertEquals(Collections.emptyList(), getCacheEntries());
-	}
+    // cache is empty. cam-read-only has also been evicted
+    assertEquals(Collections.emptyList(), getCacheEntries());
+  }
 
-	private static Group queryGroup(GroupQuery query, String groupName) {
-		Group group = query.groupName(groupName).singleResult();
-		processPendingCacheEvictions();
-		return group;
-	}
+  private static Group queryGroup(GroupQuery query, String groupName) {
+    Group group = query.groupName(groupName).singleResult();
+    processPendingCacheEvictions();
+    return group;
+  }
 
-	private static List<String> getCacheEntries() {
-		processPendingCacheEvictions();
-		return CacheAwareKeycloakIdentityProviderPluginForTest.groupQueryCache
-						.asMap()
-						.keySet()
-						.stream()
-						.map(CacheableKeycloakGroupQuery::getName)
-						.sorted()
-						.toList();
-	}
+  private static List<String> getCacheEntries() {
+    processPendingCacheEvictions();
+    return CacheAwareKeycloakIdentityProviderPluginForTest.groupQueryCache.asMap()
+        .keySet()
+        .stream()
+        .map(CacheableKeycloakGroupQuery::getName)
+        .sorted()
+        .toList();
+  }
 
-	private static void processPendingCacheEvictions() {
-		CacheAwareKeycloakIdentityProviderPluginForTest.groupQueryCache.cleanUp();
-	}
+  private static void processPendingCacheEvictions() {
+    CacheAwareKeycloakIdentityProviderPluginForTest.groupQueryCache.cleanUp();
+  }
 }

@@ -1,8 +1,5 @@
 package org.operaton.bpm.extension.keycloak.test;
 
-import static org.operaton.bpm.engine.authorization.Authorization.AUTH_TYPE_GRANT;
-import static org.junit.Assert.assertNotEquals;
-
 import java.util.List;
 
 import org.operaton.bpm.engine.BadUserRequestException;
@@ -12,6 +9,9 @@ import org.operaton.bpm.engine.authorization.Resource;
 import org.operaton.bpm.engine.identity.User;
 import org.operaton.bpm.extension.keycloak.CacheableKeycloakUserQuery;
 import org.operaton.bpm.extension.keycloak.KeycloakUserQuery;
+
+import static org.junit.Assert.assertNotEquals;
+import static org.operaton.bpm.engine.authorization.Authorization.AUTH_TYPE_GRANT;
 
 /**
  * User query test for the Keycloak identity provider.
@@ -27,18 +27,18 @@ public class KeycloakUserQueryTest extends AbstractKeycloakIdentityProviderTest 
     List<User> result = identityService.createUserQuery().unlimitedList();
     assertEquals(5, result.size());
   }
-  
+
   public void testQueryPaging() {
-	  // First page
-	  List<User> result = identityService.createUserQuery().listPage(0, 2);
-	  assertEquals(2, result.size());
-	  
-	  // Next page
-	  List<User> resultNext = identityService.createUserQuery().listPage(2, 10);
-	  assertEquals(3, resultNext.size());
-	  
-	  // unique results
-	  assertEquals(0, result.stream().filter(resultNext::contains).count());
+    // First page
+    List<User> result = identityService.createUserQuery().listPage(0, 2);
+    assertEquals(2, result.size());
+
+    // Next page
+    List<User> resultNext = identityService.createUserQuery().listPage(2, 10);
+    assertEquals(3, resultNext.size());
+
+    // unique results
+    assertEquals(0, result.stream().filter(resultNext::contains).count());
   }
 
   public void testFilterByUserId() {
@@ -56,7 +56,9 @@ public class KeycloakUserQueryTest extends AbstractKeycloakIdentityProviderTest 
   }
 
   public void testFilterByUserIdIn() {
-    List<User> users = identityService.createUserQuery().userIdIn("operaton@accso.de", "gunnar.von-der-beck@accso.de").list();
+    List<User> users = identityService.createUserQuery()
+        .userIdIn("operaton@accso.de", "gunnar.von-der-beck@accso.de")
+        .list();
     assertNotNull(users);
     assertEquals(2, users.size());
 
@@ -68,7 +70,7 @@ public class KeycloakUserQueryTest extends AbstractKeycloakIdentityProviderTest 
     assertNotNull(users);
     assertEquals(1, users.size());
   }
-  
+
   public void testFilterByFirstname() {
     User user = identityService.createUserQuery().userFirstName("Gunnar").singleResult();
     assertNotNull(user);
@@ -76,7 +78,7 @@ public class KeycloakUserQueryTest extends AbstractKeycloakIdentityProviderTest 
     user = identityService.createUserQuery().userFirstName("non-existing").singleResult();
     assertNull(user);
   }
-  
+
   public void testFilterByFirstnameLike() {
     User user = identityService.createUserQuery().userFirstNameLike("Gun*").singleResult();
     assertNotNull(user);
@@ -93,7 +95,6 @@ public class KeycloakUserQueryTest extends AbstractKeycloakIdentityProviderTest 
     assertNull(user);
   }
 
-  
   public void testFilterByLastnameLike() {
     User user = identityService.createUserQuery().userLastNameLike("von*").singleResult();
     assertNotNull(user);
@@ -103,54 +104,42 @@ public class KeycloakUserQueryTest extends AbstractKeycloakIdentityProviderTest 
   }
 
   public void testFilterByFirstnameLikeAndLastnameLike() {
-	  User user = identityService.createUserQuery()
-			  .userFirstNameLike("*n%").userLastNameLike("von*")
-			  .singleResult();
-	  assertNotNull(user);
+    User user = identityService.createUserQuery().userFirstNameLike("*n%").userLastNameLike("von*").singleResult();
+    assertNotNull(user);
 
-	  user = identityService.createUserQuery()
-			  .userFirstNameLike("nox-exist*").userLastNameLike("von*")
-			  .singleResult();
-	  assertNull(user);
+    user = identityService.createUserQuery().userFirstNameLike("nox-exist*").userLastNameLike("von*").singleResult();
+    assertNull(user);
 
-	  user = identityService.createUserQuery()
-			  .userFirstNameLike("*n%").userLastNameLike("non-exist*")
-			  .singleResult();
-	  assertNull(user);
+    user = identityService.createUserQuery().userFirstNameLike("*n%").userLastNameLike("non-exist*").singleResult();
+    assertNull(user);
   }
 
   public void testFilterByFirstLastNameEmailUsingPartsOfNames() {
-	  User user = identityService.createUserQuery()
-			  .userFirstNameLike("Gun*").userLastNameLike("von*").userEmailLike("*accso.de")
-			  .singleResult();
-	  assertNotNull(user);
+    User user = identityService.createUserQuery()
+        .userFirstNameLike("Gun*")
+        .userLastNameLike("von*")
+        .userEmailLike("*accso.de")
+        .singleResult();
+    assertNotNull(user);
 
-	  user = identityService.createUserQuery()
-			  .userFirstName("Gun")
-			  .singleResult();
-	  assertNull(user);
+    user = identityService.createUserQuery().userFirstName("Gun").singleResult();
+    assertNull(user);
 
-	  user = identityService.createUserQuery()
-			  .userLastName("von")
-			  .singleResult();
-	  assertNull(user);
+    user = identityService.createUserQuery().userLastName("von").singleResult();
+    assertNull(user);
 
-	  user = identityService.createUserQuery()
-			  .userEmail("accso.de")
-			  .singleResult();
-	  assertNull(user);
+    user = identityService.createUserQuery().userEmail("accso.de").singleResult();
+    assertNull(user);
   }
 
   public void testFilterByFirstNameExactEmailLike() {
-	  assertEquals(2, identityService.createUserQuery().userEmailLike("%accso.de").count());
-	  
-	  // Must deliver a single result
-	  User user = identityService.createUserQuery()
-			  .userFirstName("Gunnar").userEmailLike("%accso.de")
-			  .singleResult();
-	  assertNotNull(user);
+    assertEquals(2, identityService.createUserQuery().userEmailLike("%accso.de").count());
+
+    // Must deliver a single result
+    User user = identityService.createUserQuery().userFirstName("Gunnar").userEmailLike("%accso.de").singleResult();
+    assertNotNull(user);
   }
-  
+
   public void testFilterByEmail() throws Exception {
     User user = identityService.createUserQuery().userEmail("operaton@accso.de").singleResult();
     assertNotNull(user);
@@ -164,7 +153,7 @@ public class KeycloakUserQueryTest extends AbstractKeycloakIdentityProviderTest 
     assertNotNull(user);
     user = identityService.createUserQuery().userEmailLike("operaton@%").singleResult();
     assertNotNull(user);
-    
+
     List<User> users = identityService.createUserQuery().userEmailLike("%@accso.de").list();
     assertNotNull(users);
     assertEquals(2, users.size());
@@ -173,16 +162,14 @@ public class KeycloakUserQueryTest extends AbstractKeycloakIdentityProviderTest 
     assertNull(user);
   }
 
-
   public void testFilterByGroupId() {
     List<User> result = identityService.createUserQuery().memberOfGroup(GROUP_ID_TEAMLEAD).list();
     assertEquals(2, result.size());
-    
+
     result = identityService.createUserQuery().memberOfGroup("non-exist").list();
     assertEquals(0, result.size());
   }
 
- 
   public void testFilterByGroupIdAndFirstname() {
     List<User> result = identityService.createUserQuery()
         .memberOfGroup(GROUP_ID_TEAMLEAD)
@@ -222,35 +209,35 @@ public class KeycloakUserQueryTest extends AbstractKeycloakIdentityProviderTest 
         .list();
     assertEquals(1, result.size());
   }
-  
+
   public void testOrderByUserId() {
-	  List<User> result = identityService.createUserQuery().orderByUserId().desc().list();
-	  assertEquals(5, result.size());
-	  assertTrue(result.get(0).getId().compareTo(result.get(1).getId()) > 0);
-	  assertTrue(result.get(1).getId().compareTo(result.get(2).getId()) > 0);
+    List<User> result = identityService.createUserQuery().orderByUserId().desc().list();
+    assertEquals(5, result.size());
+    assertTrue(result.get(0).getId().compareTo(result.get(1).getId()) > 0);
+    assertTrue(result.get(1).getId().compareTo(result.get(2).getId()) > 0);
   }
 
   public void testOrderByUserEmail() {
-	  List<User> result = identityService.createUserQuery().orderByUserEmail().list();
-	  assertEquals(5, result.size());
-	  assertTrue(result.get(0).getEmail().compareTo(result.get(1).getEmail()) < 0);
-	  assertTrue(result.get(1).getEmail().compareTo(result.get(2).getEmail()) < 0);
+    List<User> result = identityService.createUserQuery().orderByUserEmail().list();
+    assertEquals(5, result.size());
+    assertTrue(result.get(0).getEmail().compareTo(result.get(1).getEmail()) < 0);
+    assertTrue(result.get(1).getEmail().compareTo(result.get(2).getEmail()) < 0);
   }
 
   public void testOrderByUserFirstName() {
-	  List<User> result = identityService.createUserQuery().orderByUserFirstName().desc().list();
-	  assertEquals(5, result.size());
-	  assertTrue(result.get(0).getFirstName().compareTo(result.get(1).getFirstName()) > 0);
-	  assertTrue(result.get(1).getFirstName().compareTo(result.get(2).getFirstName()) > 0);
+    List<User> result = identityService.createUserQuery().orderByUserFirstName().desc().list();
+    assertEquals(5, result.size());
+    assertTrue(result.get(0).getFirstName().compareTo(result.get(1).getFirstName()) > 0);
+    assertTrue(result.get(1).getFirstName().compareTo(result.get(2).getFirstName()) > 0);
   }
 
   public void testOrderByUserLastName() {
-	  List<User> result = identityService.createUserQuery().orderByUserLastName().list();
-	  assertEquals(5, result.size());
-	  assertTrue(result.get(0).getLastName().compareTo(result.get(1).getLastName()) < 0);
-	  assertTrue(result.get(1).getLastName().compareTo(result.get(2).getLastName()) < 0);
+    List<User> result = identityService.createUserQuery().orderByUserLastName().list();
+    assertEquals(5, result.size());
+    assertTrue(result.get(0).getLastName().compareTo(result.get(1).getLastName()) < 0);
+    assertTrue(result.get(1).getLastName().compareTo(result.get(2).getLastName()) < 0);
   }
-  
+
   public void testAuthenticatedUserSeesHimself() {
     try {
       processEngineConfiguration.setAuthorizationEnabled(true);
@@ -299,7 +286,10 @@ public class KeycloakUserQueryTest extends AbstractKeycloakIdentityProviderTest 
     assertEquals(CacheableKeycloakUserQuery.of(q1), CacheableKeycloakUserQuery.of(q2));
   }
 
-  protected void createGrantAuthorization(Resource resource, String resourceId, String userId, Permission... permissions) {
+  protected void createGrantAuthorization(Resource resource,
+                                          String resourceId,
+                                          String userId,
+                                          Permission... permissions) {
     Authorization authorization = createAuthorization(AUTH_TYPE_GRANT, resource, resourceId);
     authorization.setUserId(userId);
     for (Permission permission : permissions) {

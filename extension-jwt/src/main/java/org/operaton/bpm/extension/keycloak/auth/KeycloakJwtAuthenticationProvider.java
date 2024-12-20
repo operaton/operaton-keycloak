@@ -1,5 +1,9 @@
 package org.operaton.bpm.extension.keycloak.auth;
 
+import java.util.stream.Collectors;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.operaton.bpm.engine.ProcessEngine;
 import org.operaton.bpm.engine.rest.security.auth.AuthenticationResult;
 import org.operaton.bpm.engine.rest.security.auth.impl.ContainerBasedAuthenticationProvider;
@@ -9,32 +13,32 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.AbstractOAuth2TokenAuthenticationToken;
 import org.springframework.util.StringUtils;
 
-import jakarta.servlet.http.HttpServletRequest;
-import java.util.stream.Collectors;
-
 /**
  * OAuth2 Authentication Provider for usage with Keycloak JWT.
  */
 public class KeycloakJwtAuthenticationProvider extends ContainerBasedAuthenticationProvider {
 
-    @Override
-    public AuthenticationResult extractAuthenticatedUser(HttpServletRequest request, ProcessEngine engine) {
-        // Extract user-name-attribute of the OAuth2 token
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (!(authentication instanceof AbstractOAuth2TokenAuthenticationToken) || !(authentication.getPrincipal() instanceof Jwt)) {
-			return AuthenticationResult.unsuccessful();
-		}
-        String userId = ((Jwt)authentication.getPrincipal()).getClaimAsString("preferred_username");
-        if (!StringUtils.hasLength(userId)) {
-            return AuthenticationResult.unsuccessful();
-        }
-
-        // Authentication successful
-        AuthenticationResult authenticationResult = new AuthenticationResult(userId, true);
-        authenticationResult.setGroups(((Jwt)authentication.getPrincipal()).getClaimAsStringList("groups")
-                .stream().map(g -> g.startsWith("/") ? g.substring(1) : g).collect(Collectors.toList()));
-
-        return authenticationResult;
+  @Override
+  public AuthenticationResult extractAuthenticatedUser(HttpServletRequest request, ProcessEngine engine) {
+    // Extract user-name-attribute of the OAuth2 token
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (!(authentication instanceof AbstractOAuth2TokenAuthenticationToken)
+        || !(authentication.getPrincipal() instanceof Jwt)) {
+      return AuthenticationResult.unsuccessful();
     }
+    String userId = ((Jwt) authentication.getPrincipal()).getClaimAsString("preferred_username");
+    if (!StringUtils.hasLength(userId)) {
+      return AuthenticationResult.unsuccessful();
+    }
+
+    // Authentication successful
+    AuthenticationResult authenticationResult = new AuthenticationResult(userId, true);
+    authenticationResult.setGroups(((Jwt) authentication.getPrincipal()).getClaimAsStringList("groups")
+        .stream()
+        .map(g -> g.startsWith("/") ? g.substring(1) : g)
+        .collect(Collectors.toList()));
+
+    return authenticationResult;
+  }
 
 }
