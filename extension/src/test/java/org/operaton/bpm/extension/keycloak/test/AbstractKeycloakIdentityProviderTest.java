@@ -40,9 +40,7 @@ import org.springframework.web.client.RestTemplate;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Super class for all Identity Provider Tests.
@@ -342,7 +340,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
             + "&grant_type=password", headers);
     ResponseEntity<String> response = restTemplate.postForEntity(
         keycloakUrl + "/realms/master/protocol/openid-connect/token", request, String.class);
-    assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     JSONObject json = new JSONObject(response.getBody());
     String accessToken = json.getString("access_token");
     String tokenType = json.getString("token_type");
@@ -367,7 +365,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
         + "\",\"notBefore\":0,\"revokeRefreshToken\":false,\"refreshTokenMaxReuse\":0,\"accessTokenLifespan\":300,\"accessTokenLifespanForImplicitFlow\":900,\"ssoSessionIdleTimeout\":1800,\"ssoSessionMaxLifespan\":36000,\"ssoSessionIdleTimeoutRememberMe\":0,\"ssoSessionMaxLifespanRememberMe\":0,\"offlineSessionIdleTimeout\":2592000,\"offlineSessionMaxLifespanEnabled\":false,\"offlineSessionMaxLifespan\":5184000,\"accessCodeLifespan\":60,\"accessCodeLifespanUserAction\":300,\"accessCodeLifespanLogin\":1800,\"actionTokenGeneratedByAdminLifespan\":43200,\"actionTokenGeneratedByUserLifespan\":300,\"enabled\":true,\"sslRequired\":\"external\",\"registrationAllowed\":false,\"registrationEmailAsUsername\":false,\"rememberMe\":false,\"verifyEmail\":false,\"loginWithEmailAllowed\":true,\"duplicateEmailsAllowed\":false,\"resetPasswordAllowed\":false,\"editUsernameAllowed\":false,\"bruteForceProtected\":false,\"permanentLockout\":false,\"maxFailureWaitSeconds\":900,\"minimumQuickLoginWaitSeconds\":60,\"waitIncrementSeconds\":60,\"quickLoginCheckMilliSeconds\":1000,\"maxDeltaTimeSeconds\":43200,\"failureFactor\":30,\"defaultRoles\":[\"uma_authorization\",\"offline_access\"],\"requiredCredentials\":[\"password\"],\"otpPolicyType\":\"totp\",\"otpPolicyAlgorithm\":\"HmacSHA1\",\"otpPolicyInitialCounter\":0,\"otpPolicyDigits\":6,\"otpPolicyLookAheadWindow\":1,\"otpPolicyPeriod\":30,\"otpSupportedApplications\":[\"FreeOTP\",\"Google Authenticator\"],\"browserSecurityHeaders\":{\"contentSecurityPolicyReportOnly\":\"\",\"xContentTypeOptions\":\"nosniff\",\"xRobotsTag\":\"none\",\"xFrameOptions\":\"SAMEORIGIN\",\"xXSSProtection\":\"1; mode=block\",\"contentSecurityPolicy\":\"frame-src 'self'; frame-ancestors 'self'; object-src 'none';\",\"strictTransportSecurity\":\"max-age=31536000; includeSubDomains\"},\"smtpServer\":{},\"eventsEnabled\":false,\"eventsListeners\":[\"jboss-logging\"],\"enabledEventTypes\":[],\"adminEventsEnabled\":false,\"adminEventsDetailsEnabled\":false,\"internationalizationEnabled\":false,\"supportedLocales\":[],\"browserFlow\":\"browser\",\"registrationFlow\":\"registration\",\"directGrantFlow\":\"direct grant\",\"resetCredentialsFlow\":\"reset credentials\",\"clientAuthenticationFlow\":\"clients\",\"dockerAuthenticationFlow\":\"docker auth\",\"attributes\":{\"_browser_header.xXSSProtection\":\"1; mode=block\",\"_browser_header.xFrameOptions\":\"SAMEORIGIN\",\"_browser_header.strictTransportSecurity\":\"max-age=31536000; includeSubDomains\",\"permanentLockout\":\"false\",\"quickLoginCheckMilliSeconds\":\"1000\",\"_browser_header.xRobotsTag\":\"none\",\"maxFailureWaitSeconds\":\"900\",\"minimumQuickLoginWaitSeconds\":\"60\",\"failureFactor\":\"30\",\"actionTokenGeneratedByUserLifespan\":\"300\",\"maxDeltaTimeSeconds\":\"43200\",\"_browser_header.xContentTypeOptions\":\"nosniff\",\"offlineSessionMaxLifespan\":\"5184000\",\"actionTokenGeneratedByAdminLifespan\":\"43200\",\"_browser_header.contentSecurityPolicyReportOnly\":\"\",\"bruteForceProtected\":\"false\",\"_browser_header.contentSecurityPolicy\":\"frame-src 'self'; frame-ancestors 'self'; object-src 'none';\",\"waitIncrementSeconds\":\"60\",\"offlineSessionMaxLifespanEnabled\":\"false\"},\"userManagedAccessAllowed\":false}";
     HttpEntity<String> request = new HttpEntity<>(realmData, headers);
     ResponseEntity<String> response = restTemplate.postForEntity(keycloakUrl + "/admin/realms", request, String.class);
-    assertThat(response.getStatusCode(), equalTo(HttpStatus.CREATED));
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     LOG.info("Created realm " + realm);
   }
 
@@ -380,7 +378,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
   private static void deleteRealm(HttpHeaders headers, String realm) {
     ResponseEntity<String> response = restTemplate.exchange(keycloakUrl + "/admin/realms/" + realm, HttpMethod.DELETE,
         new HttpEntity<>(headers), String.class);
-    assertThat(response.getStatusCode(), equalTo(HttpStatus.NO_CONTENT));
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     LOG.info("Deleted realm " + realm);
   }
 
@@ -404,26 +402,26 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
     HttpEntity<String> request = new HttpEntity<>(clientData, headers);
     ResponseEntity<String> response = restTemplate.postForEntity(keycloakUrl + "/admin/realms/" + realm + "/clients",
         request, String.class);
-    assertThat(response.getStatusCode(), equalTo(HttpStatus.CREATED));
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
     // Get the Client secret
     String clientSecret = null;
     response = restTemplate.exchange(keycloakUrl + "/admin/realms/" + realm + "/clients?clientId=" + clientId,
         HttpMethod.GET, new HttpEntity<>(headers), String.class);
-    assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     String internalClientId = new JSONArray(response.getBody()).getJSONObject(0).getString("id");
     response = restTemplate.exchange(
         keycloakUrl + "/admin/realms/" + realm + "/clients/" + internalClientId + "/client-secret", HttpMethod.GET,
         new HttpEntity<>(headers), String.class);
-    assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     clientSecret = new JSONObject(response.getBody()).getString("value");
-    assertThat(clientSecret, notNullValue());
+    assertThat(clientSecret).isNotNull();
 
     // Get the Client's service account
     response = restTemplate.exchange(
         keycloakUrl + "/admin/realms/" + realm + "/users?username=service-account-" + clientId, HttpMethod.GET,
         new HttpEntity<>(headers), String.class);
-    assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     String serviceAccountId = new JSONArray(response.getBody()).getJSONObject(0).getString("id");
 
     // Get user and group roles of realm-management client
@@ -433,12 +431,12 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
     String viewClientsRoleId = null;
     response = restTemplate.exchange(keycloakUrl + "/admin/realms/" + realm + "/clients?clientId=realm-management",
         HttpMethod.GET, new HttpEntity<>(headers), String.class);
-    assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     String realmManagementId = new JSONArray(response.getBody()).getJSONObject(0).getString("id");
     response = restTemplate.exchange(
         keycloakUrl + "/admin/realms/" + realm + "/users/" + serviceAccountId + "/role-mappings/clients/"
             + realmManagementId + "/available", HttpMethod.GET, new HttpEntity<>(headers), String.class);
-    assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     JSONArray roleList = new JSONArray(response.getBody());
     for (int i = 0; i < roleList.length(); i++) {
       JSONObject role = roleList.getJSONObject(i);
@@ -456,9 +454,9 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
         break;
       }
     }
-    assertThat(queryUserRoleId, notNullValue());
-    assertThat(queryGroupRoleId, notNullValue());
-    assertThat(viewUserRoleId, notNullValue());
+    assertThat(queryUserRoleId).isNotNull();
+    assertThat(queryGroupRoleId).isNotNull();
+    assertThat(viewUserRoleId).isNotNull();
 
     // Add service account client roles query-user, query-group, view-user, view-clients for realm management: this allows using the management REST API via this newly created client
     String roleMapping = "[" + "{\"clientRole\":true,\"composite\":false,\"containerId\":\"" + realmManagementId
@@ -474,7 +472,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
     response = restTemplate.postForEntity(
         keycloakUrl + "/admin/realms/" + realm + "/users/" + serviceAccountId + "/role-mappings/clients/"
             + realmManagementId, request, String.class);
-    assertThat(response.getStatusCode(), equalTo(HttpStatus.NO_CONTENT));
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
 
     LOG.info("Created client " + clientId);
     return clientSecret;
@@ -517,18 +515,18 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
     HttpEntity<String> request = new HttpEntity<>(userData.toString(), headers);
     ResponseEntity<String> response = restTemplate.postForEntity(keycloakUrl + "/admin/realms/" + realm + "/users",
         request, String.class);
-    assertThat(response.getStatusCode(), equalTo(HttpStatus.CREATED));
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     // get the user ID
     response = restTemplate.exchange(keycloakUrl + "/admin/realms/" + realm + "/users?username=" + userName,
         HttpMethod.GET, new HttpEntity<>(headers), String.class);
-    assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     String userId = new JSONArray(response.getBody()).getJSONObject(0).getString("id");
     // set optional password
     if (!ObjectUtils.isEmpty(password)) {
       String pwd = "{\"type\":\"password\",\"value\":\"" + password + "\"}";
       response = restTemplate.exchange(keycloakUrl + "/admin/realms/" + realm + "/users/" + userId + "/reset-password",
           HttpMethod.PUT, new HttpEntity<>(pwd, headers), String.class);
-      assertThat(response.getStatusCode(), equalTo(HttpStatus.NO_CONTENT));
+      assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
     LOG.info("Created user {}", userName);
     return userId;
@@ -544,7 +542,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
   static void deleteUser(HttpHeaders headers, String realm, String userId) {
     ResponseEntity<String> response = restTemplate.exchange(keycloakUrl + "/admin/realms/" + realm + "/users/" + userId,
         HttpMethod.DELETE, new HttpEntity<>(headers), String.class);
-    assertThat(response.getStatusCode(), equalTo(HttpStatus.NO_CONTENT));
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     LOG.info("Deleted user with ID {}", userId);
   }
 
@@ -589,11 +587,11 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
         parentGroupId != null ?
             "/" + parentGroupId + "/children" :
             ""), request, String.class);
-    assertThat(response.getStatusCode(), equalTo(HttpStatus.CREATED));
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     // get the group id
     response = restTemplate.exchange(keycloakUrl + "/admin/realms/" + realm + "/groups?search=" + groupName,
         HttpMethod.GET, new HttpEntity<>(headers), String.class);
-    assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     JSONArray groups = new JSONArray(response.getBody());
     JSONObject group = findGroupInHierarchy(groups, groupName);
     if (group != null) {
@@ -613,7 +611,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
     ResponseEntity<String> response = restTemplate.exchange(
         keycloakUrl + "/admin/realms/" + realm + "/groups/" + groupId, HttpMethod.DELETE, new HttpEntity<>(headers),
         String.class);
-    assertThat(response.getStatusCode(), equalTo(HttpStatus.NO_CONTENT));
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     LOG.info("Deleted group with ID {}", groupId);
   }
 
@@ -644,7 +642,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
     ResponseEntity<String> response = restTemplate.exchange(
         keycloakUrl + "/admin/realms/" + realm + "/users/" + userId + "/groups/" + groupId, HttpMethod.PUT,
         new HttpEntity<>(headers), String.class);
-    assertThat(response.getStatusCode(), equalTo(HttpStatus.NO_CONTENT));
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
   }
 
   // ------------------------------------------------------------------------
@@ -664,7 +662,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
     ResponseEntity<String> response = restTemplate.exchange(
         keycloakUrl + "/admin/realms/" + realm + "/clients?clientId=" + clientId, HttpMethod.GET,
         new HttpEntity<>(null, headers), String.class);
-    assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     JSONArray json = new JSONArray(response.getBody());
     return json.getJSONObject(0).getString("id");
   }
@@ -682,7 +680,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
     HttpEntity<String> request = new HttpEntity<>(role, headers);
     ResponseEntity<String> response = restTemplate.postForEntity(
         keycloakUrl + "/admin/realms/" + realm + "/clients/" + clientInternalId + "/roles", request, String.class);
-    assertThat(response.getStatusCode(), equalTo(HttpStatus.CREATED));
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     LOG.info("Created client role {}", roleName);
   }
 
@@ -705,7 +703,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
     ResponseEntity<String> response = restTemplate.exchange(
         keycloakUrl + "/admin/realms/" + realm + "/clients/" + clientInternalId + "/roles/" + roleName, HttpMethod.GET,
         new HttpEntity<>(headers), String.class);
-    assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     String roleId = new JSONObject(response.getBody()).getString("id");
 
     // create role mapping
@@ -715,7 +713,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
     response = restTemplate.postForEntity(
         keycloakUrl + "/admin/realms/" + realm + "/users/" + userId + "/role-mappings/clients/" + clientInternalId,
         request, String.class);
-    assertThat(response.getStatusCode(), equalTo(HttpStatus.NO_CONTENT));
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
   }
 
   /**
@@ -737,7 +735,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
     ResponseEntity<String> response = restTemplate.exchange(
         keycloakUrl + "/admin/realms/" + realm + "/clients/" + clientInternalId + "/roles/" + roleName, HttpMethod.GET,
         new HttpEntity<>(headers), String.class);
-    assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     String roleId = new JSONObject(response.getBody()).getString("id");
 
     // create role mapping
@@ -747,7 +745,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
     response = restTemplate.postForEntity(
         keycloakUrl + "/admin/realms/" + realm + "/groups/" + groupId + "/role-mappings/clients/" + clientInternalId,
         request, String.class);
-    assertThat(response.getStatusCode(), equalTo(HttpStatus.NO_CONTENT));
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
   }
 
 }
