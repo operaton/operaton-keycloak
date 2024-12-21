@@ -27,7 +27,7 @@ public class KeycloakConfigureAdminUserIdAndUseUsernameAsIdTest extends Abstract
       protected void setUp() throws Exception {
         ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration.createProcessEngineConfigurationFromResource(
             "operaton.configureAdminUserIdAndUseUsernameAsId.cfg.xml");
-        configureKeycloakIdentityProviderPlugin(config).setAdministratorUserId(USER_ID_OPERATON_ADMIN);
+        configureKeycloakIdentityProviderPlugin(config).setAdministratorUserId(userIdOperatonAdmin);
         PluggableProcessEngineTestCase.cachedProcessEngine = config.buildProcessEngine();
       }
 

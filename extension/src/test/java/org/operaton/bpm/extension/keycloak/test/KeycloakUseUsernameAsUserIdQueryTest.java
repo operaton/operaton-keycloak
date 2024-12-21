@@ -121,10 +121,10 @@ public class KeycloakUseUsernameAsUserIdQueryTest extends AbstractKeycloakIdenti
   }
 
   public void testUserQueryFilterByGroupIdAndId() {
-    List<User> result = identityService.createUserQuery().memberOfGroup(GROUP_ID_ADMIN).userId("operaton").list();
+    List<User> result = identityService.createUserQuery().memberOfGroup(groupIdAdmin).userId("operaton").list();
     assertEquals(1, result.size());
 
-    result = identityService.createUserQuery().memberOfGroup(GROUP_ID_ADMIN).userId("non-exist").list();
+    result = identityService.createUserQuery().memberOfGroup(groupIdAdmin).userId("non-exist").list();
     assertEquals(0, result.size());
 
     result = identityService.createUserQuery().memberOfGroup("non-exist").userId("operaton").list();
@@ -161,27 +161,27 @@ public class KeycloakUseUsernameAsUserIdQueryTest extends AbstractKeycloakIdenti
   }
 
   public void testFilterByGroupIdAndUserId() {
-    Group group = identityService.createGroupQuery().groupId(GROUP_ID_ADMIN).groupMember("operaton").singleResult();
+    Group group = identityService.createGroupQuery().groupId(groupIdAdmin).groupMember("operaton").singleResult();
     assertNotNull(group);
     assertEquals("operaton-admin", group.getName());
 
     group = identityService.createGroupQuery().groupId("non-exist").groupMember("operaton").singleResult();
     assertNull(group);
 
-    group = identityService.createGroupQuery().groupId(GROUP_ID_ADMIN).groupMember("non-exist").singleResult();
+    group = identityService.createGroupQuery().groupId(groupIdAdmin).groupMember("non-exist").singleResult();
     assertNull(group);
   }
 
   public void testFilterByGroupIdInAndUserId() {
     Group group = identityService.createGroupQuery()
-        .groupIdIn(GROUP_ID_ADMIN, GROUP_ID_TEAMLEAD)
+        .groupIdIn(groupIdAdmin, groupIdTeamlead)
         .groupMember("operaton")
         .singleResult();
     assertNotNull(group);
     assertEquals("operaton-admin", group.getName());
 
     group = identityService.createGroupQuery()
-        .groupIdIn(GROUP_ID_ADMIN, GROUP_ID_TEAMLEAD)
+        .groupIdIn(groupIdAdmin, groupIdTeamlead)
         .groupMember("non-exist")
         .singleResult();
     assertNull(group);
@@ -190,7 +190,7 @@ public class KeycloakUseUsernameAsUserIdQueryTest extends AbstractKeycloakIdenti
   public void testGroupQueryFilterByUserIdSimilarToClientName() {
     Group group = identityService.createGroupQuery().groupMember("operaton-identity-service").singleResult();
     assertNotNull(group);
-    assertEquals(GROUP_ID_SIMILAR_CLIENT_NAME, group.getId());
+    assertEquals(groupIdSimilarClientName, group.getId());
     assertEquals("operaton-identity-service", group.getName());
   }
 }
