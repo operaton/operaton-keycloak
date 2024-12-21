@@ -27,6 +27,20 @@
 
     <!-- Set to false for each module that must be deployed -->
     <deploy.skip>true</deploy.skip>
+    <jacoco.skip>false</jacoco.skip>
+
+    <surefire.memArgs>-Xmx1024m -XX:MetaspaceSize=128m</surefire.memArgs>
+    <surefire.argLine>${surefire.memArgs} -Duser.language=en -Duser.region=US -XX:+HeapDumpOnOutOfMemoryError
+      -XX:HeapDumpPath=${project.build.directory}/heap_dump.hprof
+    </surefire.argLine>
+
+    <sonar.organization>operaton</sonar.organization>
+    <sonar.projectKey>operaton_operaton-keycloak</sonar.projectKey>
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <sonar.coverage.jacoco.xmlReportPaths>
+      ${maven.multiModuleProjectDirectory}/target/jacoco/operaton-keycloak/jacoco.xml
+      ${maven.multiModuleProjectDirectory}/target/jacoco/operaton-keycloak-jwt/jacoco.xml
+    </sonar.coverage.jacoco.xmlReportPaths>
   </properties>
 
   <url>http://www.operaton.org</url>
@@ -110,7 +124,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>3.3.0</version>
         <configuration>
           <archive>
             <manifest>
@@ -123,7 +136,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.13.0</version>
         <configuration>
           <release>${version.java}</release>
         </configuration>
@@ -131,7 +143,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.10.1</version>
         <configuration>
           <!-- disable javadoc linter to not fail on incomplete javadoc -->
           <additionalJOption>-Xdoclint:none</additionalJOption>
@@ -150,6 +161,16 @@
     <pluginManagement>
       <plugins>
         <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>0.8.13</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.13.0</version>
+        </plugin>
+        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-deploy-plugin</artifactId>
           <version>3.1.3</version>
@@ -161,6 +182,11 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>3.10.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.3.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -219,7 +245,6 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>3.10.1</version>
             <configuration>
               <!-- disable javadoc linter to not fail on incomplete javadoc -->
               <additionalJOption>-Xdoclint:none</additionalJOption>
@@ -238,6 +263,89 @@
                 <goals>
                   <goal>jar</goal>
                 </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>coverage</id>
+      <activation>
+        <file>
+          <exists>${project.basedir}/.coverage</exists>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>prepare-agent</id>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+                <configuration>
+                  <propertyName>jacoco.argLine</propertyName>
+                </configuration>
+              </execution>
+              <execution>
+                <id>report</id>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${maven.multiModuleProjectDirectory}/target/jacoco/${project.artifactId}</outputDirectory>
+                  <formats>
+                    <format>XML</format>
+                  </formats>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <runOrder>hourly</runOrder>
+              <argLine>${jacoco.argLine} ${surefire.argLine}</argLine>
+              <systemPropertyVariables>
+                <myWorkingDir>${project.build.directory}</myWorkingDir>
+              </systemPropertyVariables>
+              <redirectTestOutputToFile>true</redirectTestOutputToFile>
+              <forkCount>${surefire.forkCount}</forkCount>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>coverage-report</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>merge</id>
+                <goals>
+                  <goal>merge</goal>
+                </goals>
+                <configuration>
+                  <fileSets>
+                    <fileSet>
+                      <directory>${maven.multiModuleProjectDirectory}</directory>
+                      <includes>
+                        <include>**/target/jacoco.exec</include>
+                      </includes>
+                    </fileSet>
+                  </fileSets>
+                  <destFile>${maven.multiModuleProjectDirectory}/target/jacoco.exec</destFile>
+                </configuration>
               </execution>
             </executions>
           </plugin>
