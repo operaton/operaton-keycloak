@@ -140,7 +140,7 @@ public class KeycloakUserQueryTest extends AbstractKeycloakIdentityProviderTest 
     assertNotNull(user);
   }
 
-  public void testFilterByEmail() throws Exception {
+  public void testFilterByEmail() {
     User user = identityService.createUserQuery().userEmail("operaton@accso.de").singleResult();
     assertNotNull(user);
 
@@ -148,7 +148,7 @@ public class KeycloakUserQueryTest extends AbstractKeycloakIdentityProviderTest 
     assertNull(user);
   }
 
-  public void testFilterByEmailLike() throws Exception {
+  public void testFilterByEmailLike() {
     User user = identityService.createUserQuery().userEmailLike("operaton@*").singleResult();
     assertNotNull(user);
     user = identityService.createUserQuery().userEmailLike("operaton@%").singleResult();

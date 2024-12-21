@@ -24,7 +24,7 @@ public class KeycloakConfigureAdminUserIdAsUsernameSimilarToClientName extends A
     return new TestSetup(new TestSuite(KeycloakConfigureAdminUserIdAsUsernameSimilarToClientName.class)) {
 
       // @BeforeClass
-      protected void setUp() throws Exception {
+      protected void setUp() {
         ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration.createProcessEngineConfigurationFromResource(
             "operaton.configureAdminUserIdAsUsernameSimilarToClientName.cfg.xml");
         configureKeycloakIdentityProviderPlugin(config);
@@ -32,7 +32,7 @@ public class KeycloakConfigureAdminUserIdAsUsernameSimilarToClientName extends A
       }
 
       // @AfterClass
-      protected void tearDown() throws Exception {
+      protected void tearDown() {
         PluggableProcessEngineTestCase.cachedProcessEngine.close();
         PluggableProcessEngineTestCase.cachedProcessEngine = null;
       }

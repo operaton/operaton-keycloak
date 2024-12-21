@@ -25,7 +25,7 @@ public class KeycloakConfigureAdminGroupAsPathAndUsePathAsId extends AbstractKey
     return new TestSetup(new TestSuite(KeycloakConfigureAdminGroupAsPathAndUsePathAsId.class)) {
 
       // @BeforeClass
-      protected void setUp() throws Exception {
+      protected void setUp() {
         ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration.createProcessEngineConfigurationFromResource(
             "operaton.configureAdminGroupAsPathAndUsePathAsId.cfg.xml");
         configureKeycloakIdentityProviderPlugin(config);
@@ -33,7 +33,7 @@ public class KeycloakConfigureAdminGroupAsPathAndUsePathAsId extends AbstractKey
       }
 
       // @AfterClass
-      protected void tearDown() throws Exception {
+      protected void tearDown() {
         PluggableProcessEngineTestCase.cachedProcessEngine.close();
         PluggableProcessEngineTestCase.cachedProcessEngine = null;
       }

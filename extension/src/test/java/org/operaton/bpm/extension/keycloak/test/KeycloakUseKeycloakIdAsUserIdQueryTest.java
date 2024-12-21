@@ -21,7 +21,7 @@ public class KeycloakUseKeycloakIdAsUserIdQueryTest extends AbstractKeycloakIden
     return new TestSetup(new TestSuite(KeycloakUseKeycloakIdAsUserIdQueryTest.class)) {
 
       // @BeforeClass
-      protected void setUp() throws Exception {
+      protected void setUp() {
         ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration.createProcessEngineConfigurationFromResource(
             "operaton.useKeycloakIdAsOperatonUserId.cfg.xml");
         configureKeycloakIdentityProviderPlugin(config);
@@ -29,7 +29,7 @@ public class KeycloakUseKeycloakIdAsUserIdQueryTest extends AbstractKeycloakIden
       }
 
       // @AfterClass
-      protected void tearDown() throws Exception {
+      protected void tearDown() {
         PluggableProcessEngineTestCase.cachedProcessEngine.close();
         PluggableProcessEngineTestCase.cachedProcessEngine = null;
       }

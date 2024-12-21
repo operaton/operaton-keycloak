@@ -28,7 +28,7 @@ public class KeycloakUserQueryTestWithCachingAndCustomCacheExpiry extends Abstra
     return new TestSetup(new TestSuite(KeycloakUserQueryTestWithCachingAndCustomCacheExpiry.class)) {
 
       // @BeforeClass
-      protected void setUp() throws Exception {
+      protected void setUp() {
         ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration.createProcessEngineConfigurationFromResource(
             "operaton.enableCachingAndConfigureCacheDuration.cfg.xml");
         configureKeycloakIdentityProviderPlugin(config);
@@ -36,7 +36,7 @@ public class KeycloakUserQueryTestWithCachingAndCustomCacheExpiry extends Abstra
       }
 
       // @AfterClass
-      protected void tearDown() throws Exception {
+      protected void tearDown() {
         PluggableProcessEngineTestCase.cachedProcessEngine.close();
         PluggableProcessEngineTestCase.cachedProcessEngine = null;
       }
