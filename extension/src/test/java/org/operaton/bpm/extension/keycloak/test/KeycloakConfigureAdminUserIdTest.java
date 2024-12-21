@@ -24,7 +24,7 @@ public class KeycloakConfigureAdminUserIdTest extends AbstractKeycloakIdentityPr
     return new TestSetup(new TestSuite(KeycloakConfigureAdminUserIdTest.class)) {
 
       // @BeforeClass
-      protected void setUp() throws Exception {
+      protected void setUp() {
         ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration.createProcessEngineConfigurationFromResource(
             "operaton.configureAdminUserId.cfg.xml");
         configureKeycloakIdentityProviderPlugin(config).setAdministratorUserId(userIdOperatonAdmin);
@@ -32,7 +32,7 @@ public class KeycloakConfigureAdminUserIdTest extends AbstractKeycloakIdentityPr
       }
 
       // @AfterClass
-      protected void tearDown() throws Exception {
+      protected void tearDown() {
         PluggableProcessEngineTestCase.cachedProcessEngine.close();
         PluggableProcessEngineTestCase.cachedProcessEngine = null;
       }

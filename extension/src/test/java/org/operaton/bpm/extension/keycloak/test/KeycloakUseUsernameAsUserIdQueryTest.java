@@ -6,6 +6,7 @@ import java.util.List;
 import junit.extensions.TestSetup;
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import org.json.JSONException;
 import org.operaton.bpm.engine.ProcessEngineConfiguration;
 import org.operaton.bpm.engine.identity.Group;
 import org.operaton.bpm.engine.identity.User;
@@ -25,7 +26,7 @@ public class KeycloakUseUsernameAsUserIdQueryTest extends AbstractKeycloakIdenti
     return new TestSetup(new TestSuite(KeycloakUseUsernameAsUserIdQueryTest.class)) {
 
       // @BeforeClass
-      protected void setUp() throws Exception {
+      protected void setUp() throws JSONException {
         // setup Keycloak special test users
         // -------------------------------------
         HttpHeaders headers = authenticateKeycloakAdmin();
@@ -39,7 +40,7 @@ public class KeycloakUseUsernameAsUserIdQueryTest extends AbstractKeycloakIdenti
       }
 
       // @AfterClass
-      protected void tearDown() throws Exception {
+      protected void tearDown() throws JSONException {
         PluggableProcessEngineTestCase.cachedProcessEngine.close();
         PluggableProcessEngineTestCase.cachedProcessEngine = null;
 

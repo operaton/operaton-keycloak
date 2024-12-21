@@ -24,7 +24,7 @@ public class KeycloakConfigureAdminUserIdAsUsernameAndUseMailAsIdTest extends Ab
     return new TestSetup(new TestSuite(KeycloakConfigureAdminUserIdAsUsernameAndUseMailAsIdTest.class)) {
 
       // @BeforeClass
-      protected void setUp() throws Exception {
+      protected void setUp() {
         ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration.createProcessEngineConfigurationFromResource(
             "operaton.configureAdminUserIdAsUsernameAndUseMailAsId.cfg.xml");
         configureKeycloakIdentityProviderPlugin(config);
@@ -32,7 +32,7 @@ public class KeycloakConfigureAdminUserIdAsUsernameAndUseMailAsIdTest extends Ab
       }
 
       // @AfterClass
-      protected void tearDown() throws Exception {
+      protected void tearDown() {
         PluggableProcessEngineTestCase.cachedProcessEngine.close();
         PluggableProcessEngineTestCase.cachedProcessEngine = null;
       }

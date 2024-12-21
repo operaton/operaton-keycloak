@@ -28,7 +28,7 @@ public class KeycloakUserQueryTestWithCachingAndMaxSize extends AbstractKeycloak
     return new TestSetup(new TestSuite(KeycloakUserQueryTestWithCachingAndMaxSize.class)) {
 
       // @BeforeClass
-      protected void setUp() throws Exception {
+      protected void setUp() {
         ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration.createProcessEngineConfigurationFromResource(
             "operaton.enableCachingAndConfigureMaxCacheSize.cfg.xml");
         configureKeycloakIdentityProviderPlugin(config);
@@ -36,7 +36,7 @@ public class KeycloakUserQueryTestWithCachingAndMaxSize extends AbstractKeycloak
       }
 
       // @AfterClass
-      protected void tearDown() throws Exception {
+      protected void tearDown() {
         PluggableProcessEngineTestCase.cachedProcessEngine.close();
         PluggableProcessEngineTestCase.cachedProcessEngine = null;
       }
