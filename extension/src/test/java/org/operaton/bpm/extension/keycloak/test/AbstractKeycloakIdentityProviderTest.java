@@ -61,28 +61,28 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
   private static final Logger LOG = BaseLogger.createLogger(TestLogger.class, "KEYCLOAK",
       "org.operaton.bpm.extension.keycloak", "42").getLogger();
 
-  protected static String GROUP_ID_TEAMLEAD;
-  protected static String GROUP_ID_MANAGER;
-  protected static String GROUP_ID_ADMIN;
-  protected static String GROUP_ID_SYSTEM_READONLY;
+  protected static String groupIdTeamlead;
+  protected static String groupIdManager;
+  protected static String groupIdAdmin;
+  protected static String groupIdSystemReadonly;
 
-  protected static String USER_ID_OPERATON_ADMIN;
-  protected static String USER_ID_TEAMLEAD;
-  protected static String USER_ID_MANAGER;
+  protected static String userIdOperatonAdmin;
+  protected static String userIdTeamlead;
+  protected static String userIdManager;
 
-  protected static String GROUP_ID_HIERARCHY_ROOT;
-  protected static String GROUP_ID_HIERARCHY_CHILD1;
-  protected static String GROUP_ID_HIERARCHY_CHILD2;
-  protected static String GROUP_ID_HIERARCHY_SUBCHILD1;
+  protected static String groupIdHierarchyRoot;
+  protected static String groupIdHierarchyChild1;
+  protected static String groupIdHierarchyChild2;
+  protected static String groupIdHierarchySubchild1;
 
-  protected static String USER_ID_HIERARCHY;
+  protected static String userIdHierarchy;
 
-  protected static String GROUP_ID_SIMILAR_CLIENT_NAME;
-  protected static String USER_ID_SIMILAR_CLIENT_NAME;
+  protected static String groupIdSimilarClientName;
+  protected static String userIdSimilarClientName;
 
-  private static final RestTemplate restTemplate = new RestTemplate();
+  private static final RestTemplate REST_TEMPLATE = new RestTemplate();
 
-  protected static String CLIENT_SECRET;
+  protected static String clientSecret;
 
   @Container
   static KeycloakContainer keycloak = new KeycloakContainer("quay.io/keycloak/keycloak:26.0.7");
@@ -179,7 +179,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
         kcp.setKeycloakAdminUrl(kcp.getKeycloakAdminUrl().replace("http://localhost:9000", keycloakUrl));
         kcp.setKeycloakIssuerUrl(kcp.getKeycloakIssuerUrl().replace("http://localhost:9000", keycloakUrl));
         kcp.setEnforceSubgroupsInGroupQuery(keycloakEnforceSubgroupsInGroupQuery);
-        kcp.setClientSecret(CLIENT_SECRET);
+        kcp.setClientSecret(clientSecret);
         return kcp;
       }
     }
@@ -222,45 +222,45 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
     createRealm(headers, realm);
 
     // Create Client
-    CLIENT_SECRET = createClient(headers, realm, "operaton-identity-service", "http://localhost:8080/login");
+    clientSecret = createClient(headers, realm, "operaton-identity-service", "http://localhost:8080/login");
 
     // Create groups
-    GROUP_ID_ADMIN = createGroup(headers, realm, "operaton-admin", true);
-    GROUP_ID_TEAMLEAD = createGroup(headers, realm, "teamlead", false);
-    GROUP_ID_MANAGER = createGroup(headers, realm, "manager", false);
-    GROUP_ID_SYSTEM_READONLY = createGroup(headers, realm, "cam-read-only", true);
+    groupIdAdmin = createGroup(headers, realm, "operaton-admin", true);
+    groupIdTeamlead = createGroup(headers, realm, "teamlead", false);
+    groupIdManager = createGroup(headers, realm, "manager", false);
+    groupIdSystemReadonly = createGroup(headers, realm, "cam-read-only", true);
 
     // Create Users
-    USER_ID_OPERATON_ADMIN = createUser(headers, realm, "operaton", "Admin", "Operaton", "operaton@accso.de",
+    userIdOperatonAdmin = createUser(headers, realm, "operaton", "Admin", "Operaton", "operaton@accso.de",
         "operaton1!");
-    assignUserGroup(headers, realm, USER_ID_OPERATON_ADMIN, GROUP_ID_ADMIN);
+    assignUserGroup(headers, realm, userIdOperatonAdmin, groupIdAdmin);
 
-    USER_ID_TEAMLEAD = createUser(headers, realm, "hans.mustermann", "Hans", "Mustermann",
+    userIdTeamlead = createUser(headers, realm, "hans.mustermann", "Hans", "Mustermann",
         "hans.mustermann@tradermail.info", "äöüÄÖÜ");
-    assignUserGroup(headers, realm, USER_ID_TEAMLEAD, GROUP_ID_TEAMLEAD);
+    assignUserGroup(headers, realm, userIdTeamlead, groupIdTeamlead);
 
-    USER_ID_MANAGER = createUser(headers, realm, "gunnar.von-der-beck@accso.de", "Gunnar", "von der Beck",
+    userIdManager = createUser(headers, realm, "gunnar.von-der-beck@accso.de", "Gunnar", "von der Beck",
         "gunnar.von-der-beck@accso.de", null);
-    assignUserGroup(headers, realm, USER_ID_MANAGER, GROUP_ID_MANAGER);
-    assignUserGroup(headers, realm, USER_ID_MANAGER, GROUP_ID_TEAMLEAD);
+    assignUserGroup(headers, realm, userIdManager, groupIdManager);
+    assignUserGroup(headers, realm, userIdManager, groupIdTeamlead);
 
     // Create additional group hierarchy
-    GROUP_ID_HIERARCHY_ROOT = createGroup(headers, realm, "root", false);
-    GROUP_ID_HIERARCHY_CHILD1 = createGroup(headers, realm, "child1", false, GROUP_ID_HIERARCHY_ROOT);
-    GROUP_ID_HIERARCHY_CHILD2 = createGroup(headers, realm, "child2", false, GROUP_ID_HIERARCHY_ROOT);
-    GROUP_ID_HIERARCHY_SUBCHILD1 = createGroup(headers, realm, "subchild1", false, GROUP_ID_HIERARCHY_CHILD1);
+    groupIdHierarchyRoot = createGroup(headers, realm, "root", false);
+    groupIdHierarchyChild1 = createGroup(headers, realm, "child1", false, groupIdHierarchyRoot);
+    groupIdHierarchyChild2 = createGroup(headers, realm, "child2", false, groupIdHierarchyRoot);
+    groupIdHierarchySubchild1 = createGroup(headers, realm, "subchild1", false, groupIdHierarchyChild1);
 
     // Create user with access to parts of hierarchy
-    USER_ID_HIERARCHY = createUser(headers, realm, "johnfoo", "John", "Foo", "johnfoo@gmail.com",
+    userIdHierarchy = createUser(headers, realm, "johnfoo", "John", "Foo", "johnfoo@gmail.com",
         "!§$%&/()=?#'-_.:,;+*~@€");
-    assignUserGroup(headers, realm, USER_ID_HIERARCHY, GROUP_ID_HIERARCHY_CHILD2);
-    assignUserGroup(headers, realm, USER_ID_HIERARCHY, GROUP_ID_HIERARCHY_SUBCHILD1);
+    assignUserGroup(headers, realm, userIdHierarchy, groupIdHierarchyChild2);
+    assignUserGroup(headers, realm, userIdHierarchy, groupIdHierarchySubchild1);
 
     // Create user and group named similar to the name of the Keycloak Client
-    GROUP_ID_SIMILAR_CLIENT_NAME = createGroup(headers, realm, "operaton-identity-service", false);
-    USER_ID_SIMILAR_CLIENT_NAME = createUser(headers, realm, "operaton-identity-service", "Identity", "Service",
+    groupIdSimilarClientName = createGroup(headers, realm, "operaton-identity-service", false);
+    userIdSimilarClientName = createUser(headers, realm, "operaton-identity-service", "Identity", "Service",
         "identity.service@test.de", null);
-    assignUserGroup(headers, realm, USER_ID_SIMILAR_CLIENT_NAME, GROUP_ID_SIMILAR_CLIENT_NAME);
+    assignUserGroup(headers, realm, userIdSimilarClientName, groupIdSimilarClientName);
 
     // --------------------------------------------------------------------
 
@@ -272,11 +272,11 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
     createClientRole(headers, realm, clientInternalId, "role-manager");
 
     // Add Client level roles to groups and users
-    addGroupClientRoleMapping(headers, realm, GROUP_ID_ADMIN, clientInternalId, "role-admin");
-    addGroupClientRoleMapping(headers, realm, GROUP_ID_TEAMLEAD, clientInternalId, "role-teamlead");
-    addGroupClientRoleMapping(headers, realm, GROUP_ID_MANAGER, clientInternalId, "role-manager");
-    addUserClientRoleMapping(headers, realm, USER_ID_TEAMLEAD, clientInternalId, "role-readonly");
-    addUserClientRoleMapping(headers, realm, USER_ID_MANAGER, clientInternalId, "role-readonly");
+    addGroupClientRoleMapping(headers, realm, groupIdAdmin, clientInternalId, "role-admin");
+    addGroupClientRoleMapping(headers, realm, groupIdTeamlead, clientInternalId, "role-teamlead");
+    addGroupClientRoleMapping(headers, realm, groupIdManager, clientInternalId, "role-manager");
+    addUserClientRoleMapping(headers, realm, userIdTeamlead, clientInternalId, "role-readonly");
+    addUserClientRoleMapping(headers, realm, userIdManager, clientInternalId, "role-readonly");
   }
 
   /**
@@ -315,11 +315,11 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
         .setConnectionManager(connectionManagerBuilder.build())
         .build();
     final HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
-    restTemplate.setRequestFactory(factory);
+    REST_TEMPLATE.setRequestFactory(factory);
 
-    for (int i = 0; i < restTemplate.getMessageConverters().size(); i++) {
-      if (restTemplate.getMessageConverters().get(i) instanceof StringHttpMessageConverter) {
-        restTemplate.getMessageConverters().set(i, new StringHttpMessageConverter(StandardCharsets.UTF_8));
+    for (int i = 0; i < REST_TEMPLATE.getMessageConverters().size(); i++) {
+      if (REST_TEMPLATE.getMessageConverters().get(i) instanceof StringHttpMessageConverter) {
+        REST_TEMPLATE.getMessageConverters().set(i, new StringHttpMessageConverter(StandardCharsets.UTF_8));
         break;
       }
     }
@@ -338,7 +338,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
     HttpEntity<String> request = new HttpEntity<>(
         "client_id=admin-cli" + "&username=" + keycloakAdminUser + "&password=" + keycloakAdminPassword
             + "&grant_type=password", headers);
-    ResponseEntity<String> response = restTemplate.postForEntity(
+    ResponseEntity<String> response = REST_TEMPLATE.postForEntity(
         keycloakUrl + "/realms/master/protocol/openid-connect/token", request, String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     JSONObject json = new JSONObject(response.getBody());
@@ -364,7 +364,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
     String realmData = "{\"id\":null,\"realm\":\"" + realm
         + "\",\"notBefore\":0,\"revokeRefreshToken\":false,\"refreshTokenMaxReuse\":0,\"accessTokenLifespan\":300,\"accessTokenLifespanForImplicitFlow\":900,\"ssoSessionIdleTimeout\":1800,\"ssoSessionMaxLifespan\":36000,\"ssoSessionIdleTimeoutRememberMe\":0,\"ssoSessionMaxLifespanRememberMe\":0,\"offlineSessionIdleTimeout\":2592000,\"offlineSessionMaxLifespanEnabled\":false,\"offlineSessionMaxLifespan\":5184000,\"accessCodeLifespan\":60,\"accessCodeLifespanUserAction\":300,\"accessCodeLifespanLogin\":1800,\"actionTokenGeneratedByAdminLifespan\":43200,\"actionTokenGeneratedByUserLifespan\":300,\"enabled\":true,\"sslRequired\":\"external\",\"registrationAllowed\":false,\"registrationEmailAsUsername\":false,\"rememberMe\":false,\"verifyEmail\":false,\"loginWithEmailAllowed\":true,\"duplicateEmailsAllowed\":false,\"resetPasswordAllowed\":false,\"editUsernameAllowed\":false,\"bruteForceProtected\":false,\"permanentLockout\":false,\"maxFailureWaitSeconds\":900,\"minimumQuickLoginWaitSeconds\":60,\"waitIncrementSeconds\":60,\"quickLoginCheckMilliSeconds\":1000,\"maxDeltaTimeSeconds\":43200,\"failureFactor\":30,\"defaultRoles\":[\"uma_authorization\",\"offline_access\"],\"requiredCredentials\":[\"password\"],\"otpPolicyType\":\"totp\",\"otpPolicyAlgorithm\":\"HmacSHA1\",\"otpPolicyInitialCounter\":0,\"otpPolicyDigits\":6,\"otpPolicyLookAheadWindow\":1,\"otpPolicyPeriod\":30,\"otpSupportedApplications\":[\"FreeOTP\",\"Google Authenticator\"],\"browserSecurityHeaders\":{\"contentSecurityPolicyReportOnly\":\"\",\"xContentTypeOptions\":\"nosniff\",\"xRobotsTag\":\"none\",\"xFrameOptions\":\"SAMEORIGIN\",\"xXSSProtection\":\"1; mode=block\",\"contentSecurityPolicy\":\"frame-src 'self'; frame-ancestors 'self'; object-src 'none';\",\"strictTransportSecurity\":\"max-age=31536000; includeSubDomains\"},\"smtpServer\":{},\"eventsEnabled\":false,\"eventsListeners\":[\"jboss-logging\"],\"enabledEventTypes\":[],\"adminEventsEnabled\":false,\"adminEventsDetailsEnabled\":false,\"internationalizationEnabled\":false,\"supportedLocales\":[],\"browserFlow\":\"browser\",\"registrationFlow\":\"registration\",\"directGrantFlow\":\"direct grant\",\"resetCredentialsFlow\":\"reset credentials\",\"clientAuthenticationFlow\":\"clients\",\"dockerAuthenticationFlow\":\"docker auth\",\"attributes\":{\"_browser_header.xXSSProtection\":\"1; mode=block\",\"_browser_header.xFrameOptions\":\"SAMEORIGIN\",\"_browser_header.strictTransportSecurity\":\"max-age=31536000; includeSubDomains\",\"permanentLockout\":\"false\",\"quickLoginCheckMilliSeconds\":\"1000\",\"_browser_header.xRobotsTag\":\"none\",\"maxFailureWaitSeconds\":\"900\",\"minimumQuickLoginWaitSeconds\":\"60\",\"failureFactor\":\"30\",\"actionTokenGeneratedByUserLifespan\":\"300\",\"maxDeltaTimeSeconds\":\"43200\",\"_browser_header.xContentTypeOptions\":\"nosniff\",\"offlineSessionMaxLifespan\":\"5184000\",\"actionTokenGeneratedByAdminLifespan\":\"43200\",\"_browser_header.contentSecurityPolicyReportOnly\":\"\",\"bruteForceProtected\":\"false\",\"_browser_header.contentSecurityPolicy\":\"frame-src 'self'; frame-ancestors 'self'; object-src 'none';\",\"waitIncrementSeconds\":\"60\",\"offlineSessionMaxLifespanEnabled\":\"false\"},\"userManagedAccessAllowed\":false}";
     HttpEntity<String> request = new HttpEntity<>(realmData, headers);
-    ResponseEntity<String> response = restTemplate.postForEntity(keycloakUrl + "/admin/realms", request, String.class);
+    ResponseEntity<String> response = REST_TEMPLATE.postForEntity(keycloakUrl + "/admin/realms", request, String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     LOG.info("Created realm " + realm);
   }
@@ -376,7 +376,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
    * @param realm   the realm name
    */
   private static void deleteRealm(HttpHeaders headers, String realm) {
-    ResponseEntity<String> response = restTemplate.exchange(keycloakUrl + "/admin/realms/" + realm, HttpMethod.DELETE,
+    ResponseEntity<String> response = REST_TEMPLATE.exchange(keycloakUrl + "/admin/realms/" + realm, HttpMethod.DELETE,
         new HttpEntity<>(headers), String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     LOG.info("Deleted realm " + realm);
@@ -400,17 +400,17 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
         + redirectUri
         + "\"],\"webOrigins\":[],\"notBefore\":0,\"bearerOnly\":false,\"consentRequired\":false,\"standardFlowEnabled\":true,\"implicitFlowEnabled\":false,\"directAccessGrantsEnabled\":true,\"serviceAccountsEnabled\":true,\"publicClient\":false,\"frontchannelLogout\":false,\"protocol\":\"openid-connect\",\"attributes\":{\"client_credentials.use_refresh_token\":\"true\",\"saml.assertion.signature\":\"false\",\"saml.force.post.binding\":\"false\",\"saml.multivalued.roles\":\"false\",\"saml.encrypt\":\"false\",\"saml.server.signature\":\"false\",\"saml.server.signature.keyinfo.ext\":\"false\",\"exclude.session.state.from.auth.response\":\"false\",\"saml_force_name_id_format\":\"false\",\"saml.client.signature\":\"false\",\"tls.client.certificate.bound.access.tokens\":\"false\",\"saml.authnstatement\":\"false\",\"display.on.consent.screen\":\"false\",\"saml.onetimeuse.condition\":\"false\"},\"authenticationFlowBindingOverrides\":{},\"fullScopeAllowed\":true,\"nodeReRegistrationTimeout\":-1,\"protocolMappers\":[{\"id\":null,\"name\":\"Client Host\",\"protocol\":\"openid-connect\",\"protocolMapper\":\"oidc-usersessionmodel-note-mapper\",\"consentRequired\":false,\"config\":{\"user.session.note\":\"clientHost\",\"userinfo.token.claim\":\"true\",\"id.token.claim\":\"true\",\"access.token.claim\":\"true\",\"claim.name\":\"clientHost\",\"jsonType.label\":\"String\"}},{\"id\":null,\"name\":\"Client IP Address\",\"protocol\":\"openid-connect\",\"protocolMapper\":\"oidc-usersessionmodel-note-mapper\",\"consentRequired\":false,\"config\":{\"user.session.note\":\"clientAddress\",\"userinfo.token.claim\":\"true\",\"id.token.claim\":\"true\",\"access.token.claim\":\"true\",\"claim.name\":\"clientAddress\",\"jsonType.label\":\"String\"}},{\"id\":null,\"name\":\"Client ID\",\"protocol\":\"openid-connect\",\"protocolMapper\":\"oidc-usersessionmodel-note-mapper\",\"consentRequired\":false,\"config\":{\"user.session.note\":\"clientId\",\"userinfo.token.claim\":\"true\",\"id.token.claim\":\"true\",\"access.token.claim\":\"true\",\"claim.name\":\"clientId\",\"jsonType.label\":\"String\"}}],\"defaultClientScopes\":[\"web-origins\",\"role_list\",\"profile\",\"roles\",\"email\"],\"optionalClientScopes\":[\"address\",\"phone\",\"offline_access\"],\"access\":{\"view\":true,\"configure\":true,\"manage\":true}}";
     HttpEntity<String> request = new HttpEntity<>(clientData, headers);
-    ResponseEntity<String> response = restTemplate.postForEntity(keycloakUrl + "/admin/realms/" + realm + "/clients",
+    ResponseEntity<String> response = REST_TEMPLATE.postForEntity(keycloakUrl + "/admin/realms/" + realm + "/clients",
         request, String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
     // Get the Client secret
     String clientSecret = null;
-    response = restTemplate.exchange(keycloakUrl + "/admin/realms/" + realm + "/clients?clientId=" + clientId,
+    response = REST_TEMPLATE.exchange(keycloakUrl + "/admin/realms/" + realm + "/clients?clientId=" + clientId,
         HttpMethod.GET, new HttpEntity<>(headers), String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     String internalClientId = new JSONArray(response.getBody()).getJSONObject(0).getString("id");
-    response = restTemplate.exchange(
+    response = REST_TEMPLATE.exchange(
         keycloakUrl + "/admin/realms/" + realm + "/clients/" + internalClientId + "/client-secret", HttpMethod.GET,
         new HttpEntity<>(headers), String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -418,7 +418,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
     assertThat(clientSecret).isNotNull();
 
     // Get the Client's service account
-    response = restTemplate.exchange(
+    response = REST_TEMPLATE.exchange(
         keycloakUrl + "/admin/realms/" + realm + "/users?username=service-account-" + clientId, HttpMethod.GET,
         new HttpEntity<>(headers), String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -429,11 +429,11 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
     String queryGroupRoleId = null;
     String viewUserRoleId = null;
     String viewClientsRoleId = null;
-    response = restTemplate.exchange(keycloakUrl + "/admin/realms/" + realm + "/clients?clientId=realm-management",
+    response = REST_TEMPLATE.exchange(keycloakUrl + "/admin/realms/" + realm + "/clients?clientId=realm-management",
         HttpMethod.GET, new HttpEntity<>(headers), String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     String realmManagementId = new JSONArray(response.getBody()).getJSONObject(0).getString("id");
-    response = restTemplate.exchange(
+    response = REST_TEMPLATE.exchange(
         keycloakUrl + "/admin/realms/" + realm + "/users/" + serviceAccountId + "/role-mappings/clients/"
             + realmManagementId + "/available", HttpMethod.GET, new HttpEntity<>(headers), String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -469,7 +469,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
         + "\",\"description\":\"${role_view-clients}\",\"id\":\"" + viewClientsRoleId + "\",\"name\":\"view-clients\"}"
         + "]";
     request = new HttpEntity<>(roleMapping, headers);
-    response = restTemplate.postForEntity(
+    response = REST_TEMPLATE.postForEntity(
         keycloakUrl + "/admin/realms/" + realm + "/users/" + serviceAccountId + "/role-mappings/clients/"
             + realmManagementId, request, String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
@@ -513,18 +513,18 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
     userData.append(
         "\"disableableCredentialTypes\":[\"password\"],\"requiredActions\":[],\"federatedIdentities\":[],\"notBefore\":0,\"access\":{\"manageGroupMembership\":true,\"view\":true,\"mapRoles\":true,\"impersonate\":true,\"manage\":true}}");
     HttpEntity<String> request = new HttpEntity<>(userData.toString(), headers);
-    ResponseEntity<String> response = restTemplate.postForEntity(keycloakUrl + "/admin/realms/" + realm + "/users",
+    ResponseEntity<String> response = REST_TEMPLATE.postForEntity(keycloakUrl + "/admin/realms/" + realm + "/users",
         request, String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     // get the user ID
-    response = restTemplate.exchange(keycloakUrl + "/admin/realms/" + realm + "/users?username=" + userName,
+    response = REST_TEMPLATE.exchange(keycloakUrl + "/admin/realms/" + realm + "/users?username=" + userName,
         HttpMethod.GET, new HttpEntity<>(headers), String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     String userId = new JSONArray(response.getBody()).getJSONObject(0).getString("id");
     // set optional password
     if (!ObjectUtils.isEmpty(password)) {
       String pwd = "{\"type\":\"password\",\"value\":\"" + password + "\"}";
-      response = restTemplate.exchange(keycloakUrl + "/admin/realms/" + realm + "/users/" + userId + "/reset-password",
+      response = REST_TEMPLATE.exchange(keycloakUrl + "/admin/realms/" + realm + "/users/" + userId + "/reset-password",
           HttpMethod.PUT, new HttpEntity<>(pwd, headers), String.class);
       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
@@ -540,7 +540,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
    * @param userId  the user ID
    */
   static void deleteUser(HttpHeaders headers, String realm, String userId) {
-    ResponseEntity<String> response = restTemplate.exchange(keycloakUrl + "/admin/realms/" + realm + "/users/" + userId,
+    ResponseEntity<String> response = REST_TEMPLATE.exchange(keycloakUrl + "/admin/realms/" + realm + "/users/" + userId,
         HttpMethod.DELETE, new HttpEntity<>(headers), String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     LOG.info("Deleted user with ID {}", userId);
@@ -583,13 +583,13 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
         "{\"id\":null,\"name\":\"" + groupName + "\",\"attributes\":{" + (isSystemGroup ? "\"type\":[\"SYSTEM\"]" : "")
             + "},\"realmRoles\":[],\"clientRoles\":{},\"subGroups\":[],\"access\":{\"view\":true,\"manage\":true,\"manageMembership\":true}}";
     HttpEntity<String> request = new HttpEntity<>(operatonAdmin, headers);
-    ResponseEntity<String> response = restTemplate.postForEntity(keycloakUrl + "/admin/realms/" + realm + "/groups" + (
+    ResponseEntity<String> response = REST_TEMPLATE.postForEntity(keycloakUrl + "/admin/realms/" + realm + "/groups" + (
         parentGroupId != null ?
             "/" + parentGroupId + "/children" :
             ""), request, String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     // get the group id
-    response = restTemplate.exchange(keycloakUrl + "/admin/realms/" + realm + "/groups?search=" + groupName,
+    response = REST_TEMPLATE.exchange(keycloakUrl + "/admin/realms/" + realm + "/groups?search=" + groupName,
         HttpMethod.GET, new HttpEntity<>(headers), String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     JSONArray groups = new JSONArray(response.getBody());
@@ -608,7 +608,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
    * @param groupId the group ID
    */
   static void deleteGroup(HttpHeaders headers, String realm, String groupId) {
-    ResponseEntity<String> response = restTemplate.exchange(
+    ResponseEntity<String> response = REST_TEMPLATE.exchange(
         keycloakUrl + "/admin/realms/" + realm + "/groups/" + groupId, HttpMethod.DELETE, new HttpEntity<>(headers),
         String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
@@ -639,7 +639,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
    * @param groupId the group ID
    */
   static void assignUserGroup(HttpHeaders headers, String realm, String userId, String groupId) {
-    ResponseEntity<String> response = restTemplate.exchange(
+    ResponseEntity<String> response = REST_TEMPLATE.exchange(
         keycloakUrl + "/admin/realms/" + realm + "/users/" + userId + "/groups/" + groupId, HttpMethod.PUT,
         new HttpEntity<>(headers), String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
@@ -659,7 +659,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
    * @throws JSONException in case of any errors
    */
   static String getClientInternalId(HttpHeaders headers, String realm, String clientId) throws JSONException {
-    ResponseEntity<String> response = restTemplate.exchange(
+    ResponseEntity<String> response = REST_TEMPLATE.exchange(
         keycloakUrl + "/admin/realms/" + realm + "/clients?clientId=" + clientId, HttpMethod.GET,
         new HttpEntity<>(null, headers), String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -678,7 +678,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
   static void createClientRole(HttpHeaders headers, String realm, String clientInternalId, String roleName) {
     String role = "{\"name\":\"" + roleName + "\"}";
     HttpEntity<String> request = new HttpEntity<>(role, headers);
-    ResponseEntity<String> response = restTemplate.postForEntity(
+    ResponseEntity<String> response = REST_TEMPLATE.postForEntity(
         keycloakUrl + "/admin/realms/" + realm + "/clients/" + clientInternalId + "/roles", request, String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     LOG.info("Created client role {}", roleName);
@@ -700,7 +700,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
                                        String clientInternalId,
                                        String roleName) throws JSONException {
     // get internal ID of client role
-    ResponseEntity<String> response = restTemplate.exchange(
+    ResponseEntity<String> response = REST_TEMPLATE.exchange(
         keycloakUrl + "/admin/realms/" + realm + "/clients/" + clientInternalId + "/roles/" + roleName, HttpMethod.GET,
         new HttpEntity<>(headers), String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -710,7 +710,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
     String mapping = "[{\"id\":\"" + roleId + "\",\"name\":\"" + roleName
         + "\",\"composite\":false,\"clientRole\":true,\"containerId\":\"" + clientInternalId + "\"}]";
     HttpEntity<String> request = new HttpEntity<>(mapping, headers);
-    response = restTemplate.postForEntity(
+    response = REST_TEMPLATE.postForEntity(
         keycloakUrl + "/admin/realms/" + realm + "/users/" + userId + "/role-mappings/clients/" + clientInternalId,
         request, String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
@@ -732,7 +732,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
                                         String clientInternalId,
                                         String roleName) throws JSONException {
     // get internal ID of client role
-    ResponseEntity<String> response = restTemplate.exchange(
+    ResponseEntity<String> response = REST_TEMPLATE.exchange(
         keycloakUrl + "/admin/realms/" + realm + "/clients/" + clientInternalId + "/roles/" + roleName, HttpMethod.GET,
         new HttpEntity<>(headers), String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -742,7 +742,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
     String mapping = "[{\"id\":\"" + roleId + "\",\"name\":\"" + roleName
         + "\",\"composite\":false,\"clientRole\":true,\"containerId\":\"" + clientInternalId + "\"}]";
     HttpEntity<String> request = new HttpEntity<>(mapping, headers);
-    response = restTemplate.postForEntity(
+    response = REST_TEMPLATE.postForEntity(
         keycloakUrl + "/admin/realms/" + realm + "/groups/" + groupId + "/role-mappings/clients/" + clientInternalId,
         request, String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);

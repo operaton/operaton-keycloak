@@ -11,23 +11,23 @@ import org.operaton.bpm.engine.identity.User;
 public class KeycloakNestedGroupsQueryTest extends AbstractKeycloakIdentityProviderTest {
 
   public void testGroupQueryFilterByGroupIdRoot() {
-    Group group = identityService.createGroupQuery().groupId(GROUP_ID_HIERARCHY_ROOT).singleResult();
+    Group group = identityService.createGroupQuery().groupId(groupIdHierarchyRoot).singleResult();
     assertNotNull(group);
-    assertEquals(GROUP_ID_HIERARCHY_ROOT, group.getId());
+    assertEquals(groupIdHierarchyRoot, group.getId());
     assertEquals("root", group.getName());
   }
 
   public void testGroupQueryFilterByGroupIdChild() {
-    Group group = identityService.createGroupQuery().groupId(GROUP_ID_HIERARCHY_CHILD1).singleResult();
+    Group group = identityService.createGroupQuery().groupId(groupIdHierarchyChild1).singleResult();
     assertNotNull(group);
-    assertEquals(GROUP_ID_HIERARCHY_CHILD1, group.getId());
+    assertEquals(groupIdHierarchyChild1, group.getId());
     assertEquals("child1", group.getName());
   }
 
   public void testGroupQueryFilterByGroupIdSubChild() {
-    Group group = identityService.createGroupQuery().groupId(GROUP_ID_HIERARCHY_SUBCHILD1).singleResult();
+    Group group = identityService.createGroupQuery().groupId(groupIdHierarchySubchild1).singleResult();
     assertNotNull(group);
-    assertEquals(GROUP_ID_HIERARCHY_SUBCHILD1, group.getId());
+    assertEquals(groupIdHierarchySubchild1, group.getId());
     assertEquals("subchild1", group.getName());
   }
 
@@ -41,7 +41,7 @@ public class KeycloakNestedGroupsQueryTest extends AbstractKeycloakIdentityProvi
   }
 
   public void testGroupQueryFilterByGroupIdIn() {
-    List<Group> groups = identityService.createGroupQuery().groupIdIn(GROUP_ID_ADMIN, GROUP_ID_HIERARCHY_CHILD1).list();
+    List<Group> groups = identityService.createGroupQuery().groupIdIn(groupIdAdmin, groupIdHierarchyChild1).list();
     assertEquals(2, groups.size());
     assertEquals("operaton-admin not found", 1,
         groups.stream().filter(g -> "operaton-admin".equals(g.getName())).count());
@@ -50,7 +50,7 @@ public class KeycloakNestedGroupsQueryTest extends AbstractKeycloakIdentityProvi
 
   public void testGroupQueryFilterByGroupIdInAndUserId() {
     Group group = identityService.createGroupQuery()
-        .groupIdIn(GROUP_ID_ADMIN, GROUP_ID_MANAGER, GROUP_ID_HIERARCHY_CHILD2, GROUP_ID_HIERARCHY_CHILD1)
+        .groupIdIn(groupIdAdmin, groupIdManager, groupIdHierarchyChild2, groupIdHierarchyChild1)
         .groupMember("johnfoo@gmail.com")
         .singleResult();
     assertNotNull(group);
@@ -60,7 +60,7 @@ public class KeycloakNestedGroupsQueryTest extends AbstractKeycloakIdentityProvi
   public void testGroupQueryFilterByGroupName() {
     Group group = identityService.createGroupQuery().groupName("child1").singleResult();
     assertNotNull(group);
-    assertEquals(GROUP_ID_HIERARCHY_CHILD1, group.getId());
+    assertEquals(groupIdHierarchyChild1, group.getId());
     assertEquals("child1", group.getName());
   }
 
@@ -85,7 +85,7 @@ public class KeycloakNestedGroupsQueryTest extends AbstractKeycloakIdentityProvi
   public void testGroupQueryFilterByGroupNameAndGroupNameLike() {
     Group group = identityService.createGroupQuery().groupNameLike("child*").groupName("child2").singleResult();
     assertNotNull(group);
-    assertEquals(GROUP_ID_HIERARCHY_CHILD2, group.getId());
+    assertEquals(groupIdHierarchyChild2, group.getId());
     assertEquals("child2", group.getName());
   }
 
@@ -99,15 +99,15 @@ public class KeycloakNestedGroupsQueryTest extends AbstractKeycloakIdentityProvi
   }
 
   public void testUserQueryFilterByMemberOfGroup() {
-    User user = identityService.createUserQuery().memberOfGroup(GROUP_ID_HIERARCHY_SUBCHILD1).singleResult();
+    User user = identityService.createUserQuery().memberOfGroup(groupIdHierarchySubchild1).singleResult();
     assertNotNull(user);
     assertEquals("johnfoo@gmail.com", user.getId());
 
-    user = identityService.createUserQuery().memberOfGroup(GROUP_ID_HIERARCHY_CHILD2).singleResult();
+    user = identityService.createUserQuery().memberOfGroup(groupIdHierarchyChild2).singleResult();
     assertNotNull(user);
     assertEquals("johnfoo@gmail.com", user.getId());
 
-    user = identityService.createUserQuery().memberOfGroup(GROUP_ID_HIERARCHY_CHILD1).singleResult();
+    user = identityService.createUserQuery().memberOfGroup(groupIdHierarchyChild1).singleResult();
     assertNull(user);
   }
 

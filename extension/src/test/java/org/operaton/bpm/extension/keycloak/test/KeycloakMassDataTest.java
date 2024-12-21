@@ -43,7 +43,7 @@ public class KeycloakMassDataTest extends AbstractKeycloakIdentityProviderTest {
                   "test"));
         }
         HttpHeaders finalHeaders = headers;
-        USER_IDS.forEach(u -> assignUserGroup(finalHeaders, realm, u, GROUP_ID_MANAGER));
+        USER_IDS.forEach(u -> assignUserGroup(finalHeaders, realm, u, groupIdManager));
 
         headers = authenticateKeycloakAdmin();
         for (int i = 0; i < 60; i++) {
@@ -54,13 +54,13 @@ public class KeycloakMassDataTest extends AbstractKeycloakIdentityProviderTest {
           GROUP_IDS.add(createGroup(headers, realm, "group.test" + i, false));
         }
         HttpHeaders finalHeaders1 = headers;
-        GROUP_IDS.forEach(g -> assignUserGroup(finalHeaders1, realm, USER_ID_TEAMLEAD, g));
+        GROUP_IDS.forEach(g -> assignUserGroup(finalHeaders1, realm, userIdTeamlead, g));
 
         // setup process engine
         // -------------------------------------
         ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration.createProcessEngineConfigurationFromResource(
             "operaton.configureHigherMaxResultSize.cfg.xml");
-        configureKeycloakIdentityProviderPlugin(config).setAdministratorUserId(USER_ID_OPERATON_ADMIN);
+        configureKeycloakIdentityProviderPlugin(config).setAdministratorUserId(userIdOperatonAdmin);
         PluggableProcessEngineTestCase.cachedProcessEngine = config.buildProcessEngine();
       }
 
@@ -90,7 +90,7 @@ public class KeycloakMassDataTest extends AbstractKeycloakIdentityProviderTest {
   }
 
   public void testGroupMemberQuery() {
-    List<User> result = identityService.createUserQuery().memberOfGroup(GROUP_ID_MANAGER).list();
+    List<User> result = identityService.createUserQuery().memberOfGroup(groupIdManager).list();
     assertEquals(USER_IDS.size() + 1, result.size());
   }
 

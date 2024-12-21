@@ -41,7 +41,7 @@ public class KeycloakUseKeycloakIdAsUserIdQueryTest extends AbstractKeycloakIden
   // ------------------------------------------------------------------------
 
   public void testKeycloakLoginSuccess() {
-    assertTrue(identityService.checkPassword(USER_ID_OPERATON_ADMIN, "operaton1!"));
+    assertTrue(identityService.checkPassword(userIdOperatonAdmin, "operaton1!"));
   }
 
   // ------------------------------------------------------------------------
@@ -49,14 +49,14 @@ public class KeycloakUseKeycloakIdAsUserIdQueryTest extends AbstractKeycloakIden
   // ------------------------------------------------------------------------
 
   public void testUserQueryFilterByUserId() {
-    User user = identityService.createUserQuery().userId(USER_ID_TEAMLEAD).singleResult();
+    User user = identityService.createUserQuery().userId(userIdTeamlead).singleResult();
     assertNotNull(user);
 
-    user = identityService.createUserQuery().userId(USER_ID_OPERATON_ADMIN).singleResult();
+    user = identityService.createUserQuery().userId(userIdOperatonAdmin).singleResult();
     assertNotNull(user);
 
     // validate user
-    assertEquals(USER_ID_OPERATON_ADMIN, user.getId());
+    assertEquals(userIdOperatonAdmin, user.getId());
     assertEquals("Admin", user.getFirstName());
     assertEquals("Operaton", user.getLastName());
     assertEquals("operaton@accso.de", user.getEmail());
@@ -66,11 +66,11 @@ public class KeycloakUseKeycloakIdAsUserIdQueryTest extends AbstractKeycloakIden
   }
 
   public void testUserQueryFilterByUserIdIn() {
-    List<User> users = identityService.createUserQuery().userIdIn(USER_ID_OPERATON_ADMIN, USER_ID_TEAMLEAD).list();
+    List<User> users = identityService.createUserQuery().userIdIn(userIdOperatonAdmin, userIdTeamlead).list();
     assertNotNull(users);
     assertEquals(2, users.size());
 
-    users = identityService.createUserQuery().userIdIn(USER_ID_OPERATON_ADMIN, "non-existing").list();
+    users = identityService.createUserQuery().userIdIn(userIdOperatonAdmin, "non-existing").list();
     assertNotNull(users);
     assertEquals(1, users.size());
   }
@@ -80,7 +80,7 @@ public class KeycloakUseKeycloakIdAsUserIdQueryTest extends AbstractKeycloakIden
     assertNotNull(user);
 
     // validate user
-    assertEquals(USER_ID_OPERATON_ADMIN, user.getId());
+    assertEquals(userIdOperatonAdmin, user.getId());
     assertEquals("Admin", user.getFirstName());
     assertEquals("Operaton", user.getLastName());
     assertEquals("operaton@accso.de", user.getEmail());
@@ -91,15 +91,15 @@ public class KeycloakUseKeycloakIdAsUserIdQueryTest extends AbstractKeycloakIden
 
   public void testUserQueryFilterByGroupIdAndId() {
     List<User> result = identityService.createUserQuery()
-        .memberOfGroup(GROUP_ID_ADMIN)
-        .userId(USER_ID_OPERATON_ADMIN)
+        .memberOfGroup(groupIdAdmin)
+        .userId(userIdOperatonAdmin)
         .list();
     assertEquals(1, result.size());
 
-    result = identityService.createUserQuery().memberOfGroup(GROUP_ID_ADMIN).userId("non-exist").list();
+    result = identityService.createUserQuery().memberOfGroup(groupIdAdmin).userId("non-exist").list();
     assertEquals(0, result.size());
 
-    result = identityService.createUserQuery().memberOfGroup("non-exist").userId(USER_ID_OPERATON_ADMIN).list();
+    result = identityService.createUserQuery().memberOfGroup("non-exist").userId(userIdOperatonAdmin).list();
     assertEquals(0, result.size());
 
   }
@@ -111,7 +111,7 @@ public class KeycloakUseKeycloakIdAsUserIdQueryTest extends AbstractKeycloakIden
       identityService.setAuthenticatedUserId("non-existing");
       assertEquals(0, identityService.createUserQuery().count());
 
-      identityService.setAuthenticatedUserId(USER_ID_OPERATON_ADMIN);
+      identityService.setAuthenticatedUserId(userIdOperatonAdmin);
       assertEquals(1, identityService.createUserQuery().count());
 
     } finally {
@@ -125,7 +125,7 @@ public class KeycloakUseKeycloakIdAsUserIdQueryTest extends AbstractKeycloakIden
   // ------------------------------------------------------------------------
 
   public void testGroupQueryFilterByUserId() {
-    List<Group> result = identityService.createGroupQuery().groupMember(USER_ID_OPERATON_ADMIN).list();
+    List<Group> result = identityService.createGroupQuery().groupMember(userIdOperatonAdmin).list();
     assertEquals(1, result.size());
 
     result = identityService.createGroupQuery().groupMember("non-exist").list();
@@ -134,29 +134,29 @@ public class KeycloakUseKeycloakIdAsUserIdQueryTest extends AbstractKeycloakIden
 
   public void testFilterByGroupIdAndUserId() {
     Group group = identityService.createGroupQuery()
-        .groupId(GROUP_ID_ADMIN)
-        .groupMember(USER_ID_OPERATON_ADMIN)
+        .groupId(groupIdAdmin)
+        .groupMember(userIdOperatonAdmin)
         .singleResult();
     assertNotNull(group);
     assertEquals("operaton-admin", group.getName());
 
-    group = identityService.createGroupQuery().groupId("non-exist").groupMember(USER_ID_OPERATON_ADMIN).singleResult();
+    group = identityService.createGroupQuery().groupId("non-exist").groupMember(userIdOperatonAdmin).singleResult();
     assertNull(group);
 
-    group = identityService.createGroupQuery().groupId(GROUP_ID_ADMIN).groupMember("non-exist").singleResult();
+    group = identityService.createGroupQuery().groupId(groupIdAdmin).groupMember("non-exist").singleResult();
     assertNull(group);
   }
 
   public void testFilterByGroupIdInAndUserId() {
     Group group = identityService.createGroupQuery()
-        .groupIdIn(GROUP_ID_ADMIN, GROUP_ID_TEAMLEAD)
-        .groupMember(USER_ID_OPERATON_ADMIN)
+        .groupIdIn(groupIdAdmin, groupIdTeamlead)
+        .groupMember(userIdOperatonAdmin)
         .singleResult();
     assertNotNull(group);
     assertEquals("operaton-admin", group.getName());
 
     group = identityService.createGroupQuery()
-        .groupIdIn(GROUP_ID_ADMIN, GROUP_ID_TEAMLEAD)
+        .groupIdIn(groupIdAdmin, groupIdTeamlead)
         .groupMember("non-exist")
         .singleResult();
     assertNull(group);

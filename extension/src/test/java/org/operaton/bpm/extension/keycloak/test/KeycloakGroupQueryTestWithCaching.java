@@ -82,11 +82,11 @@ public class KeycloakGroupQueryTestWithCaching extends AbstractKeycloakIdentityP
   public void testCacheEnabledQueryFilterByGroupId() {
     int countBefore = CountingHttpRequestInterceptor.getHttpRequestCount();
 
-    Group group = identityService.createGroupQuery().groupId(GROUP_ID_ADMIN).singleResult();
+    Group group = identityService.createGroupQuery().groupId(groupIdAdmin).singleResult();
     assertNotNull(group);
 
     // validate result
-    assertEquals(GROUP_ID_ADMIN, group.getId());
+    assertEquals(groupIdAdmin, group.getId());
     assertEquals("operaton-admin", group.getName());
     assertEquals("SYSTEM", group.getType());
 
@@ -94,7 +94,7 @@ public class KeycloakGroupQueryTestWithCaching extends AbstractKeycloakIdentityP
     assertEquals(countBefore + 1, CountingHttpRequestInterceptor.getHttpRequestCount());
 
     // run query again
-    assertEquals(group, identityService.createGroupQuery().groupId(GROUP_ID_ADMIN).singleResult());
+    assertEquals(group, identityService.createGroupQuery().groupId(groupIdAdmin).singleResult());
 
     // request count should be same as before
     assertEquals(countBefore + 1, CountingHttpRequestInterceptor.getHttpRequestCount());
