@@ -25,8 +25,8 @@ This plugin provides the basis for using Keycloak as Identity Management solutio
 **Beware: in case you want to use Keycloak's advanced login capabilities for social connections you must configure SSO as well.**
 Password grant exchanges are only supported for Keycloak's internally managed users and users of an LDAP / Keberos User federation. Hence, without SSO you will only be able to log in with users managed by such connections.
 
-Current version: `1.0.0-beta-1`<br >
-Latest tests with: Keycloak `25.0.4`, `19.0.3-legacy`, Operaton `1.0.0-beta-2`
+Current version: `1.0.0-beta-3`<br >
+Latest tests with: Keycloak `25.0.4`, `19.0.3-legacy`, Operaton `1.0.0-beta-5`
 
 #### Features
 Changes in version `1.0.0`
