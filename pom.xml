@@ -20,7 +20,7 @@
     <project.build.resourceEncoding>${encoding}</project.build.resourceEncoding>
 
     <!-- versions -->
-    <version.operaton>1.0.0-beta-4-SNAPSHOT</version.operaton>
+    <version.operaton>1.0.0-rc-1-SNAPSHOT</version.operaton>
     <version.springBoot>3.3.5</version.springBoot>
     <version.commons-codec>1.17.1</version.commons-codec>
     <version.testcontainers>1.20.4</version.testcontainers>
@@ -73,6 +73,13 @@
         <version>${version.operaton}</version>
         <scope>import</scope>
         <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.operaton.bpm</groupId>
+        <artifactId>operaton-engine</artifactId>
+        <version>${version.operaton}</version>
+        <classifier>junit4</classifier>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.springframework.boot</groupId>

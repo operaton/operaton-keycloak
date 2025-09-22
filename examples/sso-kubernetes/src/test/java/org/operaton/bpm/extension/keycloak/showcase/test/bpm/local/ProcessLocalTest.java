@@ -11,7 +11,7 @@ import org.operaton.bpm.engine.runtime.ProcessInstance;
 import org.operaton.bpm.engine.task.Task;
 import org.operaton.bpm.engine.test.Deployment;
 import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
-import org.operaton.bpm.engine.test.mock.Mocks;
+import org.operaton.bpm.engine.impl.mock.Mocks;
 import org.operaton.bpm.extension.keycloak.showcase.ProcessConstants.Variable;
 import org.operaton.bpm.extension.keycloak.showcase.task.LoggerDelegate;
 

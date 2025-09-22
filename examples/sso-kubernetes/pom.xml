@@ -30,6 +30,19 @@
 			<artifactId>operaton-bpm-spring-boot-starter-rest</artifactId>
 		</dependency>
 
+        <dependency>
+            <groupId>org.operaton.bpm</groupId>
+            <artifactId>operaton-engine</artifactId>
+            <classifier>junit4</classifier>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
 		<!-- Spring Security -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
