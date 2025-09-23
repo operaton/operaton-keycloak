@@ -54,7 +54,6 @@
       <artifactId>h2</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.operaton.bpm.webapp</groupId>
       <artifactId>operaton-webapp</artifactId>
@@ -67,6 +66,7 @@
       <artifactId>jakarta.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
+
   </dependencies>
 
   <build>
