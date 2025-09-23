@@ -25,8 +25,8 @@ This plugin provides the basis for using Keycloak as Identity Management solutio
 **Beware: in case you want to use Keycloak's advanced login capabilities for social connections you must configure SSO as well.**
 Password grant exchanges are only supported for Keycloak's internally managed users and users of an LDAP / Keberos User federation. Hence, without SSO you will only be able to log in with users managed by such connections.
 
-Current version: `1.0.0-beta-1`<br >
-Latest tests with: Keycloak `25.0.4`, `19.0.3-legacy`, Operaton `1.0.0-beta-2`
+Current version: `1.0.0-beta-3`<br >
+Latest tests with: Keycloak `26.3.4`, Operaton `1.0.0-beta-5`
 
 #### Features
 Changes in version `1.0.0`
@@ -66,7 +66,7 @@ Maven Dependencies:
 <dependency>
     <groupId>org.operaton.bpm.extension</groupId>
     <artifactId>operaton-keycloak</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-beta-3</version>
 </dependency>
 ```
 
@@ -351,11 +351,9 @@ A description on how to install the plugin on a JBoss/Wildfly can be found under
 In order to run the unit tests I have used a local docker setup of Keycloak with `docker-compose.yml` as follows:
 
 ```docker-compose
-version: "3.9"
-
 services:
   jboss.keycloak:
-    image: quay.io/keycloak/keycloak:24.0.3
+    image: quay.io/keycloak/keycloak:26.3.4
     restart: unless-stopped
     environment:
       TZ: Europe/Berlin
