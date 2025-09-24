@@ -47,8 +47,10 @@ public class KeycloakIdentityProviderSession implements ReadOnlyIdentityProvider
 
   protected KeycloakUserService userService;
   protected KeycloakGroupService groupService;
+  protected KeycloakTenantService tenantService;
 
   protected QueryCache<CacheableKeycloakUserQuery, List<User>> userQueryCache;
+  protected QueryCache<CacheableKeycloakTenantQuery, List<Tenant>> tenantQueryCache;
   protected QueryCache<CacheableKeycloakGroupQuery, List<Group>> groupQueryCache;
   protected QueryCache<CacheableKeycloakCheckPasswordCall, Boolean> checkPasswordCache;
 
@@ -62,6 +64,7 @@ public class KeycloakIdentityProviderSession implements ReadOnlyIdentityProvider
   public KeycloakIdentityProviderSession(KeycloakConfiguration keycloakConfiguration,
                                          KeycloakRestTemplate restTemplate,
                                          KeycloakContextProvider keycloakContextProvider,
+                                         QueryCache<CacheableKeycloakTenantQuery, List<Tenant>> tenantQueryCache,
                                          QueryCache<CacheableKeycloakUserQuery, List<User>> userQueryCache,
                                          QueryCache<CacheableKeycloakGroupQuery, List<Group>> groupQueryCache,
                                          QueryCache<CacheableKeycloakCheckPasswordCall, Boolean> checkPasswordCache) {
@@ -71,7 +74,9 @@ public class KeycloakIdentityProviderSession implements ReadOnlyIdentityProvider
 
     this.userService = new KeycloakUserService(keycloakConfiguration, restTemplate, keycloakContextProvider);
     this.groupService = new KeycloakGroupService(keycloakConfiguration, restTemplate, keycloakContextProvider);
+    this.tenantService = new KeycloakTenantService(keycloakConfiguration, restTemplate, keycloakContextProvider);
 
+    this.tenantQueryCache = tenantQueryCache;
     this.userQueryCache = userQueryCache;
     this.groupQueryCache = groupQueryCache;
     this.checkPasswordCache = checkPasswordCache;
@@ -408,4 +413,48 @@ public class KeycloakIdentityProviderSession implements ReadOnlyIdentityProvider
     return null;
   }
 
+  /**
+   * find tenant meeting given tenant query criteria (without cache lookup).
+   *
+   * @param tenantQuery the tenant query
+   * @return list of matching tenants
+   */
+  private List<Tenant> doFindTenantByQueryCriteria(CacheableKeycloakTenantQuery tenantQuery) {
+    return tenantService.requestTenants(tenantQuery);
+  }
+
+  /**
+   * find the number of tenants meeting given tenant query criteria.
+   *
+   * @param tenantQuery the tenant query
+   * @return number of matching tenants
+   */
+  protected long findTenantsCountByQueryCriteria(KeycloakTenantQuery tenantQuery) {
+    return findTenantsByQueryCriteria(tenantQuery).size();
+  }
+
+  /**
+   * find tenants (Keycloak Organizations) meeting given tenant query criteria (with cache lookup).
+   *
+   * @param tenantQuery the user query
+   * @return list of matching tenants
+   */
+  protected List<Tenant> findTenantsByQueryCriteria(KeycloakTenantQuery tenantQuery) {
+    StringBuilder resultLogger = new StringBuilder();
+
+    if (KeycloakPluginLogger.INSTANCE.isDebugEnabled()) {
+      resultLogger.append("Keycloak tenant query results: [");
+    }
+
+    List<Tenant> allMatchingTenants = tenantQueryCache.getOrCompute(CacheableKeycloakTenantQuery.of(tenantQuery),
+            this::doFindTenantByQueryCriteria);
+    List<Tenant> processedTenants = tenantService.postProcessResults(tenantQuery, allMatchingTenants, resultLogger);
+
+    if (KeycloakPluginLogger.INSTANCE.isDebugEnabled()) {
+      resultLogger.append("]");
+      KeycloakPluginLogger.INSTANCE.groupQueryResult(resultLogger.toString());
+    }
+
+    return processedTenants;
+  }
 }

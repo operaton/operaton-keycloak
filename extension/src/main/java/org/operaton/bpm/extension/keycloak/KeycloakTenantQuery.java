@@ -8,10 +8,10 @@ import org.operaton.bpm.engine.impl.Page;
 import org.operaton.bpm.engine.impl.TenantQueryImpl;
 import org.operaton.bpm.engine.impl.interceptor.CommandContext;
 import org.operaton.bpm.engine.impl.interceptor.CommandExecutor;
+import org.operaton.bpm.engine.impl.persistence.entity.TenantEntity;
 
 /**
- * Since multi-tenancy is currently not yet supported for the Keycloak plugin, the query always
- * returns <code>0</code> or an empty list.
+ * Keycloak specific tenant query implementation.
  */
 public class KeycloakTenantQuery extends TenantQueryImpl {
 
@@ -27,12 +27,27 @@ public class KeycloakTenantQuery extends TenantQueryImpl {
 
   @Override
   public long executeCount(CommandContext commandContext) {
-    return 0;
+    final KeycloakIdentityProviderSession provider = getKeycloakIdentityProvider(commandContext);
+
+    if (provider.keycloakConfiguration.isUseOrganizationsAsTenants()) {
+      return provider.findTenantsCountByQueryCriteria(this);
+    } else {
+      return 0;
+    }
   }
 
   @Override
   public List<Tenant> executeList(CommandContext commandContext, Page page) {
-    return Collections.emptyList();
+    final KeycloakIdentityProviderSession provider = getKeycloakIdentityProvider(commandContext);
+
+    if (provider.keycloakConfiguration.isUseOrganizationsAsTenants()) {
+      return provider.findTenantsByQueryCriteria(this);
+    } else {
+      return Collections.emptyList();
+    }
   }
 
+  protected KeycloakIdentityProviderSession getKeycloakIdentityProvider(CommandContext commandContext) {
+    return (KeycloakIdentityProviderSession) commandContext.getReadOnlyIdentityProvider();
+  }
 }

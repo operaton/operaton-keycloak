@@ -42,12 +42,9 @@ public class KeycloakGroupQuery extends GroupQueryImpl {
     return (KeycloakIdentityProviderSession) commandContext.getReadOnlyIdentityProvider();
   }
 
-  // unimplemented features //////////////////////////////////
-
   @Override
   public GroupQuery memberOfTenant(String tenantId) {
-    throw new UnsupportedOperationException(
-        "The Keycloak identity provider does currently not support tenant queries.");
+      // do nothing, in keycloak all groups are part of all tenants
+      return this;
   }
-
 }
