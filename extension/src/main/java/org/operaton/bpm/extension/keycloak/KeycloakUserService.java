@@ -192,8 +192,15 @@ public class KeycloakUserService extends KeycloakServiceBase {
       } else {
         // Create user search filter
         String userFilter = createUserSearchFilter(query);
-        response = restTemplate.exchange(keycloakConfiguration.getKeycloakAdminUrl() + "/users" + userFilter,
-            HttpMethod.GET, String.class);
+
+        String url;
+        if(keycloakConfiguration.isUseOrganizationsAsTenants() && StringUtils.hasLength(query.getTenantId())) {
+          url = keycloakConfiguration.getKeycloakAdminUrl() + "/organizations/" + query.getTenantId() + "/members";
+        } else {
+          url = keycloakConfiguration.getKeycloakAdminUrl() + "/users";
+        }
+
+        response = restTemplate.exchange(url + userFilter, HttpMethod.GET, String.class);
       }
       if (!response.getStatusCode().equals(HttpStatus.OK)) {
         throw new IdentityProviderException(

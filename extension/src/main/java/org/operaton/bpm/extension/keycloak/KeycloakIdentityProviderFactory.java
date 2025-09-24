@@ -21,6 +21,7 @@ import org.apache.hc.client5.http.ssl.TrustAllStrategy;
 import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.operaton.bpm.engine.identity.Group;
+import org.operaton.bpm.engine.identity.Tenant;
 import org.operaton.bpm.engine.identity.User;
 import org.operaton.bpm.engine.impl.identity.IdentityProviderException;
 import org.operaton.bpm.engine.impl.identity.ReadOnlyIdentityProvider;
@@ -43,6 +44,7 @@ public class KeycloakIdentityProviderFactory implements SessionFactory {
   protected KeycloakConfiguration keycloakConfiguration;
   protected KeycloakContextProvider keycloakContextProvider;
 
+  protected QueryCache<CacheableKeycloakTenantQuery, List<Tenant>> tenantQueryCache;
   protected QueryCache<CacheableKeycloakUserQuery, List<User>> userQueryCache;
   protected QueryCache<CacheableKeycloakGroupQuery, List<Group>> groupQueryCache;
   protected QueryCache<CacheableKeycloakCheckPasswordCall, Boolean> checkPasswordCache;
@@ -63,6 +65,7 @@ public class KeycloakIdentityProviderFactory implements SessionFactory {
     CacheConfiguration cacheConfiguration = CacheConfiguration.from(keycloakConfiguration);
     CacheConfiguration loginCacheConfiguration = CacheConfiguration.fromLoginConfigOf(keycloakConfiguration);
 
+    this.setTenantQueryCache(CacheFactory.create(cacheConfiguration));
     this.setUserQueryCache(CacheFactory.create(cacheConfiguration));
     this.setGroupQueryCache(CacheFactory.create(cacheConfiguration));
     this.setCheckPasswordCache(CacheFactory.create(loginCacheConfiguration));
@@ -138,6 +141,12 @@ public class KeycloakIdentityProviderFactory implements SessionFactory {
   public Class<?> getSessionType() {
     return ReadOnlyIdentityProvider.class;
   }
+   /**
+    * @param tenantQueryCache set the queryCache for user queries
+    */
+  public void setTenantQueryCache(QueryCache<CacheableKeycloakTenantQuery, List<Tenant>> tenantQueryCache) {
+    this.tenantQueryCache = tenantQueryCache;
+  }
 
   /**
    * @param userQueryCache set the queryCache for user queries
@@ -175,7 +184,7 @@ public class KeycloakIdentityProviderFactory implements SessionFactory {
   @Override
   public Session openSession() {
     return new KeycloakIdentityProviderSession(keycloakConfiguration, restTemplate, keycloakContextProvider,
-        userQueryCache, groupQueryCache, checkPasswordCache);
+        tenantQueryCache, userQueryCache, groupQueryCache, checkPasswordCache);
   }
 
 }
