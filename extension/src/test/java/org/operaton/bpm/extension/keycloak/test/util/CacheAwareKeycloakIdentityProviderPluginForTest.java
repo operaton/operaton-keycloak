@@ -3,10 +3,12 @@ package org.operaton.bpm.extension.keycloak.test.util;
 import java.util.List;
 
 import org.operaton.bpm.engine.identity.Group;
+import org.operaton.bpm.engine.identity.Tenant;
 import org.operaton.bpm.engine.identity.User;
 import org.operaton.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.operaton.bpm.extension.keycloak.CacheableKeycloakCheckPasswordCall;
 import org.operaton.bpm.extension.keycloak.CacheableKeycloakGroupQuery;
+import org.operaton.bpm.extension.keycloak.CacheableKeycloakTenantQuery;
 import org.operaton.bpm.extension.keycloak.CacheableKeycloakUserQuery;
 import org.operaton.bpm.extension.keycloak.KeycloakIdentityProviderFactory;
 import org.operaton.bpm.extension.keycloak.cache.CacheConfiguration;
@@ -17,6 +19,7 @@ public class CacheAwareKeycloakIdentityProviderPluginForTest extends KeycloakIde
 
   public static CaffeineCache<CacheableKeycloakUserQuery, List<User>> userQueryCache;
   public static CaffeineCache<CacheableKeycloakGroupQuery, List<Group>> groupQueryCache;
+  public static CaffeineCache<CacheableKeycloakTenantQuery, List<Tenant>> tenantQueryCache;
   public static CaffeineCache<CacheableKeycloakCheckPasswordCall, Boolean> checkPasswordCache;
 
   @Override
@@ -31,8 +34,10 @@ public class CacheAwareKeycloakIdentityProviderPluginForTest extends KeycloakIde
     // instantiate with ticker that can be controlled in tests
     userQueryCache = new CaffeineCache<>(cacheConfiguration, ticker);
     groupQueryCache = new CaffeineCache<>(cacheConfiguration, ticker);
+    tenantQueryCache = new CaffeineCache<>(cacheConfiguration, ticker);
     checkPasswordCache = new CaffeineCache<>(loginCacheConfiguration, ticker);
 
+    factory.setTenantQueryCache(tenantQueryCache);
     factory.setUserQueryCache(userQueryCache);
     factory.setGroupQueryCache(groupQueryCache);
     factory.setCheckPasswordCache(checkPasswordCache);
