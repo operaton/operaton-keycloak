@@ -7,7 +7,7 @@
 
   <groupId>org.operaton.bpm.extension</groupId>
   <artifactId>operaton-keycloak-root</artifactId>
-  <version>1.0.0-beta-2-SNAPSHOT</version>
+  <version>1.0.0-beta-3</version>
   <packaging>pom</packaging>
   <name>Operaton - engine plugins - identity - keycloak - root</name>
   <description>A Operaton Identity Provider Plugin for Keycloak</description>
@@ -20,10 +20,10 @@
     <project.build.resourceEncoding>${encoding}</project.build.resourceEncoding>
 
     <!-- versions -->
-    <version.operaton>1.0.0-beta-4-SNAPSHOT</version.operaton>
-    <version.springBoot>3.3.5</version.springBoot>
-    <version.commons-codec>1.17.1</version.commons-codec>
-    <version.testcontainers>1.20.4</version.testcontainers>
+    <version.operaton>1.0.0-rc-1</version.operaton>
+    <version.springBoot>3.5.6</version.springBoot>
+    <version.commons-codec>1.19.0</version.commons-codec>
+    <version.testcontainers>1.21.3</version.testcontainers>
 
     <!-- Set to false for each module that must be deployed -->
     <deploy.skip>true</deploy.skip>
@@ -100,12 +100,6 @@
         <version>${version.testcontainers}</version>
         <type>pom</type>
         <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.operaton.bpm</groupId>
-        <artifactId>operaton-engine</artifactId>
-        <version>${version.operaton}</version>
-        <classifier>junit5</classifier>
       </dependency>
     </dependencies>
   </dependencyManagement>

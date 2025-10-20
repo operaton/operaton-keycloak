@@ -85,7 +85,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
   protected static String clientSecret;
 
   @Container
-  static KeycloakContainer keycloak = new KeycloakContainer("quay.io/keycloak/keycloak:26.0.7");
+  static KeycloakContainer keycloak = new KeycloakContainer("quay.io/keycloak/keycloak:26.3.4");
 
   // creates Keycloak setup only once per test run
   @BeforeClass

@@ -245,6 +245,9 @@ public abstract class ProcessTestAssertions {
     }
 
     @Override
+    public String getProcessDefinitionKey() { return hpi.getProcessDefinitionKey(); }
+
+    @Override
     public String getProcessInstanceId() {
       return hpi.getId();
     }

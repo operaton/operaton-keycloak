@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.operaton.bpm.extension</groupId>
     <artifactId>operaton-keycloak-root</artifactId>
-    <version>1.0.0-beta-2-SNAPSHOT</version>
+    <version>1.0.0-beta-3</version>
   </parent>
 
   <artifactId>operaton-keycloak</artifactId>
@@ -26,7 +26,12 @@
       <artifactId>operaton-engine</artifactId>
       <scope>provided</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.operaton.bpm</groupId>
+      <artifactId>operaton-engine</artifactId>
+      <classifier>junit4</classifier>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
@@ -35,7 +40,6 @@
     <dependency>
       <groupId>org.operaton.commons</groupId>
       <artifactId>operaton-commons-logging</artifactId>
-      <version>1.0.0-beta-2</version>
     </dependency>
 
     <!-- http client 5 -->
@@ -63,6 +67,11 @@
     <dependency>
       <groupId>org.operaton.bpm.springboot</groupId>
       <artifactId>operaton-bpm-spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.operaton.bpm.springboot</groupId>
+      <artifactId>operaton-bpm-spring-boot-starter-test-junit5</artifactId>
       <scope>test</scope>
     </dependency>
 
