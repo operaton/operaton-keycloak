@@ -16,7 +16,7 @@ import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
 import org.apache.hc.client5.http.ssl.TrustAllStrategy;
 import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
@@ -74,9 +74,8 @@ public class KeycloakIdentityProviderFactory implements SessionFactory {
     if (keycloakConfiguration.isDisableSSLCertificateValidation()) {
       try {
         SSLContext sslContext = SSLContextBuilder.create().loadTrustMaterial(TrustAllStrategy.INSTANCE).build();
-        SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(sslContext,
-            NoopHostnameVerifier.INSTANCE);
-        connectionManagerBuilder.setSSLSocketFactory(sslConnectionSocketFactory);
+        DefaultClientTlsStrategy tlsStrategy = new DefaultClientTlsStrategy(sslContext, NoopHostnameVerifier.INSTANCE);
+        connectionManagerBuilder.setTlsSocketStrategy(tlsStrategy);
       } catch (GeneralSecurityException e) {
         throw new IdentityProviderException("Disabling SSL certificate validation failed", e);
       }
@@ -87,8 +86,8 @@ public class KeycloakIdentityProviderFactory implements SessionFactory {
       char[] truststorePasswordCharArray = truststorePassword == null ? null : truststorePassword.toCharArray();
       try {
         SSLContext sslContext = SSLContextBuilder.create().loadTrustMaterial(file, truststorePasswordCharArray).build();
-        SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(sslContext);
-        connectionManagerBuilder.setSSLSocketFactory(sslConnectionSocketFactory);
+        DefaultClientTlsStrategy tlsStrategy = new DefaultClientTlsStrategy(sslContext);
+        connectionManagerBuilder.setTlsSocketStrategy(tlsStrategy);
       } catch (GeneralSecurityException | IOException e) {
         throw new IdentityProviderException("Configuring truststore failed", e);
       }
