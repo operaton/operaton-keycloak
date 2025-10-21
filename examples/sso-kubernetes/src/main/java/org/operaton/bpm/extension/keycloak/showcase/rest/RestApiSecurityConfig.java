@@ -19,8 +19,7 @@ import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
-
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
 /**
  * Optional Security Configuration for Operaton REST Api.
@@ -58,9 +57,10 @@ public class RestApiSecurityConfig {
   public SecurityFilterChain httpSecurityRest(HttpSecurity http, JwtDecoder jwtDecoder) throws Exception {
     String jwkSetUri = applicationContext.getEnvironment()
         .getRequiredProperty("spring.security.oauth2.client.provider." + configProps.getProvider() + ".jwk-set-uri");
+    PathPatternRequestMatcher.Builder pathPattern = PathPatternRequestMatcher.withDefaults();
 
-    return http.securityMatcher(antMatcher("/engine-rest/**"))
-        .csrf(csrf -> csrf.ignoringRequestMatchers(antMatcher("/engine-rest/**")))
+    return http.securityMatcher(pathPattern.matcher("/engine-rest/**"))
+        .csrf(csrf -> csrf.ignoringRequestMatchers(pathPattern.matcher("/engine-rest/**")))
         .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
         .oauth2ResourceServer(
             oauth2ResourceServer -> oauth2ResourceServer.jwt(jwt -> jwt.decoder(jwtDecoder).jwkSetUri(jwkSetUri)))

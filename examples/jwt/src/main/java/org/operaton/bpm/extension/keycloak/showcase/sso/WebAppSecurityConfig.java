@@ -17,9 +17,8 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.web.context.request.RequestContextListener;
-
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 /**
  * Operaton Web application SSO configuration for usage with KeycloakIdentityProviderPlugin.
@@ -42,21 +41,25 @@ public class WebAppSecurityConfig {
   @Bean
   public SecurityFilterChain httpSecurity(HttpSecurity http) throws Exception {
     String path = operatonBpmProperties.getWebapp().getApplicationPath();
-    return http.csrf(csrf -> csrf.ignoringRequestMatchers(antMatcher(path + "/api/**"), antMatcher("/engine-rest/**")))
+    PathPatternRequestMatcher.Builder applicationPath = PathPatternRequestMatcher.withDefaults().basePath(path);
+    PathPatternRequestMatcher.Builder pathPattern = PathPatternRequestMatcher.withDefaults();
+
+    return http.csrf(csrf -> csrf.ignoringRequestMatchers(
+        applicationPath.matcher( "/api/**"), pathPattern.matcher("/engine-rest/**")))
         .securityMatcher("/**")
-        .authorizeHttpRequests(authz -> authz.requestMatchers(antMatcher("/"))
+        .authorizeHttpRequests(authz -> authz.requestMatchers(pathPattern.matcher("/"))
             .permitAll()
-            .requestMatchers(antMatcher(path + "/app/**"))
+            .requestMatchers(applicationPath.matcher("/app/**"))
             .permitAll()
-            .requestMatchers(antMatcher(path + "/assets/**"))
+            .requestMatchers(applicationPath.matcher( "/assets/**"))
             .permitAll()
-            .requestMatchers(antMatcher(path + "/lib/**"))
+            .requestMatchers(applicationPath.matcher( "/lib/**"))
             .permitAll()
-            .requestMatchers(antMatcher(path + "/api/engine/engine/**"))
+            .requestMatchers(applicationPath.matcher( "/api/engine/engine/**"))
             .permitAll()
-            .requestMatchers(antMatcher(path + "/api/*/plugin/*/static/app/plugin.css"))
+            .requestMatchers(applicationPath.matcher( "/api/*/plugin/*/static/app/plugin.css"))
             .permitAll()
-            .requestMatchers(antMatcher(path + "/api/*/plugin/*/static/app/plugin.js"))
+            .requestMatchers(applicationPath.matcher( "/api/*/plugin/*/static/app/plugin.js"))
             .permitAll()
             .anyRequest()
             .authenticated())
