@@ -27,7 +27,7 @@ public class KeycloakUseUsernameAsUserIdQueryTest extends AbstractKeycloakIdenti
 
       // @BeforeClass
       protected void setUp() throws JSONException {
-        initialize();
+//        initialize();
         // setup Keycloak special test users
         // -------------------------------------
         HttpHeaders headers = authenticateKeycloakAdmin();
