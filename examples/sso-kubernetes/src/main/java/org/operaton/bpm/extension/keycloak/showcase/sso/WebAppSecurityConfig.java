@@ -16,11 +16,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 
 import static org.springframework.security.config.Customizer.withDefaults;
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 /**
  * Operaton Web application SSO configuration for usage with KeycloakIdentityProviderPlugin.
@@ -36,11 +36,12 @@ public class WebAppSecurityConfig {
   @Bean
   @Order(2)
   public SecurityFilterChain httpSecurity(HttpSecurity http) throws Exception {
-    return http.csrf(csrf -> csrf.ignoringRequestMatchers(antMatcher("/api/**"), antMatcher("/engine-rest/**")))
-        .authorizeHttpRequests(authorize -> authorize.requestMatchers(antMatcher("/assets/**"), antMatcher("/app/**"),
-            antMatcher("/api/**"), antMatcher("/lib/**")).authenticated().anyRequest().permitAll())
+    PathPatternRequestMatcher.Builder pathPattern = PathPatternRequestMatcher.withDefaults();
+    return http.csrf(csrf -> csrf.ignoringRequestMatchers(pathPattern.matcher("/api/**"), pathPattern.matcher("/engine-rest/**")))
+        .authorizeHttpRequests(authorize -> authorize.requestMatchers(pathPattern.matcher("/assets/**"), pathPattern.matcher("/app/**"),
+            pathPattern.matcher("/api/**"), pathPattern.matcher("/lib/**")).authenticated().anyRequest().permitAll())
         .oauth2Login(withDefaults())
-        .logout(logout -> logout.logoutRequestMatcher(antMatcher("/app/**/logout"))
+        .logout(logout -> logout.logoutRequestMatcher(pathPattern.matcher("/app/**/logout"))
             .logoutSuccessHandler(keycloakLogoutHandler))
         .build();
   }

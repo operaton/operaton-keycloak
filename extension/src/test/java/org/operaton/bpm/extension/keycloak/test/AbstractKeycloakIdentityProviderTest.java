@@ -10,7 +10,7 @@ import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
 import org.apache.hc.client5.http.ssl.TrustAllStrategy;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.json.JSONArray;
@@ -308,9 +308,8 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
 
     PoolingHttpClientConnectionManagerBuilder connectionManagerBuilder = PoolingHttpClientConnectionManagerBuilder.create();
     SSLContext sslContext = SSLContextBuilder.create().loadTrustMaterial(new TrustAllStrategy()).build();
-    SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(sslContext,
-        NoopHostnameVerifier.INSTANCE);
-    connectionManagerBuilder.setSSLSocketFactory(sslConnectionSocketFactory);
+    DefaultClientTlsStrategy tlsStrategy = new DefaultClientTlsStrategy(sslContext, NoopHostnameVerifier.INSTANCE);
+    connectionManagerBuilder.setTlsSocketStrategy(tlsStrategy);
     final HttpClient httpClient = HttpClientBuilder.create()
         .setConnectionManager(connectionManagerBuilder.build())
         .build();

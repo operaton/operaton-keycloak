@@ -12,9 +12,9 @@ import org.operaton.bpm.extension.keycloak.showcase.plugin.KeycloakIdentityProvi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -37,14 +37,14 @@ import static org.operaton.bpm.extension.keycloak.showcase.test.util.ProcessTest
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
-public class ProcessIntegrationTest {
+class ProcessIntegrationTest {
 
   private static final String PROCESS_DEFINITION_KEY = "operaton.showcase";
 
   @Autowired
   private ProcessEngine processEngine;
 
-  @MockBean
+  @MockitoBean
   public KeycloakIdentityProvider disableKeycloak;
 
   static {
@@ -52,7 +52,7 @@ public class ProcessIntegrationTest {
   }
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     // init BPM assert
     init(processEngine);
   }
@@ -65,7 +65,7 @@ public class ProcessIntegrationTest {
    * Test the happy (approved) path.
    */
   @Test
-  public void testApprovedPath() {
+  void testApprovedPath() {
     // start process
     ProcessInstance pi = runtimeService().startProcessInstanceByKey(PROCESS_DEFINITION_KEY,
         withVariables(Variable.NAME, "Demo"));
