@@ -27,17 +27,16 @@ public class KeycloakUseUsernameAsUserIdQueryTest extends AbstractKeycloakIdenti
 
       // @BeforeClass
       protected void setUp() throws JSONException {
-//        initialize();
+        ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration.createProcessEngineConfigurationFromResource(
+            "operaton.useUsernameAsOperatonUserId.cfg.xml");
+        configureKeycloakIdentityProviderPlugin(config);
+        PluggableProcessEngineTestCase.cachedProcessEngine = config.buildProcessEngine();
+
         // setup Keycloak special test users
         // -------------------------------------
         HttpHeaders headers = authenticateKeycloakAdmin();
         String realm = "test";
         USER_IDS.add(createUser(headers, realm, "hans.wurst", null, null, null, null));
-
-        ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration.createProcessEngineConfigurationFromResource(
-            "operaton.useUsernameAsOperatonUserId.cfg.xml");
-        configureKeycloakIdentityProviderPlugin(config);
-        PluggableProcessEngineTestCase.cachedProcessEngine = config.buildProcessEngine();
       }
 
       // @AfterClass
