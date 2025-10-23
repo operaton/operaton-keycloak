@@ -25,8 +25,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.operaton.bpm.engine.test.assertions.bpmn.AbstractAssertions.init;
 
 /**
@@ -66,7 +64,7 @@ class RestApiSecurityConfigTest {
   }
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     // init BPM assert
     init(processEngine);
   }
@@ -86,22 +84,22 @@ class RestApiSecurityConfigTest {
   // ---------------------------------------------------------------------------
 
   @Test
-  void testSecuredRestApi_Accepted() throws Exception {
+  void securedRestApiAccepted() throws Exception {
     HttpHeaders headers = new HttpHeaders();
     headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + getToken());
     ResponseEntity<String> response = restTemplate.exchange(getEngineRestUrl("engine"), HttpMethod.GET,
         new HttpEntity<>(headers), String.class);
-    assertEquals("[{\"name\":\"default\"}]", response.getBody());
+    assertThat(response.getBody()).isEqualTo("[{\"name\":\"default\"}]");
   }
 
   @Test
-  void testUnSecuredRestApi_Denied() {
+  void unSecuredRestApiDenied() {
     HttpHeaders headers = new HttpHeaders();
     try {
       restTemplate.exchange(getEngineRestUrl("engine"), HttpMethod.GET, new HttpEntity<>(headers), String.class);
-      fail("Expected Status 401 Unauthorized");
+      org.assertj.core.api.Assertions.fail("Expected Status 401 Unauthorized");
     } catch (HttpClientErrorException ex) {
-      assertEquals(ex.getStatusCode(), HttpStatus.UNAUTHORIZED);
+      assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
   }
 

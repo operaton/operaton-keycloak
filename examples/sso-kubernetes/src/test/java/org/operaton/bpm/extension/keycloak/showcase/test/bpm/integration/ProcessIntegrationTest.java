@@ -3,7 +3,6 @@ package org.operaton.bpm.extension.keycloak.showcase.test.bpm.integration;
 import org.apache.ibatis.logging.LogFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.operaton.bpm.engine.ProcessEngine;
 import org.operaton.bpm.engine.runtime.ProcessInstance;
 import org.operaton.bpm.engine.task.Task;
@@ -15,9 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.operaton.bpm.engine.test.assertions.bpmn.AbstractAssertions.init;
 import static org.operaton.bpm.engine.test.assertions.bpmn.BpmnAwareTests.assertThat;
 import static org.operaton.bpm.engine.test.assertions.bpmn.BpmnAwareTests.complete;
@@ -34,7 +31,6 @@ import static org.operaton.bpm.extension.keycloak.showcase.test.util.ProcessTest
  * errors arising out of the combination of the service implementation with
  * the BPM process.
  */
-@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 class ProcessIntegrationTest {
@@ -65,7 +61,7 @@ class ProcessIntegrationTest {
    * Test the happy (approved) path.
    */
   @Test
-  void testApprovedPath() {
+  void approvedPath() {
     // start process
     ProcessInstance pi = runtimeService().startProcessInstanceByKey(PROCESS_DEFINITION_KEY,
         withVariables(Variable.NAME, "Demo"));
@@ -74,7 +70,7 @@ class ProcessIntegrationTest {
     // check user task and approve user
     assertThat(pi).isWaitingAt("ApproveUser");
     Task task = task();
-    assertNotNull(task, "User task expected");
+    assertThat(task).as("User task expected").isNotNull();
     complete(task, withVariables("approved", Boolean.TRUE));
 
     // check service task (asynchronous continuation)
@@ -91,7 +87,7 @@ class ProcessIntegrationTest {
    * Test the not approved path.
    */
   @Test
-  public void testNotApprovedPath() {
+  void notApprovedPath() {
     // start process
     ProcessInstance pi = runtimeService().startProcessInstanceByKey(PROCESS_DEFINITION_KEY,
         withVariables(Variable.NAME, "Demo"));
@@ -100,7 +96,7 @@ class ProcessIntegrationTest {
     // check user task and do not approve user
     assertThat(pi).isWaitingAt("ApproveUser");
     Task task = task();
-    assertNotNull(task, "User task expected");
+    assertThat(task).as("User task expected").isNotNull();
     complete(task, withVariables("approved", Boolean.FALSE));
 
     // check corresponding process end
