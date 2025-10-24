@@ -33,7 +33,7 @@ jobs:
         restore-keys: ${{ runner.os }}-sonar
     - name: Run Maven
       run: |
-        ./mvnw clean verify -DskipTests
+        ./mvnw clean verify
         ./mvnw --non-recursive org.jacoco:jacoco-maven-plugin:report-aggregate
     - name: Sonarqube Analysis
       if: env.SONAR_TOKEN && (github.ref == 'refs/heads/main' || github.event_name == 'pull_request')
