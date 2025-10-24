@@ -15,16 +15,12 @@ import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
 import org.operaton.bpm.extension.keycloak.auth.KeycloakJwtAuthenticationFilter;
 
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -54,7 +50,7 @@ class StatelessAuthenticationFilterTest {
     }
 
     @Test
-    void testDoFilterForProtectedResource() throws ServletException, IOException {
+    void doFilterForProtectedResource() throws Exception {
         HttpServletRequest httpServletRequest = mock(HttpServletRequest.class);
         HttpServletResponse httpServletResponse = mock(HttpServletResponse.class);
 
@@ -68,8 +64,8 @@ class StatelessAuthenticationFilterTest {
             @Override
             public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse) {
                 Authentication currentAuthentication = processEngine.getIdentityService().getCurrentAuthentication();
-                assertNotNull(currentAuthentication);
-                assertEquals("user", currentAuthentication.getUserId());
+                assertThat(currentAuthentication).isNotNull();
+                assertThat(currentAuthentication.getUserId()).isEqualTo("user");
             }
         });
 
@@ -77,11 +73,11 @@ class StatelessAuthenticationFilterTest {
         verify(filterChain).doFilter(httpServletRequest, httpServletResponse);
 
         Authentication currentAuthentication = processEngine.getIdentityService().getCurrentAuthentication();
-        assertNull(currentAuthentication);
+        assertThat(currentAuthentication).isNull();
     }
 
     @Test
-    void testDoFilterForStaticResource() throws ServletException, IOException {
+    void doFilterForStaticResource() throws Exception {
         HttpServletRequest httpServletRequest = mock(HttpServletRequest.class);
         HttpServletResponse httpServletResponse = mock(HttpServletResponse.class);
 
@@ -94,15 +90,15 @@ class StatelessAuthenticationFilterTest {
         statelessAuthenticationFilter.doFilter(httpServletRequest, httpServletResponse,
                 (servletRequest, servletResponse) -> {
                     Authentication currentAuthentication = processEngine.getIdentityService().getCurrentAuthentication();
-                    assertNull(currentAuthentication);
+                    assertThat(currentAuthentication).isNull();
                 });
 
         Authentication currentAuthentication = processEngine.getIdentityService().getCurrentAuthentication();
-        assertNull(currentAuthentication);
+        assertThat(currentAuthentication).isNull();
     }
 
     @Test
-    void testDoFilterForProtectedResourceWithoutUser() throws ServletException, IOException {
+    void doFilterForProtectedResourceWithoutUser() throws Exception {
         HttpServletRequest httpServletRequest = mock(HttpServletRequest.class);
         HttpServletResponse httpServletResponse = mock(HttpServletResponse.class);
 
@@ -119,7 +115,7 @@ class StatelessAuthenticationFilterTest {
 
         verify(httpServletResponse).setStatus(401);
         Authentication currentAuthentication = processEngine.getIdentityService().getCurrentAuthentication();
-        assertNull(currentAuthentication);
+        assertThat(currentAuthentication).isNull();
     }
 
 }

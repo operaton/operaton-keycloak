@@ -7,7 +7,7 @@
   <bean id="processEngineConfiguration" class="org.operaton.bpm.engine.impl.cfg.StandaloneInMemProcessEngineConfiguration">
     <property name="history" value="full" />
     <property name="expressionManager">
-        <bean class="org.operaton.bpm.engine.test.mock.MockExpressionManager"/>
+        <bean class="org.operaton.bpm.engine.impl.mock.MockExpressionManager"/>
     </property>
   </bean>
 

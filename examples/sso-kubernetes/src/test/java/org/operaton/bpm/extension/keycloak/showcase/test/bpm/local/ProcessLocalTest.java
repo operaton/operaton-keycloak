@@ -15,7 +15,6 @@ import org.operaton.bpm.engine.impl.mock.Mocks;
 import org.operaton.bpm.extension.keycloak.showcase.ProcessConstants.Variable;
 import org.operaton.bpm.extension.keycloak.showcase.task.LoggerDelegate;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -65,7 +64,7 @@ class ProcessLocalTest {
    * Set up the test case.
    */
   @BeforeEach
-  public void setup() {
+  void setup() {
     // Initialize and register mocks
     MockitoAnnotations.openMocks(this);
     Mocks.register("logger", loggerTask);
@@ -78,7 +77,7 @@ class ProcessLocalTest {
    * Tear down test case.
    */
   @AfterEach
-  public void tearDown() {
+  void tearDown() {
     // Reset mocks
     reset(loggerTask);
   }
@@ -92,7 +91,7 @@ class ProcessLocalTest {
    */
   @Test
   @Deployment(resources = PROCESS_RESOURCE)
-  void testParsingAndDeployment() {
+  void parsingAndDeployment() {
     // nothing is done here, as we just want to check for exceptions during
     // deployment
   }
@@ -102,7 +101,7 @@ class ProcessLocalTest {
    */
   @Test
   @Deployment(resources = PROCESS_RESOURCE)
-  void testApprovedPath() throws Exception {
+  void approvedPath() throws Exception {
     // start process
     ProcessInstance pi = runtimeService().startProcessInstanceByKey(PROCESS_DEFINITION_KEY,
         withVariables(Variable.NAME, "Demo"));
@@ -111,7 +110,7 @@ class ProcessLocalTest {
     // check user task and approve user
     assertThat(pi).isWaitingAt("ApproveUser");
     Task task = task();
-    assertNotNull(task, "User task expected");
+    assertThat(task).as("User task expected").isNotNull();
     complete(task, withVariables("approved", Boolean.TRUE));
 
     // check service task (asynchronous continuation)
@@ -131,7 +130,7 @@ class ProcessLocalTest {
    */
   @Test
   @Deployment(resources = PROCESS_RESOURCE)
-  void testNotApprovedPath() throws Exception {
+  void notApprovedPath() throws Exception {
     // start process
     ProcessInstance pi = runtimeService().startProcessInstanceByKey(PROCESS_DEFINITION_KEY,
         withVariables(Variable.NAME, "Demo"));
@@ -140,7 +139,7 @@ class ProcessLocalTest {
     // check user task and do not approve user
     assertThat(pi).isWaitingAt("ApproveUser");
     Task task = task();
-    assertNotNull(task, "User task expected");
+    assertThat(task).as("User task expected").isNotNull();
     complete(task, withVariables("approved", Boolean.FALSE));
 
     // check corresponding process end

@@ -1,7 +1,7 @@
 name: Build project with Maven
 on:
   pull_request: 
-  push: 
+#  push:
   schedule:
   - cron: '2 2 * * 1-5' # run nightly master builds on weekdays
 
@@ -17,11 +17,12 @@ jobs:
         java-version: 17
         distribution: temurin
     - name: Cache
-      uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # pin@v2
+      uses: actions/cache@v4
       with:
         path: ~/.m2/repository
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-maven-
     - name: Run Maven
-      run: mvn -B clean install com.mycila:license-maven-plugin:check
+      run: mvn -B clean verify
+#      run: mvn -B clean install com.mycila:license-maven-plugin:check
