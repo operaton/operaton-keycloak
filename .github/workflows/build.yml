@@ -25,6 +25,21 @@ jobs:
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-maven-
+    - name: Cache SonarCloud packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
     - name: Run Maven
-      run: mvn -B clean verify
-#      run: mvn -B clean install com.mycila:license-maven-plugin:check
+      run: |
+        ./mvnw clean verify -DskipTests
+        ./mvnw --non-recursive org.jacoco:jacoco-maven-plugin:report-aggregate
+    - name: Sonarqube Analysis
+      if: env.SONAR_TOKEN && (github.ref == 'refs/heads/main' || github.event_name == 'pull_request')
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      shell: bash
+      run: ./mvnw org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=operaton_operaton-keycloak
+      continue-on-error: true
