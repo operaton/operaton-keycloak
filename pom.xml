@@ -7,7 +7,7 @@
 
   <groupId>org.operaton.bpm.extension</groupId>
   <artifactId>operaton-keycloak-root</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>pom</packaging>
   <name>Operaton - engine plugins - identity - keycloak - root</name>
   <description>A Operaton Identity Provider Plugin for Keycloak</description>
