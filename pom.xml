@@ -23,7 +23,7 @@
     <version.operaton>1.0.0</version.operaton>
     <version.springBoot>3.5.7</version.springBoot>
     <version.commons-codec>1.19.0</version.commons-codec>
-    <version.testcontainers>1.21.3</version.testcontainers>
+    <version.testcontainers>2.0.2</version.testcontainers>
 
     <!-- Set to false for each module that must be deployed -->
     <deploy.skip>true</deploy.skip>
@@ -170,7 +170,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.5.1</version>
+          <version>3.5.4</version>
         </plugin>
       </plugins>
     </pluginManagement>
