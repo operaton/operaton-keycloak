@@ -12,23 +12,43 @@ updates:
       interval: "weekly"
     reviewers:
       - "cachescrubber"
+
+  # Maven: only patch updates to release/1.0.x
   - package-ecosystem: "maven"
     directory: "/"
     schedule:
       interval: "daily"
       time: "01:00"
+    target-branch: "release/1.0.x"
     reviewers:
       - "cachescrubber"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-minor"
+          - "version-update:semver-major"
     groups:
       maven-patch:
-        applies-to: version-updates
-        update-types: [ "patch" ]
-        target-branch: release/1.0.x
-        reviewers:
-          - "cachescrubber"
-      maven-minor-patch:
-        applies-to: version-updates
-        update-types: [ "minor", "patch" ]
-        target-branch: master
-        reviewers:
-          - "cachescrubber"
+        update-types:
+          - "patch"
+
+  # Maven: minor + patch updates to master
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "01:00"
+    target-branch: "master"
+    reviewers:
+      - "cachescrubber"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+    groups:
+      maven-minor:
+        update-types:
+          - "minor"
+      maven-patch:
+        update-types:
+          - "patch"
