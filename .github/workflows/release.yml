@@ -131,7 +131,7 @@ jobs:
       - name: Publish Test Report
         if: always()
         #https://github.com/marketplace/actions/junit-report-action
-        uses: mikepenz/action-junit-report@v4
+        uses: mikepenz/action-junit-report@v6
         with:
           report_paths: ${{ github.workspace }}/**/target/surefire-reports/*.xml
           require_passed_tests: true
