@@ -44,9 +44,6 @@ updates:
         update-types:
           - "version-update:semver-major"
     groups:
-      maven-minor:
-        update-types:
-          - "minor"
       maven-patch:
         update-types:
           - "patch"
