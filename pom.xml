@@ -21,7 +21,7 @@
 
     <!-- versions -->
     <version.operaton>1.0.0</version.operaton>
-    <version.springBoot>3.5.7</version.springBoot>
+    <version.springBoot>3.5.8</version.springBoot>
     <version.commons-codec>1.19.0</version.commons-codec>
     <version.testcontainers>1.21.3</version.testcontainers>
 
@@ -152,7 +152,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-deploy-plugin</artifactId>
-          <version>3.1.3</version>
+          <version>3.1.4</version>
           <configuration>
             <skip>${deploy.skip}</skip>
           </configuration>
@@ -170,7 +170,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.5.1</version>
+          <version>3.5.4</version>
         </plugin>
       </plugins>
     </pluginManagement>
