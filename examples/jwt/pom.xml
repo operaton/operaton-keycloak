@@ -113,7 +113,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <version>3.1.1</version>
+        <version>3.6.2</version>
         <configuration>
           <mainClass>
             org.operaton.bpm.extension.keycloak.org.operaton.bpm.extension.keycloak.showcase.OperatonApplication
