@@ -17,8 +17,7 @@ updates:
   - package-ecosystem: "maven"
     directory: "/"
     schedule:
-      interval: "daily"
-      time: "01:00"
+      interval: "weekly"
     target-branch: "release/1.0.x"
     reviewers:
       - "cachescrubber"
@@ -36,8 +35,7 @@ updates:
   - package-ecosystem: "maven"
     directory: "/"
     schedule:
-      interval: "daily"
-      time: "01:00"
+      interval: "weekly"
     target-branch: "master"
     reviewers:
       - "cachescrubber"
