@@ -22,7 +22,7 @@
     <!-- versions -->
     <version.operaton>1.0.2</version.operaton>
     <version.springBoot>3.5.9</version.springBoot>
-    <version.commons-codec>1.20.0</version.commons-codec>
+    <version.commons-codec>1.21.0</version.commons-codec>
     <version.testcontainers>1.21.4</version.testcontainers>
 
     <!-- Set to false for each module that must be deployed -->
