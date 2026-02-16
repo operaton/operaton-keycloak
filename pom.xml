@@ -20,8 +20,8 @@
     <project.build.resourceEncoding>${encoding}</project.build.resourceEncoding>
 
     <!-- versions -->
-    <version.operaton>1.0.2</version.operaton>
-    <version.springBoot>3.5.9</version.springBoot>
+    <version.operaton>1.0.3</version.operaton>
+    <version.springBoot>3.5.10</version.springBoot>
     <version.commons-codec>1.20.0</version.commons-codec>
     <version.testcontainers>1.21.4</version.testcontainers>
 
