@@ -20,10 +20,10 @@
     <project.build.resourceEncoding>${encoding}</project.build.resourceEncoding>
 
     <!-- versions -->
-    <version.operaton>1.0.0</version.operaton>
-    <version.springBoot>3.5.7</version.springBoot>
-    <version.commons-codec>1.19.0</version.commons-codec>
-    <version.testcontainers>2.0.2</version.testcontainers>
+    <version.operaton>2.0.0-M3</version.operaton>
+    <version.springBoot>4.0.3</version.springBoot>
+    <version.commons-codec>1.21.0</version.commons-codec>
+    <version.testcontainers>2.0.3</version.testcontainers>
 
     <!-- Set to false for each module that must be deployed -->
     <deploy.skip>true</deploy.skip>
