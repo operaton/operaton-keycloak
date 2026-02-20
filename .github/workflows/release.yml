@@ -25,7 +25,7 @@ jobs:
       is_prerelease: ${{steps.version.outputs.is_prerelease}}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: ${{github.event.inputs.release_branch}}
@@ -59,13 +59,13 @@ jobs:
       output1: ${{steps.upload-release-artifacts.outputs.artifact-id}}
     steps:
       - name: Check out the code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: ${{github.event.inputs.release_branch}}
 
       - name: Set up JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -100,7 +100,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out the code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: ${{github.event.inputs.release_branch}}
@@ -137,14 +137,14 @@ jobs:
           require_passed_tests: true
 
       - name: Archive Reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: reports
           path: |
             **/target/reports/**
 
       - name: Archive Staging Repo
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: staging
           path: |
@@ -157,13 +157,13 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out the code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: ${{github.event.inputs.release_branch}}
 
       - name: Set up JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'temurin'
