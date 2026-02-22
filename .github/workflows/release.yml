@@ -7,10 +7,14 @@ on:
         description: 'The branch to release from'
         required: true
         default: 'master'
+      release_version:
+        description: 'The version to release (e.g., 2.0.0-M1 for a milestone or 2.0.0-RC1 for a release candidate). If not provided, the version is calculated from the project version by removing the -SNAPSHOT suffix.'
+        required: false
+        default: ''
       next_version:
-        description: 'The next development version to set (without -SNAPSHOT suffix)'
+        description: 'The next development version to set (without -SNAPSHOT suffix). For prereleases (M, RC), provide the base version so the snapshot stays at that base (e.g., 2.0.0 after releasing 2.0.0-M1).'
         required: true
-        default: '1.0.0-beta-2'
+        default: '2.0.0'
       dry_run:
         description: 'Dry-Run: Skips remote operations when true'
         type: boolean
@@ -34,9 +38,13 @@ jobs:
         id: version
         shell: bash
         run: |
-          RELEASE_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout | tail -n 1 | sed -e 's/-SNAPSHOT//')
+          if [ -n "${{github.event.inputs.release_version}}" ]; then
+            RELEASE_VERSION="${{github.event.inputs.release_version}}"
+          else
+            RELEASE_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout | tail -n 1 | sed -e 's/-SNAPSHOT//')
+          fi
           echo "version=$RELEASE_VERSION" >> $GITHUB_OUTPUT
-          if [[ "$RELEASE_VERSION" == *"alpha"* || "$RELEASE_VERSION" == *"beta"* ]]; then
+          if [[ "$RELEASE_VERSION" =~ -(alpha|beta|M[0-9]+|RC[0-9]+) ]]; then
             echo "⚙ Releasing version '$RELEASE_VERSION' (Pre-Release)"
             echo "is_prerelease=true" >> $GITHUB_OUTPUT
           else
