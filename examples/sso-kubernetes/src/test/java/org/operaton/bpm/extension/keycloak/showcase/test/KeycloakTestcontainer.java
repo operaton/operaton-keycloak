@@ -15,7 +15,7 @@ public class KeycloakTestcontainer {
   private static final Logger log = LoggerFactory.getLogger(KeycloakTestcontainer.class);
 
   static KeycloakContainer keycloakContainer = new KeycloakContainer(
-      "quay.io/keycloak/keycloak:26.3.4").withRealmImportFile("/operaton-realm.json")
+      "quay.io/keycloak/keycloak:26.5.4").withRealmImportFile("/operaton-realm.json")
       .withAdminUsername("operaton")
       .withAdminPassword("operaton!");
 

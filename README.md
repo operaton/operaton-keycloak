@@ -26,7 +26,7 @@ This plugin provides the basis for using Keycloak as Identity Management solutio
 Password grant exchanges are only supported for Keycloak's internally managed users and users of an LDAP / Keberos User federation. Hence, without SSO you will only be able to log in with users managed by such connections.
 
 Current version: `2.0.0`<br >
-Latest tests with: Keycloak `26.3.4`, Operaton `2.0.x`
+Latest tests with: Keycloak `26.5.4`, Operaton `2.0.x`
 
 #### Features
 Changes in version `2.0.0`
@@ -353,7 +353,7 @@ In order to run the unit tests I have used a local docker setup of Keycloak with
 ```docker-compose
 services:
   jboss.keycloak:
-    image: quay.io/keycloak/keycloak:26.3.4
+    image: quay.io/keycloak/keycloak:26.5.4
     restart: unless-stopped
     environment:
       TZ: Europe/Berlin
