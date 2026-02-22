@@ -41,8 +41,8 @@ release: # https://jreleaser.org/guide/latest/reference/release/github.html
     skipTag: false
     previousTagName: fork-baseline
     releaseName: Release {{tagName}}
-    prerelease: # TODO Evaluate JRELEASER_PRERELEASE_ENABLED
-      enabled: true
+    prerelease:
+      pattern: '.+-(M[0-9]+|RC[0-9]+|alpha|beta)$'
     issues:
       enabled: true
       comment: '🎉 This issue has been resolved in `{{tagName}}` ([Release Notes]({{releaseNotesUrl}}))'
