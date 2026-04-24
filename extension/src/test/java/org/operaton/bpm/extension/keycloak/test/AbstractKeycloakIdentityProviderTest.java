@@ -1,11 +1,13 @@
 package org.operaton.bpm.extension.keycloak.test;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 import javax.net.ssl.SSLContext;
 
 import dasniko.testcontainers.keycloak.KeycloakContainer;
+import jakarta.ws.rs.core.Response;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
@@ -13,6 +15,8 @@ import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
 import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
 import org.apache.hc.client5.http.ssl.TrustAllStrategy;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
+import org.keycloak.admin.client.CreatedResponseUtil;
+import org.keycloak.representations.idm.OrganizationRepresentation;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -80,6 +84,10 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
   protected static String groupIdSimilarClientName;
   protected static String userIdSimilarClientName;
 
+  protected static String tenantIdAlpha;
+  protected static String tenantIdBeta;
+  protected static String tenantIdGamma;
+
   private static final RestTemplate REST_TEMPLATE = new RestTemplate();
 
   protected static String clientSecret;
@@ -98,6 +106,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
         getConfigValue(defaults, "keycloak.enforce.subgroups.in.group.query"));
     keycloak.withAdminUsername(keycloakAdminUser);
     keycloak.withAdminPassword(keycloakAdminPassword);
+    keycloak.withFeaturesEnabled("organization");
 
     keycloak.start();
     keycloakUrl = keycloak.getAuthServerUrl();
@@ -263,6 +272,18 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
     assignUserGroup(headers, realm, userIdSimilarClientName, groupIdSimilarClientName);
 
     // --------------------------------------------------------------------
+    // Create organizations (tenants)
+    tenantIdAlpha = createOrganization(realm, "Alpha");
+    tenantIdBeta = createOrganization(realm, "Beta");
+    tenantIdGamma = createOrganization(realm, "Gamma");
+
+    // Assign members to organizations
+    addOrganizationMember(realm, tenantIdAlpha, userIdOperatonAdmin);
+    addOrganizationMember(realm, tenantIdAlpha, userIdManager);
+    addOrganizationMember(realm, tenantIdBeta, userIdManager);
+    addOrganizationMember(realm, tenantIdBeta, userIdTeamlead);
+
+    // --------------------------------------------------------------------
 
     // Create Client roles
     String clientInternalId = getClientInternalId(headers, realm, "operaton-identity-service");
@@ -361,7 +382,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
    */
   private static void createRealm(HttpHeaders headers, String realm) {
     String realmData = "{\"id\":null,\"realm\":\"" + realm
-        + "\",\"notBefore\":0,\"revokeRefreshToken\":false,\"refreshTokenMaxReuse\":0,\"accessTokenLifespan\":300,\"accessTokenLifespanForImplicitFlow\":900,\"ssoSessionIdleTimeout\":1800,\"ssoSessionMaxLifespan\":36000,\"ssoSessionIdleTimeoutRememberMe\":0,\"ssoSessionMaxLifespanRememberMe\":0,\"offlineSessionIdleTimeout\":2592000,\"offlineSessionMaxLifespanEnabled\":false,\"offlineSessionMaxLifespan\":5184000,\"accessCodeLifespan\":60,\"accessCodeLifespanUserAction\":300,\"accessCodeLifespanLogin\":1800,\"actionTokenGeneratedByAdminLifespan\":43200,\"actionTokenGeneratedByUserLifespan\":300,\"enabled\":true,\"sslRequired\":\"external\",\"registrationAllowed\":false,\"registrationEmailAsUsername\":false,\"rememberMe\":false,\"verifyEmail\":false,\"loginWithEmailAllowed\":true,\"duplicateEmailsAllowed\":false,\"resetPasswordAllowed\":false,\"editUsernameAllowed\":false,\"bruteForceProtected\":false,\"permanentLockout\":false,\"maxFailureWaitSeconds\":900,\"minimumQuickLoginWaitSeconds\":60,\"waitIncrementSeconds\":60,\"quickLoginCheckMilliSeconds\":1000,\"maxDeltaTimeSeconds\":43200,\"failureFactor\":30,\"defaultRoles\":[\"uma_authorization\",\"offline_access\"],\"requiredCredentials\":[\"password\"],\"otpPolicyType\":\"totp\",\"otpPolicyAlgorithm\":\"HmacSHA1\",\"otpPolicyInitialCounter\":0,\"otpPolicyDigits\":6,\"otpPolicyLookAheadWindow\":1,\"otpPolicyPeriod\":30,\"otpSupportedApplications\":[\"FreeOTP\",\"Google Authenticator\"],\"browserSecurityHeaders\":{\"contentSecurityPolicyReportOnly\":\"\",\"xContentTypeOptions\":\"nosniff\",\"xRobotsTag\":\"none\",\"xFrameOptions\":\"SAMEORIGIN\",\"xXSSProtection\":\"1; mode=block\",\"contentSecurityPolicy\":\"frame-src 'self'; frame-ancestors 'self'; object-src 'none';\",\"strictTransportSecurity\":\"max-age=31536000; includeSubDomains\"},\"smtpServer\":{},\"eventsEnabled\":false,\"eventsListeners\":[\"jboss-logging\"],\"enabledEventTypes\":[],\"adminEventsEnabled\":false,\"adminEventsDetailsEnabled\":false,\"internationalizationEnabled\":false,\"supportedLocales\":[],\"browserFlow\":\"browser\",\"registrationFlow\":\"registration\",\"directGrantFlow\":\"direct grant\",\"resetCredentialsFlow\":\"reset credentials\",\"clientAuthenticationFlow\":\"clients\",\"dockerAuthenticationFlow\":\"docker auth\",\"attributes\":{\"_browser_header.xXSSProtection\":\"1; mode=block\",\"_browser_header.xFrameOptions\":\"SAMEORIGIN\",\"_browser_header.strictTransportSecurity\":\"max-age=31536000; includeSubDomains\",\"permanentLockout\":\"false\",\"quickLoginCheckMilliSeconds\":\"1000\",\"_browser_header.xRobotsTag\":\"none\",\"maxFailureWaitSeconds\":\"900\",\"minimumQuickLoginWaitSeconds\":\"60\",\"failureFactor\":\"30\",\"actionTokenGeneratedByUserLifespan\":\"300\",\"maxDeltaTimeSeconds\":\"43200\",\"_browser_header.xContentTypeOptions\":\"nosniff\",\"offlineSessionMaxLifespan\":\"5184000\",\"actionTokenGeneratedByAdminLifespan\":\"43200\",\"_browser_header.contentSecurityPolicyReportOnly\":\"\",\"bruteForceProtected\":\"false\",\"_browser_header.contentSecurityPolicy\":\"frame-src 'self'; frame-ancestors 'self'; object-src 'none';\",\"waitIncrementSeconds\":\"60\",\"offlineSessionMaxLifespanEnabled\":\"false\"},\"userManagedAccessAllowed\":false}";
+        + "\",\"notBefore\":0,\"revokeRefreshToken\":false,\"refreshTokenMaxReuse\":0,\"accessTokenLifespan\":300,\"accessTokenLifespanForImplicitFlow\":900,\"ssoSessionIdleTimeout\":1800,\"ssoSessionMaxLifespan\":36000,\"ssoSessionIdleTimeoutRememberMe\":0,\"ssoSessionMaxLifespanRememberMe\":0,\"offlineSessionIdleTimeout\":2592000,\"offlineSessionMaxLifespanEnabled\":false,\"offlineSessionMaxLifespan\":5184000,\"accessCodeLifespan\":60,\"accessCodeLifespanUserAction\":300,\"accessCodeLifespanLogin\":1800,\"actionTokenGeneratedByAdminLifespan\":43200,\"actionTokenGeneratedByUserLifespan\":300,\"enabled\":true,\"organizationsEnabled\":true,\"sslRequired\":\"external\",\"registrationAllowed\":false,\"registrationEmailAsUsername\":false,\"rememberMe\":false,\"verifyEmail\":false,\"loginWithEmailAllowed\":true,\"duplicateEmailsAllowed\":false,\"resetPasswordAllowed\":false,\"editUsernameAllowed\":false,\"bruteForceProtected\":false,\"permanentLockout\":false,\"maxFailureWaitSeconds\":900,\"minimumQuickLoginWaitSeconds\":60,\"waitIncrementSeconds\":60,\"quickLoginCheckMilliSeconds\":1000,\"maxDeltaTimeSeconds\":43200,\"failureFactor\":30,\"defaultRoles\":[\"uma_authorization\",\"offline_access\"],\"requiredCredentials\":[\"password\"],\"otpPolicyType\":\"totp\",\"otpPolicyAlgorithm\":\"HmacSHA1\",\"otpPolicyInitialCounter\":0,\"otpPolicyDigits\":6,\"otpPolicyLookAheadWindow\":1,\"otpPolicyPeriod\":30,\"otpSupportedApplications\":[\"FreeOTP\",\"Google Authenticator\"],\"browserSecurityHeaders\":{\"contentSecurityPolicyReportOnly\":\"\",\"xContentTypeOptions\":\"nosniff\",\"xRobotsTag\":\"none\",\"xFrameOptions\":\"SAMEORIGIN\",\"xXSSProtection\":\"1; mode=block\",\"contentSecurityPolicy\":\"frame-src 'self'; frame-ancestors 'self'; object-src 'none';\",\"strictTransportSecurity\":\"max-age=31536000; includeSubDomains\"},\"smtpServer\":{},\"eventsEnabled\":false,\"eventsListeners\":[\"jboss-logging\"],\"enabledEventTypes\":[],\"adminEventsEnabled\":false,\"adminEventsDetailsEnabled\":false,\"internationalizationEnabled\":false,\"supportedLocales\":[],\"browserFlow\":\"browser\",\"registrationFlow\":\"registration\",\"directGrantFlow\":\"direct grant\",\"resetCredentialsFlow\":\"reset credentials\",\"clientAuthenticationFlow\":\"clients\",\"dockerAuthenticationFlow\":\"docker auth\",\"attributes\":{\"_browser_header.xXSSProtection\":\"1; mode=block\",\"_browser_header.xFrameOptions\":\"SAMEORIGIN\",\"_browser_header.strictTransportSecurity\":\"max-age=31536000; includeSubDomains\",\"permanentLockout\":\"false\",\"quickLoginCheckMilliSeconds\":\"1000\",\"_browser_header.xRobotsTag\":\"none\",\"maxFailureWaitSeconds\":\"900\",\"minimumQuickLoginWaitSeconds\":\"60\",\"failureFactor\":\"30\",\"actionTokenGeneratedByUserLifespan\":\"300\",\"maxDeltaTimeSeconds\":\"43200\",\"_browser_header.xContentTypeOptions\":\"nosniff\",\"offlineSessionMaxLifespan\":\"5184000\",\"actionTokenGeneratedByAdminLifespan\":\"43200\",\"_browser_header.contentSecurityPolicyReportOnly\":\"\",\"bruteForceProtected\":\"false\",\"_browser_header.contentSecurityPolicy\":\"frame-src 'self'; frame-ancestors 'self'; object-src 'none';\",\"waitIncrementSeconds\":\"60\",\"offlineSessionMaxLifespanEnabled\":\"false\"},\"userManagedAccessAllowed\":false}";
     HttpEntity<String> request = new HttpEntity<>(realmData, headers);
     ResponseEntity<String> response = REST_TEMPLATE.postForEntity(keycloakUrl + "/admin/realms", request, String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -428,6 +449,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
     String queryGroupRoleId = null;
     String viewUserRoleId = null;
     String viewClientsRoleId = null;
+    String manageRealmRoleId = null;
     response = REST_TEMPLATE.exchange(keycloakUrl + "/admin/realms/" + realm + "/clients?clientId=realm-management",
         HttpMethod.GET, new HttpEntity<>(headers), String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -448,16 +470,23 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
         viewUserRoleId = role.getString("id");
       } else if ("view-clients".equals(roleName)) {
         viewClientsRoleId = role.getString("id");
+      } else if ("manage-realm".equals(roleName)) {
+        manageRealmRoleId = role.getString("id");
       }
-      if (queryUserRoleId != null && queryGroupRoleId != null && viewUserRoleId != null && viewClientsRoleId != null) {
+      if (queryUserRoleId != null
+          && queryGroupRoleId != null
+          && viewUserRoleId != null
+          && viewClientsRoleId != null
+          && manageRealmRoleId != null) {
         break;
       }
     }
     assertThat(queryUserRoleId).isNotNull();
     assertThat(queryGroupRoleId).isNotNull();
     assertThat(viewUserRoleId).isNotNull();
+    assertThat(manageRealmRoleId).isNotNull();
 
-    // Add service account client roles query-user, query-group, view-user, view-clients for realm management: this allows using the management REST API via this newly created client
+    // Add service account client roles query-user, query-group, view-user, view-clients, manage-realm for realm management: this allows using the management REST API via this newly created client
     String roleMapping = "[" + "{\"clientRole\":true,\"composite\":false,\"containerId\":\"" + realmManagementId
         + "\",\"description\":\"${role_query-groups}\",\"id\":\"" + queryGroupRoleId + "\",\"name\":\"query-groups\"},"
         + "{\"clientRole\":true,\"composite\":false,\"containerId\":\"" + realmManagementId
@@ -465,7 +494,9 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
         + "{\"clientRole\":true,\"composite\":true,\"containerId\":\"" + realmManagementId
         + "\",\"description\":\"${role_view-users}\",\"id\":\"" + viewUserRoleId + "\",\"name\":\"view-users\"},"
         + "{\"clientRole\":true,\"composite\":true,\"containerId\":\"" + realmManagementId
-        + "\",\"description\":\"${role_view-clients}\",\"id\":\"" + viewClientsRoleId + "\",\"name\":\"view-clients\"}"
+        + "\",\"description\":\"${role_view-clients}\",\"id\":\"" + viewClientsRoleId + "\",\"name\":\"view-clients\"},"
+        + "{\"clientRole\":true,\"composite\":true,\"containerId\":\"" + realmManagementId
+        + "\",\"description\":\"${role_manage-realm}\",\"id\":\"" + manageRealmRoleId + "\",\"name\":\"manage-realm\"}"
         + "]";
     request = new HttpEntity<>(roleMapping, headers);
     response = REST_TEMPLATE.postForEntity(
@@ -642,6 +673,55 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
         keycloakUrl + "/admin/realms/" + realm + "/users/" + userId + "/groups/" + groupId, HttpMethod.PUT,
         new HttpEntity<>(headers), String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+  }
+
+  // ------------------------------------------------------------------------
+  // Organization specific functions
+  // ------------------------------------------------------------------------
+
+  /**
+   * Creates an organization (tenant).
+   *
+   * @param realm            the realm name
+   * @param organizationName the organization name
+   * @return the organization ID
+   */
+  static String createOrganization(String realm, String organizationName) {
+    OrganizationRepresentation organization = new OrganizationRepresentation();
+    organization.setName(organizationName);
+    organization.setAlias(organizationName.toLowerCase(Locale.ROOT));
+    organization.setEnabled(true);
+
+    Response response = keycloak.getKeycloakAdminClient().realm(realm).organizations().create(organization);
+    if (response.getStatus() != HttpStatus.CREATED.value()) {
+      throw new IllegalStateException("Unable to create organization " + organizationName + ": HTTP status code "
+          + response.getStatus());
+    }
+    String organizationId = CreatedResponseUtil.getCreatedId(response);
+    response.close();
+    LOG.info("Created organization {}", organizationName);
+    return organizationId;
+  }
+
+  /**
+   * Assigns a user to an organization.
+   *
+   * @param realm          the realm name
+   * @param organizationId the organization ID
+   * @param userId         the user ID
+   */
+  static void addOrganizationMember(String realm, String organizationId, String userId) {
+    Response response = keycloak.getKeycloakAdminClient()
+        .realm(realm)
+        .organizations()
+        .get(organizationId)
+        .members()
+        .addMember(userId);
+    if (response.getStatus() / 100 != 2) {
+      throw new IllegalStateException("Unable to add member " + userId + " to organization " + organizationId
+          + ": HTTP status code " + response.getStatus());
+    }
+    response.close();
   }
 
   // ------------------------------------------------------------------------

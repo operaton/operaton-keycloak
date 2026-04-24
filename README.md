@@ -32,13 +32,13 @@ Latest tests with: Keycloak `26.5.4`, Operaton `2.0.x`
 Changes in version `2.0.0`
 
 * Support Operaton 2.0.x
+* Optional: Use Keycloak Organizations as Operaton tenants (disabled by default)
 
 Known limitations:
 
 *   A strategy to distinguish SYSTEM and WORKFLOW groups is missing. Currently only the administrator group is mapped to type SYSTEM.
 *   Some query filters are applied on the client side - the Keycloak REST API does not allow full criteria search in all required cases.
 *   Sort criteria for queries are implemented on the client side - the Keycloak REST API does not allow result ordering.
-*   Tenants are currently not supported.
 
 ## Prerequisites in your Keycloak realm
 
@@ -52,12 +52,23 @@ Known limitations:
 4. In order to use refresh tokens set the "Use Refresh Tokens For Client Credentials Grant" option within the "OpenID Connect Compatibility Modes" section (available in newer Keycloak versions):
 
     ![IdentityServiceOptions](doc/identity-service_options.png "Identity Service Options")
-5. Add the roles `query-groups, query-users, view-users` to the service account client roles of your realm (choose `realm-management` or `master-realm`, depending on whether you are using a separate realm or master):
+5. Add the roles `query-groups, query-users, view-users` to the service account client roles of your realm (choose `realm-management` or `master-realm`, depending on whether you are using a separate realm or master). If you enable Organizations as tenants, also add `manage-realm`:
     ![IdentityServiceRoles](doc/identity-service_roles.png "Identity Service Roles")
 6. Your client credentials can be found here:
     ![IdentityServiceCredentials](doc/identity-service_credentials.png "Identity Service Credentials")
 7. Once you're done with the basic setup you're now ready to manage your users and groups with Keycloak. Please keep in mind, that in order to make the Keycloak Identity Provider work, you will need at least one dedicated Operaton admin group or Operaton admin user in your realm. Whether you create this group/user manually or import it using the LDAP user federation or any other Identity Provider is up to you.
     ![KeycloakGroups](doc/keycloak-groups.png "Keycloak Realm Groups")
+
+## Organizations as Tenants (optional)
+
+Operaton tenants can be backed by Keycloak Organizations. When enabled, each organization is exposed as an Operaton tenant and tenant membership is derived from Keycloak organization members. The plugin uses the Keycloak Admin REST endpoints `.../admin/realms/<realm>/organizations` and `.../admin/realms/<realm>/organizations/members/{userId}/organizations`.
+
+Requirements:
+
+1. Enable the Keycloak feature `organization` on the server (for example via `KC_FEATURES=organization`).
+2. Enable organizations for the realm (set `organizationsEnabled=true` in the realm settings or via the Admin REST API).
+3. Configure the plugin with `useOrganizationsAsTenants: true`.
+4. Grant the service-account client role `manage-realm` in `realm-management`. Without it Keycloak returns `403` for the organizations endpoints.
 
 ## Usage with Operaton Spring Boot
 
@@ -125,6 +136,7 @@ A list of configuration options can be found below:
 | `clientSecret`                    | The Client Secret of your application.                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `useEmailAsOperatonUserId`        | Whether to use the Keycloak email attribute as Operaton's user ID. Default is `false`.<br /><br />This is option is a fallback in case you don't use SSO and want to login using Operaton's web interface with your mail address and not the cryptic internal Keycloak ID. Keep in mind that you will only be able to login without SSO with Keycloak's internally managed users and users managed by the LDAP / Keberos User federation. |
 | `useUsernameAsOperatonUserId`     | Whether to use the Keycloak username attribute as Operaton's user ID. Default is `false`. In the default case the plugin will use the internal Keycloak ID as Operaton's user ID.                                                                                                                                                                                                                                                         |
+| `useOrganizationsAsTenants`       | Whether to map Keycloak Organizations to Operaton tenants. Default is `false`. Requires the Keycloak `organization` feature, `organizationsEnabled=true` on the realm, and the service-account role `manage-realm` in `realm-management`.                                                                                                                                                                                                 |
 | `useGroupPathAsOperatonGroupId`   | Whether to use the Keycloak unique group path as Operaton's group ID. Default is `false`. In the default case the plugin will use the internal Keycloak ID as Operaton's group ID.<br />This flag is particularly useful in case you want to have human readable group IDs and recommended when using groups in Operaton's authorization management.<br />*Since 1.1.0*                                                                   |
 | `enforceSubgroupsInGroupQuery`    | Starting with Keycloak version 23 the group query without any other search parameters does not automatically return subgroups within the result. Set this flag to `true` in case you use subgroups together with Keycloak 23 or higher. Otherwise leave it to the default `false` and benefit from better performance.<br />*Since 7.21.1*                                                                                               |
 | `administratorGroupName`          | The name of the administrator group. If this name is set and engine authorization is enabled, the plugin will create group-level Administrator authorizations on all built-in resources.                                                                                                                                                                                                                                                 |

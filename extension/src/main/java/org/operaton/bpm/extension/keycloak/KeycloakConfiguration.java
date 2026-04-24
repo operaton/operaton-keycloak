@@ -40,6 +40,11 @@ public class KeycloakConfiguration {
   protected boolean useUsernameAsOperatonUserId;
 
   /**
+   * Whether to use the Keycloak organizations as tenants in Operaton.
+   */
+  protected boolean useOrganizationsAsTenants;
+
+  /**
    * Whether to use the group's path as Operaton group ID. Makes sense in case you want to have human readable group IDs
    * and e.g. use them in Operaton's authorization configuration.
    */
@@ -246,6 +251,20 @@ public class KeycloakConfiguration {
    */
   public void setUseUsernameAsOperatonUserId(boolean useUsernameAsOperatonUserId) {
     this.useUsernameAsOperatonUserId = useUsernameAsOperatonUserId;
+  }
+
+  /**
+   * @return the useOrganizationsAsTenants
+   */
+  public boolean isUseOrganizationsAsTenants() {
+        return useOrganizationsAsTenants;
+    }
+
+  /**
+   * @param useOrganizationsAsTenants the useUsernameAsOperatonUserId to set
+   */
+  public void setUseOrganizationsAsTenants(boolean useOrganizationsAsTenants) {
+      this.useOrganizationsAsTenants = useOrganizationsAsTenants;
   }
 
   /**
