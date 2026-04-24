@@ -20,8 +20,8 @@
     <project.build.resourceEncoding>${encoding}</project.build.resourceEncoding>
 
     <!-- versions -->
-    <version.operaton>1.0.2</version.operaton>
-    <version.springBoot>3.5.9</version.springBoot>
+    <version.operaton>1.0.3</version.operaton>
+    <version.springBoot>3.5.11</version.springBoot>
     <version.commons-codec>1.19.0</version.commons-codec>
     <version.testcontainers>1.21.4</version.testcontainers>
 
@@ -170,7 +170,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.5.4</version>
+          <version>3.5.5</version>
         </plugin>
       </plugins>
     </pluginManagement>
