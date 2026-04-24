@@ -2,7 +2,7 @@
 
 ## New and Noteworthy
 
-Version 2.0.0 is the first major release of this project compatible with Operaton 2.0.x.
+Version 2.1.0 is the first major release of this project compatible with Operaton 2.1.x.
 
 {{changelogContributors}}
 
