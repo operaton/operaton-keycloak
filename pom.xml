@@ -21,7 +21,7 @@
 
     <!-- versions -->
     <version.operaton>1.0.3</version.operaton>
-    <version.springBoot>3.5.11</version.springBoot>
+    <version.springBoot>3.5.14</version.springBoot>
     <version.commons-codec>1.19.0</version.commons-codec>
     <version.testcontainers>1.21.4</version.testcontainers>
 
