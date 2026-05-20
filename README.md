@@ -44,20 +44,21 @@ Known limitations:
 
 1. Keycloak docker images can be found on [Keycloak Docker Hub](https://hub.docker.com/r/jboss/keycloak/ "Keycloak Docker Images").
 2. Create a new client named `operaton-identity-service` with access type confidential and service accounts enabled:
-    ![IdentityServiceSettings](doc/identity-service_settings.png "Identity Service Settings")
+   ![GeneralSettings](doc/operaton-kc-1.png "General Settings")
+   ![CapabilityConfig](doc/operaton-kc-2.png "Capability Config")
+   ![LoginSettings](doc/operaton-kc-3.png "Login Settings")
    Please be aware, that beginning with Keycloak 18, you do not only have to configure a valid redirect URL, but
    a valid post logout redirect URL as well. To keep things easy values can be the same.
 3. Since Keycloak 20, user queries require an 'openid' scope for OIDC clients. To enable this, create an 'openid' scope under client scopes and add this the `operaton-identity-service` client.
 ![openid-client-scope.png](doc/openid-clientscope.png "Client scopes") 
 4. In order to use refresh tokens set the "Use Refresh Tokens For Client Credentials Grant" option within the "OpenID Connect Compatibility Modes" section (available in newer Keycloak versions):
-
-    ![IdentityServiceOptions](doc/identity-service_options.png "Identity Service Options")
+   ![AdvancedSettings](doc/operaton-kc-6.png "Advanced Settings")
 5. Add the roles `query-groups, query-users, view-users` to the service account client roles of your realm (choose `realm-management` or `master-realm`, depending on whether you are using a separate realm or master). If you enable Organizations as tenants, also add `manage-realm`:
-    ![IdentityServiceRoles](doc/identity-service_roles.png "Identity Service Roles")
-6. Your client credentials can be found here:
-    ![IdentityServiceCredentials](doc/identity-service_credentials.png "Identity Service Credentials")
+   ![ServiceAccountRoles](doc/operaton-kc-8.png "Service Account Roles")
+7. Your client credentials can be found here:
+   ![ClientCredentials](doc/operaton-kc-9.png "Client Credentials")
 7. Once you're done with the basic setup you're now ready to manage your users and groups with Keycloak. Please keep in mind, that in order to make the Keycloak Identity Provider work, you will need at least one dedicated Operaton admin group or Operaton admin user in your realm. Whether you create this group/user manually or import it using the LDAP user federation or any other Identity Provider is up to you.
-    ![KeycloakGroups](doc/keycloak-groups.png "Keycloak Realm Groups")
+   ![OperatonAdminGroup](doc/operaton-kc-12.png "Operaton Admin Group")
 
 ## Organizations as Tenants (optional)
 
