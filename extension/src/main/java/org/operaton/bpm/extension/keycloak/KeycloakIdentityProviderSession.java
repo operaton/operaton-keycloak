@@ -247,7 +247,7 @@ public class KeycloakIdentityProviderSession implements ReadOnlyIdentityProvider
           request, String.class);
       return true;
     } catch (HttpClientErrorException hcee) {
-      if (hcee.getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
+      if (isInvalidCredentialResponse(hcee)) {
         return false;
       }
       throw new IdentityProviderException(
@@ -257,6 +257,20 @@ public class KeycloakIdentityProviderSession implements ReadOnlyIdentityProvider
           "Unable to authenticate user at " + keycloakConfiguration.getKeycloakIssuerUrl(), rce);
     }
 
+  }
+
+  private boolean isInvalidCredentialResponse(HttpClientErrorException hcee) {
+    if (hcee.getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
+      return true;
+    }
+    if (!hcee.getStatusCode().equals(HttpStatus.BAD_REQUEST)) {
+      return false;
+    }
+    try {
+      return "invalid_grant".equals(parseAsJsonObjectAndGetMemberAsString(hcee.getResponseBodyAsString(), "error"));
+    } catch (JsonException je) {
+      return false;
+    }
   }
 
   /**
