@@ -53,9 +53,7 @@ Click any screenshot to open it full size.
 
    Please be aware that starting with Keycloak 18, you do not only have to configure a valid redirect URL, but
    a valid post-logout redirect URL as well. To keep things easy, values can be the same.
-3. Since Keycloak 20, user queries require an 'openid' scope for OIDC clients. To enable this, create an 'openid' scope under client scopes and add this the `operaton-identity-service` client.
-
-   [<img src="doc/openid-clientscope.png" alt="Client scopes" width="900">](doc/openid-clientscope.png)
+3. For current Keycloak versions, you do not need to create a separate `openid` client scope in the Admin UI. `openid` is the standard OIDC scope value used in authentication requests, while built-in scopes such as `profile` and `email` are managed in the client's *Client Scopes* tab. If you use OIDC login flows with this client, make sure the authentication request includes `scope=openid`.
 
 4. In order to use refresh tokens, set the "Use Refresh Tokens For Client Credentials Grant" option within the "OpenID Connect Compatibility Modes" section (available in newer Keycloak versions):
 
