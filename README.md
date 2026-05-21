@@ -26,7 +26,7 @@ This plugin provides the basis for using Keycloak as Identity Management solutio
 Password grant exchanges are only supported for Keycloak's internally managed users and users of an LDAP / Keberos User federation. Hence, without SSO you will only be able to log in with users managed by such connections.
 
 Current version: `2.1.0`<br >
-Latest tests with: Keycloak `26.5.4`, Operaton `2.1.x`
+Latest tests with: Keycloak `26.6.2`, Operaton `2.1.x`
 
 #### Features
 Changes in version `2.1.0`
@@ -42,22 +42,34 @@ Known limitations:
 
 ## Prerequisites in your Keycloak realm
 
+Click any screenshot to open it full size.
+
 1. Keycloak docker images can be found on [Keycloak Docker Hub](https://hub.docker.com/r/jboss/keycloak/ "Keycloak Docker Images").
 2. Create a new client named `operaton-identity-service` with access type confidential and service accounts enabled:
-    ![IdentityServiceSettings](doc/identity-service_settings.png "Identity Service Settings")
-   Please be aware, that beginning with Keycloak 18, you do not only have to configure a valid redirect URL, but
-   a valid post logout redirect URL as well. To keep things easy values can be the same.
-3. Since Keycloak 20, user queries require an 'openid' scope for OIDC clients. To enable this, create an 'openid' scope under client scopes and add this the `operaton-identity-service` client.
-![openid-client-scope.png](doc/openid-clientscope.png "Client scopes") 
-4. In order to use refresh tokens set the "Use Refresh Tokens For Client Credentials Grant" option within the "OpenID Connect Compatibility Modes" section (available in newer Keycloak versions):
 
-    ![IdentityServiceOptions](doc/identity-service_options.png "Identity Service Options")
+   | General settings | Capability config | Login settings |
+   | --- | --- | --- |
+   | [<img src="doc/operaton-kc-1.png" alt="General settings" width="100%">](doc/operaton-kc-1.png) | [<img src="doc/operaton-kc-2.png" alt="Capability config" width="100%">](doc/operaton-kc-2.png) | [<img src="doc/operaton-kc-3.png" alt="Login settings" width="100%">](doc/operaton-kc-3.png) |
+
+   Please be aware that starting with Keycloak 18, you do not only have to configure a valid redirect URL, but
+   a valid post-logout redirect URL as well. To keep things easy, values can be the same.
+3. For current Keycloak versions, you do not need to create a separate `openid` client scope in the Admin UI. `openid` is the standard OIDC scope value used in authentication requests, while built-in scopes such as `profile` and `email` are managed in the client's *Client Scopes* tab. If you use OIDC login flows with this client, make sure the authentication request includes `scope=openid`.
+
+4. In order to use refresh tokens, set the "Use Refresh Tokens For Client Credentials Grant" option within the "OpenID Connect Compatibility Modes" section (available in newer Keycloak versions):
+
+   [<img src="doc/operaton-kc-6.png" alt="Advanced settings" width="900">](doc/operaton-kc-6.png)
+
 5. Add the roles `query-groups, query-users, view-users` to the service account client roles of your realm (choose `realm-management` or `master-realm`, depending on whether you are using a separate realm or master). If you enable Organizations as tenants, also add `manage-realm`:
-    ![IdentityServiceRoles](doc/identity-service_roles.png "Identity Service Roles")
+
+   [<img src="doc/operaton-kc-8.png" alt="Service account roles" width="900">](doc/operaton-kc-8.png)
+
 6. Your client credentials can be found here:
-    ![IdentityServiceCredentials](doc/identity-service_credentials.png "Identity Service Credentials")
+
+   [<img src="doc/operaton-kc-9.png" alt="Client credentials" width="900">](doc/operaton-kc-9.png)
+
 7. Once you're done with the basic setup you're now ready to manage your users and groups with Keycloak. Please keep in mind, that in order to make the Keycloak Identity Provider work, you will need at least one dedicated Operaton admin group or Operaton admin user in your realm. Whether you create this group/user manually or import it using the LDAP user federation or any other Identity Provider is up to you.
-    ![KeycloakGroups](doc/keycloak-groups.png "Keycloak Realm Groups")
+
+   [<img src="doc/operaton-kc-12.png" alt="Operaton admin group" width="900">](doc/operaton-kc-12.png)
 
 ## Organizations as Tenants (optional)
 
@@ -365,7 +377,7 @@ In order to run the unit tests I have used a local docker setup of Keycloak with
 ```docker-compose
 services:
   jboss.keycloak:
-    image: quay.io/keycloak/keycloak:26.5.4
+    image: quay.io/keycloak/keycloak:26.6.2
     restart: unless-stopped
     environment:
       TZ: Europe/Berlin
