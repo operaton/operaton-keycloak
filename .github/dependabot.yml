@@ -12,6 +12,8 @@ updates:
       interval: "weekly"
     reviewers:
       - "cachescrubber"
+    cooldown:
+      default-days: 7
 
   # Maven: only patch updates to release/1.0.x
   - package-ecosystem: "maven"
