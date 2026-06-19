@@ -25,13 +25,13 @@ This plugin provides the basis for using Keycloak as Identity Management solutio
 **Beware: in case you want to use Keycloak's advanced login capabilities for social connections you must configure SSO as well.**
 Password grant exchanges are only supported for Keycloak's internally managed users and users of an LDAP / Keberos User federation. Hence, without SSO you will only be able to log in with users managed by such connections.
 
-Current version: `2.1.0`<br >
-Latest tests with: Keycloak `26.6.2`, Operaton `2.1.x`
+Current version: `2.2.0-M1`<br >
+Latest tests with: Keycloak `26.6.2`, Operaton `2.2.0-M1`
 
 #### Features
-Changes in version `2.1.0`
+Changes in version `2.2.0-M1`
 
-* Support Operaton 2.1.x
+* Support Operaton 2.2.0-M1
 * Optional: Use Keycloak Organizations as Operaton tenants (disabled by default)
 
 Known limitations:
@@ -89,7 +89,7 @@ Maven Dependencies:
 <dependency>
     <groupId>org.operaton.bpm.extension</groupId>
     <artifactId>operaton-keycloak</artifactId>
-    <version>2.1.0</version>
+    <version>2.2.0-M1</version>
 </dependency>
 ```
 
