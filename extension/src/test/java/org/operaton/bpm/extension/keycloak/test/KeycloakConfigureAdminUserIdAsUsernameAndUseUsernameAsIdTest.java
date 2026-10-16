@@ -2,86 +2,59 @@ package org.operaton.bpm.extension.keycloak.test;
 
 import java.util.List;
 
-import junit.extensions.TestSetup;
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import org.operaton.bpm.engine.ProcessEngineConfiguration;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.operaton.bpm.engine.authorization.Authorization;
 import org.operaton.bpm.engine.authorization.Permissions;
 import org.operaton.bpm.engine.authorization.Resources;
 import org.operaton.bpm.engine.identity.Group;
 import org.operaton.bpm.engine.identity.User;
-import org.operaton.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
-import org.operaton.bpm.engine.impl.test.PluggableProcessEngineTestCase;
+import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Admin user configuration test for the Keycloak identity provider.
  * Use username as administratorUserId and flag useUsernameAsOperatonUserId enabled.
  */
-public class KeycloakConfigureAdminUserIdAsUsernameAndUseUsernameAsIdTest extends AbstractKeycloakIdentityProviderTest {
+class KeycloakConfigureAdminUserIdAsUsernameAndUseUsernameAsIdTest extends AbstractKeycloakIdentityProviderTest {
 
-  public static Test suite() {
-    return new TestSetup(new TestSuite(KeycloakConfigureAdminUserIdAsUsernameAndUseUsernameAsIdTest.class)) {
-
-      // @BeforeClass
-      protected void setUp() {
-        ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration.createProcessEngineConfigurationFromResource(
-            "operaton.configureAdminUserIdAsUsernameAndUseUsernameAsId.cfg.xml");
-        configureKeycloakIdentityProviderPlugin(config);
-        PluggableProcessEngineTestCase.cachedProcessEngine = config.buildProcessEngine();
-      }
-
-      // @AfterClass
-      protected void tearDown() {
-        PluggableProcessEngineTestCase.cachedProcessEngine.close();
-        PluggableProcessEngineTestCase.cachedProcessEngine = null;
-      }
-    };
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
-    // delete all created authorizations
-    processEngine.getAuthorizationService()
-        .createAuthorizationQuery()
-        .list()
-        .forEach(a -> processEngine.getAuthorizationService().deleteAuthorization(a.getId()));
-  }
+  @RegisterExtension
+  static ProcessEngineExtension engineExtension = keycloakEngine("operaton.configureAdminUserIdAsUsernameAndUseUsernameAsId.cfg.xml");
 
   // ------------------------------------------------------------------------
   // Test configuration
   // ------------------------------------------------------------------------
 
-  public void testAdminUserConfiguration() {
+  @Test
+  void adminUserConfiguration() {
     // check engine configuration
-    List<String> operatonAdminUsers = ((ProcessEngineConfigurationImpl) processEngine.getProcessEngineConfiguration()).getAdminUsers();
-    assertEquals(1, operatonAdminUsers.size());
+    List<String> operatonAdminUsers = processEngineConfiguration.getAdminUsers();
+    assertThat(operatonAdminUsers).hasSize(1);
     String adminUserId = operatonAdminUsers.get(0);
-    assertEquals("operaton", adminUserId);
+    assertThat(adminUserId).isEqualTo("operaton");
 
     // check that authorizations have been created
-    assertTrue(processEngine.getAuthorizationService().createAuthorizationQuery().userIdIn(adminUserId).count() > 0);
+    assertThat(authorizationService.createAuthorizationQuery().userIdIn(adminUserId).count()).isPositive();
 
     // check sample authorization for applications
-    assertEquals(1, processEngine.getAuthorizationService()
+    assertThat(authorizationService
         .createAuthorizationQuery()
         .userIdIn(adminUserId)
         .resourceType(Resources.APPLICATION)
         .resourceId(Authorization.ANY)
         .hasPermission(Permissions.ALL)
-        .count());
+        .count()).isOne();
 
     // query user data
-    User user = processEngine.getIdentityService().createUserQuery().userId(adminUserId).singleResult();
-    assertNotNull(user);
-    assertEquals("operaton", user.getId());
-    assertEquals("operaton@accso.de", user.getEmail());
+    User user = identityService.createUserQuery().userId(adminUserId).singleResult();
+    assertThat(user).isNotNull();
+    assertThat(user.getId()).isEqualTo("operaton");
+    assertThat(user.getEmail()).isEqualTo("operaton@accso.de");
 
     // query groups
-    Group group = processEngine.getIdentityService().createGroupQuery().groupMember(adminUserId).singleResult();
-    assertNotNull(group);
-    assertEquals("operaton-admin", group.getName());
+    Group group = identityService.createGroupQuery().groupMember(adminUserId).singleResult();
+    assertThat(group).isNotNull();
+    assertThat(group.getName()).isEqualTo("operaton-admin");
   }
-
 }
