@@ -1,9 +1,8 @@
 package org.operaton.bpm.extension.keycloak.test;
-
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.ResourceBundle;
-
+import java.util.function.Consumer;
 import javax.net.ssl.SSLContext;
 
 import dasniko.testcontainers.keycloak.KeycloakContainer;
@@ -11,23 +10,22 @@ import jakarta.ws.rs.core.Response;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
-import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
 import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
 import org.apache.hc.client5.http.ssl.TrustAllStrategy;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
-import org.keycloak.admin.client.CreatedResponseUtil;
-import org.keycloak.representations.idm.OrganizationRepresentation;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.keycloak.admin.client.CreatedResponseUtil;
+import org.keycloak.representations.idm.OrganizationRepresentation;
+import org.operaton.bpm.engine.AuthorizationService;
+import org.operaton.bpm.engine.IdentityService;
 import org.operaton.bpm.engine.ProcessEngine;
-import org.operaton.bpm.engine.ProcessEngineConfiguration;
 import org.operaton.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.operaton.bpm.engine.impl.cfg.ProcessEnginePlugin;
-import org.operaton.bpm.engine.impl.test.PluggableProcessEngineTestCase;
 import org.operaton.bpm.engine.impl.test.TestLogger;
+import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
 import org.operaton.bpm.extension.keycloak.plugin.KeycloakIdentityProviderPlugin;
 import org.operaton.commons.logging.BaseLogger;
 import org.slf4j.Logger;
@@ -41,16 +39,18 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Super class for all Identity Provider Tests.
+ * <p>
+ * A single Keycloak container including the test realm is started lazily and shared by all test classes of a test
+ * run. Each test class registers its own process engine via {@link #keycloakEngine(String)}, which patches the
+ * Keycloak URLs and client secret of the test setup into the {@link KeycloakIdentityProviderPlugin} before the engine
+ * is built.
  */
-@Testcontainers
-public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProcessEngineTestCase {
+public abstract class AbstractKeycloakIdentityProviderTest {
 
   // Keycloak configuration
   // - in your maven build set as environment variables in order to override defaults
@@ -92,12 +92,55 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
 
   protected static String clientSecret;
 
-  @Container
-  static KeycloakContainer keycloak = new KeycloakContainer("quay.io/keycloak/keycloak:26.6.2");
+  // shared by all test classes; stopped by Testcontainers when the JVM exits
+  static final KeycloakContainer keycloak = new KeycloakContainer("quay.io/keycloak/keycloak:26.6.2");
 
-  // creates Keycloak setup only once per test run
-  @BeforeClass
-  public static void initialize() {
+  // injected by the ProcessEngineExtension
+  protected ProcessEngine processEngine;
+  protected ProcessEngineConfigurationImpl processEngineConfiguration;
+  protected IdentityService identityService;
+  protected AuthorizationService authorizationService;
+
+  /**
+   * Creates the process engine extension for a test class.
+   *
+   * @param configurationResource the process engine configuration resource
+   * @return the process engine extension to register with {@code @RegisterExtension}
+   */
+  protected static ProcessEngineExtension keycloakEngine(String configurationResource) {
+    return keycloakEngine(configurationResource, plugin -> {
+    });
+  }
+
+  /**
+   * Creates the process engine extension for a test class.
+   *
+   * @param configurationResource the process engine configuration resource
+   * @param pluginCustomizer      additional configuration of the Keycloak plugin, applied after the test setup values
+   * @return the process engine extension to register with {@code @RegisterExtension}
+   */
+  protected static ProcessEngineExtension keycloakEngine(String configurationResource,
+                                                         Consumer<KeycloakIdentityProviderPlugin> pluginCustomizer) {
+    return ProcessEngineExtension.builder()
+        .configurationResource(configurationResource)
+        .randomEngineName()
+        .closeEngineAfterAllTests()
+        .ensureCleanAfterTest(true)
+        .configurator(config -> {
+          // each engine gets its own in-memory database
+          config.setJdbcUrl(config.getJdbcUrl().replaceFirst("jdbc:h2:mem:[^;]+", "jdbc:h2:mem:" + config.getProcessEngineName()));
+          pluginCustomizer.accept(configureKeycloakIdentityProviderPlugin(config));
+        })
+        .build();
+  }
+
+  /**
+   * Starts the Keycloak container and creates the test realm. Does nothing if this has already been done.
+   */
+  private static synchronized void ensureKeycloakStarted() {
+    if (keycloak.isRunning()) {
+      return;
+    }
     // read keycloak configuration
     ResourceBundle defaults = ResourceBundle.getBundle("keycloak-default");
     keycloakAdminUser = getConfigValue(defaults, "keycloak.admin.user");
@@ -116,7 +159,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
       setupRestTemplate();
       setupKeycloak();
     } catch (Exception e) {
-      throw new RuntimeException("Unable to setup keycloak test realm", e);
+      throw new IllegalStateException("Unable to setup keycloak test realm", e);
     }
   }
 
@@ -148,32 +191,6 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
   }
 
   /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected void initializeProcessEngine() {
-    processEngine = getOrInitializeCachedProcessEngine();
-  }
-
-  /**
-   * Initializes the process engine using standard configuration operaton.cfg.xml, but
-   * replaces the KeyCloakProvider's client secret with the actual test setup.
-   * Furthermore, it uses a new database for each test class.
-   *
-   * @return the process engine
-   */
-  private ProcessEngine getOrInitializeCachedProcessEngine() {
-    if (cachedProcessEngine == null) {
-      ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration.createProcessEngineConfigurationFromResource(
-          "operaton.cfg.xml");
-      configureKeycloakIdentityProviderPlugin(config);
-      config.setJdbcUrl(config.getJdbcUrl().replace("KeycloakIdentityServiceTest", getClass().getSimpleName()));
-      cachedProcessEngine = config.buildProcessEngine();
-    }
-    return cachedProcessEngine;
-  }
-
-  /**
    * Helper for configuring the KeycloakIdentityProviderPlugin with the test setup configuration.
    *
    * @param config the process engine configuration
@@ -182,9 +199,7 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
   protected static KeycloakIdentityProviderPlugin configureKeycloakIdentityProviderPlugin(ProcessEngineConfigurationImpl config) {
     for (ProcessEnginePlugin p : config.getProcessEnginePlugins()) {
       if (p instanceof KeycloakIdentityProviderPlugin kcp) {
-        if (!keycloak.isCreated()) {
-          initialize();
-        }
+        ensureKeycloakStarted();
         kcp.setKeycloakAdminUrl(kcp.getKeycloakAdminUrl().replace("http://localhost:9000", keycloakUrl));
         kcp.setKeycloakIssuerUrl(kcp.getKeycloakIssuerUrl().replace("http://localhost:9000", keycloakUrl));
         kcp.setEnforceSubgroupsInGroupQuery(keycloakEnforceSubgroupsInGroupQuery);
@@ -193,22 +208,6 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
       }
     }
     throw new IllegalStateException("KeycloakIdentityProviderPlugin not found in process engine plugins.");
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
   }
 
   // ------------------------------------------------------------------------
@@ -300,22 +299,6 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
     addUserClientRoleMapping(headers, realm, userIdManager, clientInternalId, "role-readonly");
   }
 
-  /**
-   * Deletes Keycloak test realm
-   *
-   * @throws JSONException in case of errors
-   */
-  @AfterClass
-  public static void tearDownKeycloak() throws JSONException {
-    LOG.info("Cleaning up Keycloak Test Realm");
-
-    // Delete test realm
-    HttpHeaders headers = authenticateKeycloakAdmin();
-    deleteRealm(headers, "test");
-
-    keycloak.stop();
-  }
-
   // ------------------------------------------------------------------------
   // Helper methods
   // ------------------------------------------------------------------------
@@ -387,19 +370,6 @@ public abstract class AbstractKeycloakIdentityProviderTest extends PluggableProc
     ResponseEntity<String> response = REST_TEMPLATE.postForEntity(keycloakUrl + "/admin/realms", request, String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     LOG.info("Created realm " + realm);
-  }
-
-  /**
-   * Deletes a Keycloak realm.
-   *
-   * @param headers HttpHeaders including the Authorization header / access token
-   * @param realm   the realm name
-   */
-  private static void deleteRealm(HttpHeaders headers, String realm) {
-    ResponseEntity<String> response = REST_TEMPLATE.exchange(keycloakUrl + "/admin/realms/" + realm, HttpMethod.DELETE,
-        new HttpEntity<>(headers), String.class);
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
-    LOG.info("Deleted realm " + realm);
   }
 
   /**

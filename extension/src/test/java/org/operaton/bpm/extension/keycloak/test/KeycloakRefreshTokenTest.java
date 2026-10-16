@@ -1,25 +1,33 @@
 package org.operaton.bpm.extension.keycloak.test;
-
 import java.lang.reflect.Field;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.operaton.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
+import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
 import org.operaton.bpm.extension.keycloak.KeycloakContext;
 import org.operaton.bpm.extension.keycloak.KeycloakContextProvider;
 import org.operaton.bpm.extension.keycloak.KeycloakIdentityProviderFactory;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Refresh access token test.
  */
-public class KeycloakRefreshTokenTest extends AbstractKeycloakIdentityProviderTest {
+class KeycloakRefreshTokenTest extends AbstractKeycloakIdentityProviderTest {
+
+  @RegisterExtension
+  static ProcessEngineExtension engineExtension = keycloakEngine("operaton.cfg.xml");
 
   /**
    * Tests refreshing access token.
    *
    * @throws Exception in case of errors
    */
-  public void testRefreshToken() throws Exception {
+  @Test
+  void refreshToken() throws Exception {
     // access Keycloak
-    assertEquals(5, identityService.createUserQuery().count());
+    assertThat(identityService.createUserQuery().count()).isEqualTo(5);
 
     // expire current token (the dirty way)
     KeycloakIdentityProviderFactory sessionFactory = (KeycloakIdentityProviderFactory) ((ProcessEngineConfigurationImpl) processEngine.getProcessEngineConfiguration()).getIdentityProviderSessionFactory();
@@ -28,10 +36,10 @@ public class KeycloakRefreshTokenTest extends AbstractKeycloakIdentityProviderTe
     Field expiresField = KeycloakContext.class.getDeclaredField("expiresAt");
     expiresField.setAccessible(true);
     expiresField.set(ctx, 0);
-    assertTrue(ctx.needsRefresh());
+    assertThat(ctx.needsRefresh()).isTrue();
 
     // access Keycloak again
-    assertEquals(5, identityService.createUserQuery().count());
+    assertThat(identityService.createUserQuery().count()).isEqualTo(5);
 
   }
 

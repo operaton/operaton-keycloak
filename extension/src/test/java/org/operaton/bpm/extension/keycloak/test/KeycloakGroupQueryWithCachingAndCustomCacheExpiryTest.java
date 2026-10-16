@@ -1,50 +1,33 @@
 package org.operaton.bpm.extension.keycloak.test;
-
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import junit.extensions.TestSetup;
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import org.operaton.bpm.engine.ProcessEngineConfiguration;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.operaton.bpm.engine.identity.Group;
 import org.operaton.bpm.engine.identity.GroupQuery;
-import org.operaton.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
-import org.operaton.bpm.engine.impl.test.PluggableProcessEngineTestCase;
+import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
 import org.operaton.bpm.extension.keycloak.CacheableKeycloakGroupQuery;
 import org.operaton.bpm.extension.keycloak.plugin.KeycloakIdentityProviderPlugin;
 import org.operaton.bpm.extension.keycloak.test.util.CacheAwareKeycloakIdentityProviderPluginForTest;
 import org.operaton.bpm.extension.keycloak.test.util.CountingHttpRequestInterceptor;
 import org.operaton.bpm.extension.keycloak.test.util.PredictableTicker;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Tests group queries with caching enabled and cache duration configured
  */
-public class KeycloakGroupQueryTestWithCachingAndCustomCacheExpiry extends AbstractKeycloakIdentityProviderTest {
+class KeycloakGroupQueryWithCachingAndCustomCacheExpiryTest extends AbstractKeycloakIdentityProviderTest {
 
-  public static Test suite() {
-    return new TestSetup(new TestSuite(KeycloakGroupQueryTestWithCachingAndCustomCacheExpiry.class)) {
+  @RegisterExtension
+  static ProcessEngineExtension engineExtension = keycloakEngine("operaton.enableCachingAndConfigureCacheDuration.cfg.xml");
 
-      // @BeforeClass
-      protected void setUp() {
-        ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration.createProcessEngineConfigurationFromResource(
-            "operaton.enableCachingAndConfigureCacheDuration.cfg.xml");
-        configureKeycloakIdentityProviderPlugin(config);
-        PluggableProcessEngineTestCase.cachedProcessEngine = config.buildProcessEngine();
-      }
-
-      // @AfterClass
-      protected void tearDown() {
-        PluggableProcessEngineTestCase.cachedProcessEngine.close();
-        PluggableProcessEngineTestCase.cachedProcessEngine = null;
-      }
-    };
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
+  @AfterEach
+  void tearDown() {
     // delete all created authorizations
     processEngine.getAuthorizationService()
         .createAuthorizationQuery()
@@ -70,43 +53,44 @@ public class KeycloakGroupQueryTestWithCachingAndCustomCacheExpiry extends Abstr
   // Test configuration
   // ------------------------------------------------------------------------
 
-  public void testCacheEntriesEvictedWhenCacheTimeoutIsReached() {
+  @Test
+  void cacheEntriesEvictedWhenCacheTimeoutIsReached() {
 
     GroupQuery query = identityService.createGroupQuery();
 
     // query operaton-admin at time = 0
-    assertEquals("operaton-admin", queryGroup(query, "operaton-admin").getName());
+    assertThat(queryGroup(query, "operaton-admin").getName()).isEqualTo("operaton-admin");
 
     // cache contains only operaton-admin at this point
-    assertEquals(Collections.singletonList("operaton-admin"), getCacheEntries());
+    assertThat(getCacheEntries()).containsExactlyElementsOf(singletonList("operaton-admin"));
 
     // move clock by 2 minutes
     PredictableTicker.moveTimeForwardByMinutes(2);
 
     // query cam-read-only after 2 minutes
-    assertEquals("cam-read-only", queryGroup(query, "cam-read-only").getName());
+    assertThat(queryGroup(query, "cam-read-only").getName()).isEqualTo("cam-read-only");
 
     // cache contains cam-read-only and operaton-admin
-    assertEquals(Arrays.asList("cam-read-only", "operaton-admin"), getCacheEntries());
+    assertThat(getCacheEntries()).containsExactlyElementsOf(asList("cam-read-only", "operaton-admin"));
 
     // move clock by another 2 minutes
     PredictableTicker.moveTimeForwardByMinutes(2);
 
     // cache still contains cam-read-only and operaton-admin
-    assertEquals(Arrays.asList("cam-read-only", "operaton-admin"), getCacheEntries());
+    assertThat(getCacheEntries()).containsExactlyElementsOf(asList("cam-read-only", "operaton-admin"));
 
     // move clock by another 2 minutes
     PredictableTicker.moveTimeForwardByMinutes(2);
 
     // operaton-admin was evicted because eviction timeout (5 minutes) has been breached
     // it's been 6 minutes since operaton-admin was inserted into cache
-    assertEquals(Collections.singletonList("cam-read-only"), getCacheEntries());
+    assertThat(getCacheEntries()).containsExactlyElementsOf(singletonList("cam-read-only"));
 
     // move clock by another 5 minutes
     PredictableTicker.moveTimeForwardByMinutes(5);
 
     // cache is empty. cam-read-only has also been evicted
-    assertEquals(Collections.emptyList(), getCacheEntries());
+    assertThat(getCacheEntries()).containsExactlyElementsOf(emptyList());
   }
 
   private static Group queryGroup(GroupQuery query, String groupName) {

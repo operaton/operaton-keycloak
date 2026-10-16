@@ -1,49 +1,31 @@
 package org.operaton.bpm.extension.keycloak.test;
-
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import junit.extensions.TestSetup;
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import org.operaton.bpm.engine.ProcessEngineConfiguration;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.operaton.bpm.engine.identity.Group;
 import org.operaton.bpm.engine.identity.GroupQuery;
-import org.operaton.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
-import org.operaton.bpm.engine.impl.test.PluggableProcessEngineTestCase;
+import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
 import org.operaton.bpm.extension.keycloak.CacheableKeycloakGroupQuery;
 import org.operaton.bpm.extension.keycloak.plugin.KeycloakIdentityProviderPlugin;
 import org.operaton.bpm.extension.keycloak.test.util.CacheAwareKeycloakIdentityProviderPluginForTest;
 import org.operaton.bpm.extension.keycloak.test.util.CountingHttpRequestInterceptor;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Tests group queries with caching enabled and max size configured
  */
-public class KeycloakGroupQueryTestWithCachingAndMaxSize extends AbstractKeycloakIdentityProviderTest {
+class KeycloakGroupQueryWithCachingAndMaxSizeTest extends AbstractKeycloakIdentityProviderTest {
 
-  public static Test suite() {
-    return new TestSetup(new TestSuite(KeycloakGroupQueryTestWithCachingAndMaxSize.class)) {
+  @RegisterExtension
+  static ProcessEngineExtension engineExtension = keycloakEngine("operaton.enableCachingAndConfigureMaxCacheSize.cfg.xml");
 
-      // @BeforeClass
-      protected void setUp() {
-        ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration.createProcessEngineConfigurationFromResource(
-            "operaton.enableCachingAndConfigureMaxCacheSize.cfg.xml");
-        configureKeycloakIdentityProviderPlugin(config);
-        PluggableProcessEngineTestCase.cachedProcessEngine = config.buildProcessEngine();
-      }
-
-      // @AfterClass
-      protected void tearDown() {
-        PluggableProcessEngineTestCase.cachedProcessEngine.close();
-        PluggableProcessEngineTestCase.cachedProcessEngine = null;
-      }
-    };
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
+  @AfterEach
+  void tearDown() {
     // delete all created authorizations
     processEngine.getAuthorizationService()
         .createAuthorizationQuery()
@@ -68,54 +50,55 @@ public class KeycloakGroupQueryTestWithCachingAndMaxSize extends AbstractKeycloa
   // Test configuration
   // ------------------------------------------------------------------------
 
-  public void testCacheEntriesEvictedWhenMaxSizeIsReached() {
+  @Test
+  void cacheEntriesEvictedWhenMaxSizeIsReached() {
 
     GroupQuery query = identityService.createGroupQuery();
 
     int countBefore = CountingHttpRequestInterceptor.getHttpRequestCount();
 
-    assertEquals(0, countBefore);
+    assertThat(countBefore).isZero();
 
-    assertEquals("operaton-admin", queryGroup(query, "operaton-admin").getName());
+    assertThat(queryGroup(query, "operaton-admin").getName()).isEqualTo("operaton-admin");
 
     // operaton-admin has not been queried before so http call count should increase by 1
-    assertEquals(countBefore + 1, CountingHttpRequestInterceptor.getHttpRequestCount());
+    assertThat(CountingHttpRequestInterceptor.getHttpRequestCount()).isEqualTo(countBefore + 1);
 
     // cache contains only operaton-admin at this point
-    assertEquals(Collections.singletonList("operaton-admin"), getCacheEntries());
+    assertThat(getCacheEntries()).containsExactlyElementsOf(singletonList("operaton-admin"));
 
-    assertEquals("cam-read-only", queryGroup(query, "cam-read-only").getName());
+    assertThat(queryGroup(query, "cam-read-only").getName()).isEqualTo("cam-read-only");
 
     // cam-read-only has not been queried before so http call count should increase by 1
-    assertEquals(countBefore + 2, CountingHttpRequestInterceptor.getHttpRequestCount());
+    assertThat(CountingHttpRequestInterceptor.getHttpRequestCount()).isEqualTo(countBefore + 2);
 
     // cache contains cam-read-only and operaton-admin
-    assertEquals(Arrays.asList("cam-read-only", "operaton-admin"), getCacheEntries());
+    assertThat(getCacheEntries()).containsExactlyElementsOf(asList("cam-read-only", "operaton-admin"));
 
-    assertEquals("operaton-admin", queryGroup(query, "operaton-admin").getName());
+    assertThat(queryGroup(query, "operaton-admin").getName()).isEqualTo("operaton-admin");
 
     // operaton-admin has already been queried and is still in the cache so count stays same
-    assertEquals(countBefore + 2, CountingHttpRequestInterceptor.getHttpRequestCount());
+    assertThat(CountingHttpRequestInterceptor.getHttpRequestCount()).isEqualTo(countBefore + 2);
 
     // cache still contains cam-read-only and operaton-admin
-    assertEquals(Arrays.asList("cam-read-only", "operaton-admin"), getCacheEntries());
+    assertThat(getCacheEntries()).containsExactlyElementsOf(asList("cam-read-only", "operaton-admin"));
 
-    assertEquals("manager", queryGroup(query, "manager").getName());
+    assertThat(queryGroup(query, "manager").getName()).isEqualTo("manager");
 
     // manager has not been queried before so http call count should increase by 1
-    assertEquals(countBefore + 3, CountingHttpRequestInterceptor.getHttpRequestCount());
+    assertThat(CountingHttpRequestInterceptor.getHttpRequestCount()).isEqualTo(countBefore + 3);
 
     // cam-read-only was evicted because maxSize(2) was breached and it was used fewer times than operaton-admin
-    assertEquals(Arrays.asList("manager", "operaton-admin"), getCacheEntries());
+    assertThat(getCacheEntries()).containsExactlyElementsOf(asList("manager", "operaton-admin"));
 
     // query cam-read-only again
-    assertEquals("cam-read-only", queryGroup(query, "cam-read-only").getName());
+    assertThat(queryGroup(query, "cam-read-only").getName()).isEqualTo("cam-read-only");
 
     // count should increase because cam-read-only was removed from cache before the query
-    assertEquals(countBefore + 4, CountingHttpRequestInterceptor.getHttpRequestCount());
+    assertThat(CountingHttpRequestInterceptor.getHttpRequestCount()).isEqualTo(countBefore + 4);
 
     // manager was evicted because it was used fewer times than operaton-admin
-    assertEquals(Arrays.asList("cam-read-only", "operaton-admin"), getCacheEntries());
+    assertThat(getCacheEntries()).containsExactlyElementsOf(asList("cam-read-only", "operaton-admin"));
   }
 
   private static Group queryGroup(GroupQuery query, String groupName) {

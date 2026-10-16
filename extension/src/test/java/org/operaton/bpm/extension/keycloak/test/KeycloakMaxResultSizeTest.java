@@ -1,109 +1,102 @@
 package org.operaton.bpm.extension.keycloak.test;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.extensions.TestSetup;
-import junit.framework.Test;
-import junit.framework.TestSuite;
 import org.json.JSONException;
-import org.operaton.bpm.engine.ProcessEngineConfiguration;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.operaton.bpm.engine.identity.Group;
 import org.operaton.bpm.engine.identity.User;
-import org.operaton.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
-import org.operaton.bpm.engine.impl.test.PluggableProcessEngineTestCase;
+import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
 import org.springframework.http.HttpHeaders;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test for checking a very low value of the maxResultSize parameter.
  */
-public class KeycloakMaxResultSizeTest extends AbstractKeycloakIdentityProviderTest {
+class KeycloakMaxResultSizeTest extends AbstractKeycloakIdentityProviderTest {
+
+  @RegisterExtension
+  static ProcessEngineExtension engineExtension = keycloakEngine("operaton.configureSmallMaxResultSize.cfg.xml",
+      plugin -> plugin.setAdministratorUserId(userIdOperatonAdmin));
 
   static List<String> USER_IDS = new ArrayList<>();
   static List<String> GROUP_IDS = new ArrayList<>();
 
-  public static Test suite() {
-    return new TestSetup(new TestSuite(KeycloakMaxResultSizeTest.class)) {
+  @BeforeAll
+  static void setupMassData() throws JSONException {
+    HttpHeaders headers = authenticateKeycloakAdmin();
+    String realm = "test";
+    for (int i = 0; i < 50; i++) {
+      USER_IDS.add(
+          createUser(headers, realm, "user.test" + i, "UTest" + i, "User Test" + i, "utest.user" + i + "@test.info",
+              "test"));
+    }
+    USER_IDS.forEach(u -> assignUserGroup(headers, realm, u, groupIdManager));
 
-      // @BeforeClass
-      protected void setUp() throws JSONException {
-        // setup Keycloak mass data test users
-        // -------------------------------------
-        HttpHeaders headers = authenticateKeycloakAdmin();
-        String realm = "test";
-        for (int i = 0; i < 50; i++) {
-          USER_IDS.add(
-              createUser(headers, realm, "user.test" + i, "UTest" + i, "User Test" + i, "utest.user" + i + "@test.info",
-                  "test"));
-        }
-        USER_IDS.forEach(u -> assignUserGroup(headers, realm, u, groupIdManager));
-
-        for (int i = 0; i < 50; i++) {
-          GROUP_IDS.add(createGroup(headers, realm, "group.test" + i, false));
-        }
-        GROUP_IDS.forEach(g -> assignUserGroup(headers, realm, userIdTeamlead, g));
-
-        // setup process engine
-        // -------------------------------------
-        ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration.createProcessEngineConfigurationFromResource(
-            "operaton.configureSmallMaxResultSize.cfg.xml");
-        configureKeycloakIdentityProviderPlugin(config).setAdministratorUserId(userIdOperatonAdmin);
-        PluggableProcessEngineTestCase.cachedProcessEngine = config.buildProcessEngine();
-      }
-
-      // @AfterClass
-      protected void tearDown() throws JSONException {
-        // tear down process engine
-        PluggableProcessEngineTestCase.cachedProcessEngine.close();
-        PluggableProcessEngineTestCase.cachedProcessEngine = null;
-
-        // delete mass data test users
-        HttpHeaders headers = authenticateKeycloakAdmin();
-        String realm = "test";
-        USER_IDS.forEach(u -> deleteUser(headers, realm, u));
-        GROUP_IDS.forEach(g -> deleteGroup(headers, realm, g));
-      }
-    };
+    for (int i = 0; i < 50; i++) {
+      GROUP_IDS.add(createGroup(headers, realm, "group.test" + i, false));
+    }
+    GROUP_IDS.forEach(g -> assignUserGroup(headers, realm, userIdTeamlead, g));
   }
 
-  public void testUserQueryNoFilter() {
+  @AfterAll
+  static void deleteMassData() throws JSONException {
+    HttpHeaders headers = authenticateKeycloakAdmin();
+    String realm = "test";
+    USER_IDS.forEach(u -> deleteUser(headers, realm, u));
+    GROUP_IDS.forEach(g -> deleteGroup(headers, realm, g));
+  }
+
+  @Test
+  void userQueryNoFilter() {
     List<User> result = identityService.createUserQuery().list();
-    assertEquals(25, result.size());
+    assertThat(result).hasSize(25);
   }
 
-  public void testQueryUnlimitedList() {
+  @Test
+  void queryUnlimitedList() {
     List<User> result = identityService.createUserQuery().unlimitedList();
-    assertEquals(25, result.size());
+    assertThat(result).hasSize(25);
   }
 
-  public void testGroupMemberQuery() {
+  @Test
+  void groupMemberQuery() {
     List<User> result = identityService.createUserQuery().memberOfGroup(groupIdManager).list();
-    assertEquals(25, result.size());
+    assertThat(result).hasSize(25);
   }
 
-  public void testUserQueryUserFirstNameLike() {
+  @Test
+  void userQueryUserFirstNameLike() {
     List<User> result = identityService.createUserQuery().userFirstNameLike("UT%").list();
-    assertEquals(25, result.size());
+    assertThat(result).hasSize(25);
   }
 
-  public void testUserQueryUserLastNameLike() {
+  @Test
+  void userQueryUserLastNameLike() {
     List<User> result = identityService.createUserQuery().userLastNameLike("User%").orderByUserLastName().desc().list();
-    assertEquals(25, result.size());
+    assertThat(result).hasSize(25);
   }
 
-  public void testGroupQueryNoFilter() {
+  @Test
+  void groupQueryNoFilter() {
     List<Group> result = identityService.createGroupQuery().list();
-    assertEquals(25, result.size());
+    assertThat(result).hasSize(25);
   }
 
-  public void testGroupQueryGroupNameLike() {
+  @Test
+  void groupQueryGroupNameLike() {
     List<Group> result = identityService.createGroupQuery().groupNameLike("group%").list();
-    assertEquals(25, result.size());
+    assertThat(result).hasSize(25);
   }
 
-  public void testGroupQueryGroupMember() {
+  @Test
+  void groupQueryGroupMember() {
     List<Group> result = identityService.createGroupQuery().groupMember("hans.mustermann@tradermail.info").list();
-    assertEquals(25, result.size());
+    assertThat(result).hasSize(25);
   }
 
 }

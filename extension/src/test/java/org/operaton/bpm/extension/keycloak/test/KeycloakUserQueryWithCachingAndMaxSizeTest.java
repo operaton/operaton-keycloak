@@ -1,51 +1,33 @@
 package org.operaton.bpm.extension.keycloak.test;
-
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import junit.extensions.TestSetup;
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import org.operaton.bpm.engine.ProcessEngineConfiguration;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.operaton.bpm.engine.identity.User;
 import org.operaton.bpm.engine.identity.UserQuery;
-import org.operaton.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
-import org.operaton.bpm.engine.impl.test.PluggableProcessEngineTestCase;
+import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
 import org.operaton.bpm.extension.keycloak.CacheableKeycloakUserQuery;
 import org.operaton.bpm.extension.keycloak.plugin.KeycloakIdentityProviderPlugin;
 import org.operaton.bpm.extension.keycloak.test.util.CacheAwareKeycloakIdentityProviderPluginForTest;
 import org.operaton.bpm.extension.keycloak.test.util.CountingHttpRequestInterceptor;
 import org.operaton.bpm.extension.keycloak.test.util.PredictableTicker;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * User query test for the Keycloak identity provider with caching enabled and max size configured
  */
-public class KeycloakUserQueryTestWithCachingAndMaxSize extends AbstractKeycloakIdentityProviderTest {
+class KeycloakUserQueryWithCachingAndMaxSizeTest extends AbstractKeycloakIdentityProviderTest {
 
-  public static Test suite() {
-    return new TestSetup(new TestSuite(KeycloakUserQueryTestWithCachingAndMaxSize.class)) {
+  @RegisterExtension
+  static ProcessEngineExtension engineExtension = keycloakEngine("operaton.enableCachingAndConfigureMaxCacheSize.cfg.xml");
 
-      // @BeforeClass
-      protected void setUp() {
-        ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration.createProcessEngineConfigurationFromResource(
-            "operaton.enableCachingAndConfigureMaxCacheSize.cfg.xml");
-        configureKeycloakIdentityProviderPlugin(config);
-        PluggableProcessEngineTestCase.cachedProcessEngine = config.buildProcessEngine();
-      }
-
-      // @AfterClass
-      protected void tearDown() {
-        PluggableProcessEngineTestCase.cachedProcessEngine.close();
-        PluggableProcessEngineTestCase.cachedProcessEngine = null;
-      }
-    };
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
+  @AfterEach
+  void tearDown() {
     // delete all created authorizations
     processEngine.getAuthorizationService()
         .createAuthorizationQuery()
@@ -71,54 +53,55 @@ public class KeycloakUserQueryTestWithCachingAndMaxSize extends AbstractKeycloak
   // Test configuration
   // ------------------------------------------------------------------------
 
-  public void testCacheEntriesEvictedWhenMaxSizeIsReached() {
+  @Test
+  void cacheEntriesEvictedWhenMaxSizeIsReached() {
 
     UserQuery query = identityService.createUserQuery();
 
     int countBefore = CountingHttpRequestInterceptor.getHttpRequestCount();
 
-    assertEquals(0, countBefore);
+    assertThat(countBefore).isZero();
 
-    assertEquals("Admin", queryUser(query, "Admin").getFirstName());
+    assertThat(queryUser(query, "Admin").getFirstName()).isEqualTo("Admin");
 
     // Admin has not been queried before so http call count should increase by 1
-    assertEquals(countBefore + 1, CountingHttpRequestInterceptor.getHttpRequestCount());
+    assertThat(CountingHttpRequestInterceptor.getHttpRequestCount()).isEqualTo(countBefore + 1);
 
     // cache contains only Admin at this point
-    assertEquals(Collections.singletonList("Admin"), getCacheEntries());
+    assertThat(getCacheEntries()).containsExactlyElementsOf(singletonList("Admin"));
 
-    assertEquals("Identity", queryUser(query, "Identity").getFirstName());
+    assertThat(queryUser(query, "Identity").getFirstName()).isEqualTo("Identity");
 
     // Identity has not been queried before so http call count should increase by 1
-    assertEquals(countBefore + 2, CountingHttpRequestInterceptor.getHttpRequestCount());
+    assertThat(CountingHttpRequestInterceptor.getHttpRequestCount()).isEqualTo(countBefore + 2);
 
     // cache contains Identity and Admin
-    assertEquals(Arrays.asList("Admin", "Identity"), getCacheEntries());
+    assertThat(getCacheEntries()).containsExactlyElementsOf(asList("Admin", "Identity"));
 
-    assertEquals("Admin", queryUser(query, "Admin").getFirstName());
+    assertThat(queryUser(query, "Admin").getFirstName()).isEqualTo("Admin");
 
     // Admin has already been queried and is still in the cache so count stays same
-    assertEquals(countBefore + 2, CountingHttpRequestInterceptor.getHttpRequestCount());
+    assertThat(CountingHttpRequestInterceptor.getHttpRequestCount()).isEqualTo(countBefore + 2);
 
     // cache still contains Identity and Admin
-    assertEquals(Arrays.asList("Admin", "Identity"), getCacheEntries());
+    assertThat(getCacheEntries()).containsExactlyElementsOf(asList("Admin", "Identity"));
 
-    assertEquals("Gunnar", queryUser(query, "Gunnar").getFirstName());
+    assertThat(queryUser(query, "Gunnar").getFirstName()).isEqualTo("Gunnar");
 
     // Gunnar has not been queried before so http call count should increase by 1
-    assertEquals(countBefore + 3, CountingHttpRequestInterceptor.getHttpRequestCount());
+    assertThat(CountingHttpRequestInterceptor.getHttpRequestCount()).isEqualTo(countBefore + 3);
 
     // Identity was evicted because maxSize(2) was breached and it was used fewer times than Admin
-    assertEquals(Arrays.asList("Admin", "Gunnar"), getCacheEntries());
+    assertThat(getCacheEntries()).containsExactlyElementsOf(asList("Admin", "Gunnar"));
 
     // query Identity again
-    assertEquals("Identity", queryUser(query, "Identity").getFirstName());
+    assertThat(queryUser(query, "Identity").getFirstName()).isEqualTo("Identity");
 
     // count should increase because Identity was removed from cache before the query
-    assertEquals(countBefore + 4, CountingHttpRequestInterceptor.getHttpRequestCount());
+    assertThat(CountingHttpRequestInterceptor.getHttpRequestCount()).isEqualTo(countBefore + 4);
 
     // Gunnar was evicted because the name was used fewer times than Admin
-    assertEquals(Arrays.asList("Admin", "Identity"), getCacheEntries());
+    assertThat(getCacheEntries()).containsExactlyElementsOf(asList("Admin", "Identity"));
   }
 
   private static User queryUser(UserQuery query, String firstName) {
