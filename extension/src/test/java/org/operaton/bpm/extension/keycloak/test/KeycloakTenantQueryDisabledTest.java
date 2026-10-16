@@ -17,6 +17,6 @@ class KeycloakTenantQueryDisabledTest extends AbstractKeycloakIdentityProviderTe
   @Test
   void tenantQueriesDisabledReturnEmpty() {
     assertThat(identityService.createTenantQuery().count()).isZero();
-    assertThat(identityService.createTenantQuery().list()).hasSize(0);
+    assertThat(identityService.createTenantQuery().list()).isEmpty();
   }
 }

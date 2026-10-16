@@ -174,7 +174,7 @@ class KeycloakUseGroupPathAsGroupIdQueryTest extends AbstractKeycloakIdentityPro
     list = identityService.createGroupQuery().groupMember("hans.mustermann@tradermail.info").list();
     assertThat(list).hasSize(1);
     list = identityService.createGroupQuery().groupMember("non-existing").list();
-    assertThat(list).hasSize(0);
+    assertThat(list).isEmpty();
   }
 
   @Test
@@ -209,7 +209,7 @@ class KeycloakUseGroupPathAsGroupIdQueryTest extends AbstractKeycloakIdentityPro
     assertThat(result).hasSize(2);
 
     result = identityService.createUserQuery().memberOfGroup("non-exist").list();
-    assertThat(result).hasSize(0);
+    assertThat(result).isEmpty();
   }
 
   @Test

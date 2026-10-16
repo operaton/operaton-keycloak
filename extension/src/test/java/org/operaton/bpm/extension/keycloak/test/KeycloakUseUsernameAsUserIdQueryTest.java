@@ -72,12 +72,10 @@ class KeycloakUseUsernameAsUserIdQueryTest extends AbstractKeycloakIdentityProvi
   @Test
   void userQueryFilterByUserIdIn() {
     List<User> users = identityService.createUserQuery().userIdIn("operaton", "hans.mustermann").list();
-    assertThat(users).isNotNull();
-    assertThat(users).hasSize(2);
+    assertThat(users).isNotNull().hasSize(2);
 
     users = identityService.createUserQuery().userIdIn("operaton", "non-existing").list();
-    assertThat(users).isNotNull();
-    assertThat(users).hasSize(1);
+    assertThat(users).isNotNull().hasSize(1);
   }
 
   @Test
@@ -118,10 +116,10 @@ class KeycloakUseUsernameAsUserIdQueryTest extends AbstractKeycloakIdentityProvi
     assertThat(result).hasSize(1);
 
     result = identityService.createUserQuery().memberOfGroup(groupIdAdmin).userId("non-exist").list();
-    assertThat(result).hasSize(0);
+    assertThat(result).isEmpty();
 
     result = identityService.createUserQuery().memberOfGroup("non-exist").userId("operaton").list();
-    assertThat(result).hasSize(0);
+    assertThat(result).isEmpty();
 
   }
 
@@ -152,7 +150,7 @@ class KeycloakUseUsernameAsUserIdQueryTest extends AbstractKeycloakIdentityProvi
     assertThat(result).hasSize(1);
 
     result = identityService.createGroupQuery().groupMember("non-exist").list();
-    assertThat(result).hasSize(0);
+    assertThat(result).isEmpty();
   }
 
   @Test

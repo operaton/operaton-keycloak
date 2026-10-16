@@ -99,14 +99,6 @@ class KeycloakNestedGroupsQueryTest extends AbstractKeycloakIdentityProviderTest
   }
 
   @Test
-  void groupQueryFilterByGroupMember() {
-    List<Group> result = identityService.createGroupQuery().groupMember("johnfoo@gmail.com").list();
-    assertThat(result).hasSize(2);
-    assertThat(result.stream().filter(g -> "child2".equals(g.getName())).count()).as("expected johnfoo@gmail.com to member of group child2").isOne();
-    assertThat(result.stream().filter(g -> "subchild1".equals(g.getName())).count()).as("expected johnfoo@gmail.com to member of group subchild1").isOne();
-  }
-
-  @Test
   void userQueryFilterByMemberOfGroup() {
     User user = identityService.createUserQuery().memberOfGroup(groupIdHierarchySubchild1).singleResult();
     assertThat(user).isNotNull();

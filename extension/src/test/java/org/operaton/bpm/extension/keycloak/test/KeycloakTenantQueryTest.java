@@ -93,7 +93,7 @@ class KeycloakTenantQueryTest extends AbstractKeycloakIdentityProviderTest {
     assertThat(adminTenants).hasSize(1);
 
     List<Tenant> noTenants = identityService.createTenantQuery().userMember(userIdHierarchy).list();
-    assertThat(noTenants).hasSize(0);
+    assertThat(noTenants).isEmpty();
   }
 
   @Test

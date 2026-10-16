@@ -71,16 +71,13 @@ class KeycloakUserQueryTest extends AbstractKeycloakIdentityProviderTest {
     List<User> users = identityService.createUserQuery()
         .userIdIn("operaton@accso.de", "gunnar.von-der-beck@accso.de")
         .list();
-    assertThat(users).isNotNull();
-    assertThat(users).hasSize(2);
+    assertThat(users).isNotNull().hasSize(2);
 
     users = identityService.createUserQuery().userIdIn("operaton@accso.de", "non-existing").list();
-    assertThat(users).isNotNull();
-    assertThat(users).hasSize(1);
+    assertThat(users).isNotNull().hasSize(1);
 
     users = identityService.createUserQuery().userIdIn("operaton@accso.de").list();
-    assertThat(users).isNotNull();
-    assertThat(users).hasSize(1);
+    assertThat(users).isNotNull().hasSize(1);
   }
 
   @Test
@@ -176,8 +173,7 @@ class KeycloakUserQueryTest extends AbstractKeycloakIdentityProviderTest {
     assertThat(user).isNotNull();
 
     List<User> users = identityService.createUserQuery().userEmailLike("%@accso.de").list();
-    assertThat(users).isNotNull();
-    assertThat(users).hasSize(2);
+    assertThat(users).isNotNull().hasSize(2);
 
     user = identityService.createUserQuery().userEmailLike("non-exist*").singleResult();
     assertThat(user).isNull();
@@ -189,7 +185,7 @@ class KeycloakUserQueryTest extends AbstractKeycloakIdentityProviderTest {
     assertThat(result).hasSize(2);
 
     result = identityService.createUserQuery().memberOfGroup("non-exist").list();
-    assertThat(result).hasSize(0);
+    assertThat(result).isEmpty();
   }
 
   @Test

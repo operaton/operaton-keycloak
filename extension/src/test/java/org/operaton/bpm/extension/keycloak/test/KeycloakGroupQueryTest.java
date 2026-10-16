@@ -204,7 +204,7 @@ class KeycloakGroupQueryTest extends AbstractKeycloakIdentityProviderTest {
     list = identityService.createGroupQuery().groupMember("hans.mustermann@tradermail.info").list();
     assertThat(list).hasSize(1);
     list = identityService.createGroupQuery().groupMember("non-existing").list();
-    assertThat(list).hasSize(0);
+    assertThat(list).isEmpty();
   }
 
   @Test

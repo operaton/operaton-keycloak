@@ -59,8 +59,7 @@ class KeycloakConfigureAdminGroupAsPathAndUsePathAsIdTest extends AbstractKeyclo
 
     // query groups using group member
     List<Group> groups = identityService.createGroupQuery().groupMember(user.getId()).list();
-    assertThat(groups).isNotNull();
-    assertThat(groups).as("Wrong number of groups for admin").hasSize(2);
+    assertThat(groups).isNotNull().as("Wrong number of groups for admin").hasSize(2);
 
   }
 }
