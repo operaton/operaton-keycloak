@@ -1,4 +1,5 @@
 package org.operaton.bpm.extension.keycloak;
+
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 

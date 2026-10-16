@@ -1,7 +1,7 @@
 package org.operaton.bpm.extension.keycloak.test;
+
 import java.util.List;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.operaton.bpm.engine.authorization.Authorization;
@@ -10,7 +10,6 @@ import org.operaton.bpm.engine.authorization.Permissions;
 import org.operaton.bpm.engine.authorization.Resources;
 import org.operaton.bpm.engine.identity.Group;
 import org.operaton.bpm.engine.identity.User;
-import org.operaton.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,15 +23,6 @@ class KeycloakConfigureAdminGroupAsPathTest extends AbstractKeycloakIdentityProv
   @RegisterExtension
   static ProcessEngineExtension engineExtension = keycloakEngine("operaton.configureAdminGroupAsPath.cfg.xml");
 
-  @AfterEach
-  void tearDown() {
-    // delete all created authorizations
-    processEngine.getAuthorizationService()
-        .createAuthorizationQuery()
-        .list()
-        .forEach(a -> processEngine.getAuthorizationService().deleteAuthorization(a.getId()));
-  }
-
   // ------------------------------------------------------------------------
   // Test configuration
   // ------------------------------------------------------------------------
@@ -40,15 +30,15 @@ class KeycloakConfigureAdminGroupAsPathTest extends AbstractKeycloakIdentityProv
   @Test
   void adminGroupConfiguration() {
     // check engine configuration
-    List<String> operatonAdminGroups = ((ProcessEngineConfigurationImpl) processEngine.getProcessEngineConfiguration()).getAdminGroups();
+    List<String> operatonAdminGroups = processEngineConfiguration.getAdminGroups();
     assertThat(operatonAdminGroups).hasSize(2); // operaton always adds "operaton-admin" as admin group ID - we want the other ID
     String adminGroupId = operatonAdminGroups.stream().filter(g -> !Groups.OPERATON_ADMIN.equals(g)).findFirst().get();
 
     // check that authorizations have been created
-    assertThat(processEngine.getAuthorizationService().createAuthorizationQuery().groupIdIn(adminGroupId).count()).isGreaterThan(0);
+    assertThat(authorizationService.createAuthorizationQuery().groupIdIn(adminGroupId).count()).isPositive();
 
     // check sample authorization for applications
-    assertThat(processEngine.getAuthorizationService()
+    assertThat(authorizationService
         .createAuthorizationQuery()
         .groupIdIn(adminGroupId)
         .resourceType(Resources.APPLICATION)
@@ -57,14 +47,13 @@ class KeycloakConfigureAdminGroupAsPathTest extends AbstractKeycloakIdentityProv
         .count()).isOne();
 
     // query user data
-    User user = processEngine.getIdentityService().createUserQuery().memberOfGroup(adminGroupId).singleResult();
+    User user = identityService.createUserQuery().memberOfGroup(adminGroupId).singleResult();
     assertThat(user).isNotNull();
     assertThat(user.getEmail()).isEqualTo("johnfoo@gmail.com");
 
     // query groups
-    Group group = processEngine.getIdentityService().createGroupQuery().groupId(adminGroupId).singleResult();
+    Group group = identityService.createGroupQuery().groupId(adminGroupId).singleResult();
     assertThat(group).isNotNull();
     assertThat(group.getName()).isEqualTo("subchild1");
   }
-
 }

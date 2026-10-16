@@ -1,7 +1,7 @@
 package org.operaton.bpm.extension.keycloak.test;
+
 import java.util.List;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.operaton.bpm.engine.authorization.Authorization;
@@ -26,14 +26,6 @@ class KeycloakTenantQueryTest extends AbstractKeycloakIdentityProviderTest {
 
   @RegisterExtension
   static ProcessEngineExtension engineExtension = keycloakEngine("operaton.useOrganizationsAsTenants.cfg.xml");
-
-  @AfterEach
-  void tearDown() {
-    processEngine.getAuthorizationService()
-        .createAuthorizationQuery()
-        .list()
-        .forEach(a -> processEngine.getAuthorizationService().deleteAuthorization(a.getId()));
-  }
 
   @Test
   void queryNoFilter() {

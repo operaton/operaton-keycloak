@@ -1,7 +1,7 @@
 package org.operaton.bpm.extension.keycloak.test;
+
 import java.util.List;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.operaton.bpm.engine.authorization.Authorization;
@@ -9,7 +9,6 @@ import org.operaton.bpm.engine.authorization.Permissions;
 import org.operaton.bpm.engine.authorization.Resources;
 import org.operaton.bpm.engine.identity.Group;
 import org.operaton.bpm.engine.identity.User;
-import org.operaton.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,15 +23,6 @@ class KeycloakConfigureAdminUserIdAndUseUsernameAsIdTest extends AbstractKeycloa
   static ProcessEngineExtension engineExtension = keycloakEngine("operaton.configureAdminUserIdAndUseUsernameAsId.cfg.xml",
       plugin -> plugin.setAdministratorUserId(userIdOperatonAdmin));
 
-  @AfterEach
-  void tearDown() {
-    // delete all created authorizations
-    processEngine.getAuthorizationService()
-        .createAuthorizationQuery()
-        .list()
-        .forEach(a -> processEngine.getAuthorizationService().deleteAuthorization(a.getId()));
-  }
-
   // ------------------------------------------------------------------------
   // Test configuration
   // ------------------------------------------------------------------------
@@ -40,16 +30,16 @@ class KeycloakConfigureAdminUserIdAndUseUsernameAsIdTest extends AbstractKeycloa
   @Test
   void adminUserConfiguration() {
     // check engine configuration
-    List<String> operatonAdminUsers = ((ProcessEngineConfigurationImpl) processEngine.getProcessEngineConfiguration()).getAdminUsers();
+    List<String> operatonAdminUsers = processEngineConfiguration.getAdminUsers();
     assertThat(operatonAdminUsers).hasSize(1);
     String adminUserId = operatonAdminUsers.get(0);
     assertThat(adminUserId).isEqualTo("operaton");
 
     // check that authorizations have been created
-    assertThat(processEngine.getAuthorizationService().createAuthorizationQuery().userIdIn(adminUserId).count()).isGreaterThan(0);
+    assertThat(authorizationService.createAuthorizationQuery().userIdIn(adminUserId).count()).isPositive();
 
     // check sample authorization for applications
-    assertThat(processEngine.getAuthorizationService()
+    assertThat(authorizationService
         .createAuthorizationQuery()
         .userIdIn(adminUserId)
         .resourceType(Resources.APPLICATION)
@@ -58,15 +48,14 @@ class KeycloakConfigureAdminUserIdAndUseUsernameAsIdTest extends AbstractKeycloa
         .count()).isOne();
 
     // query user data
-    User user = processEngine.getIdentityService().createUserQuery().userId(adminUserId).singleResult();
+    User user = identityService.createUserQuery().userId(adminUserId).singleResult();
     assertThat(user).isNotNull();
     assertThat(user.getId()).isEqualTo("operaton");
     assertThat(user.getEmail()).isEqualTo("operaton@accso.de");
 
     // query groups
-    Group group = processEngine.getIdentityService().createGroupQuery().groupMember(adminUserId).singleResult();
+    Group group = identityService.createGroupQuery().groupMember(adminUserId).singleResult();
     assertThat(group).isNotNull();
     assertThat(group.getName()).isEqualTo("operaton-admin");
   }
-
 }

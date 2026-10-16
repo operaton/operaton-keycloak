@@ -1,4 +1,5 @@
 package org.operaton.bpm.extension.keycloak.test;
+
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -152,5 +153,4 @@ class KeycloakUseKeycloakIdAsUserIdQueryTest extends AbstractKeycloakIdentityPro
         .singleResult();
     assertThat(group).isNull();
   }
-
 }

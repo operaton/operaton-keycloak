@@ -1,8 +1,11 @@
 package org.operaton.bpm.extension.keycloak.test;
+
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
+
 import javax.net.ssl.SSLContext;
 
 import dasniko.testcontainers.keycloak.KeycloakContainer;
@@ -17,16 +20,21 @@ import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.keycloak.admin.client.CreatedResponseUtil;
 import org.keycloak.representations.idm.OrganizationRepresentation;
 import org.operaton.bpm.engine.AuthorizationService;
 import org.operaton.bpm.engine.IdentityService;
-import org.operaton.bpm.engine.ProcessEngine;
 import org.operaton.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.operaton.bpm.engine.impl.cfg.ProcessEnginePlugin;
 import org.operaton.bpm.engine.impl.test.TestLogger;
 import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
 import org.operaton.bpm.extension.keycloak.plugin.KeycloakIdentityProviderPlugin;
+import org.operaton.bpm.extension.keycloak.test.util.CountingHttpRequestInterceptor;
+import org.operaton.bpm.extension.keycloak.test.util.PredictableTicker;
 import org.operaton.commons.logging.BaseLogger;
 import org.slf4j.Logger;
 import org.springframework.http.HttpEntity;
@@ -45,12 +53,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Super class for all Identity Provider Tests.
  * <p>
- * A single Keycloak container including the test realm is started lazily and shared by all test classes of a test
- * run. Each test class registers its own process engine via {@link #keycloakEngine(String)}, which patches the
- * Keycloak URLs and client secret of the test setup into the {@link KeycloakIdentityProviderPlugin} before the engine
- * is built.
+ * A single Keycloak container including the test realm is started before the first test class and shared by all test
+ * classes of a test run. Each test class registers its own process engine via {@link #keycloakEngine(String)}, which
+ * patches the Keycloak URLs and client secret of the test setup into the {@link KeycloakIdentityProviderPlugin} before
+ * the engine is built.
  */
+@ExtendWith(AbstractKeycloakIdentityProviderTest.KeycloakSetupExtension.class)
 public abstract class AbstractKeycloakIdentityProviderTest {
+
+  protected static final String TEST_REALM = "test";
 
   // Keycloak configuration
   // - in your maven build set as environment variables in order to override defaults
@@ -96,10 +107,38 @@ public abstract class AbstractKeycloakIdentityProviderTest {
   static final KeycloakContainer keycloak = new KeycloakContainer("quay.io/keycloak/keycloak:26.6.2");
 
   // injected by the ProcessEngineExtension
-  protected ProcessEngine processEngine;
   protected ProcessEngineConfigurationImpl processEngineConfiguration;
   protected IdentityService identityService;
   protected AuthorizationService authorizationService;
+
+  /**
+   * Starts the shared Keycloak container. Registered on class level, so it runs before the process engine extensions
+   * registered by the test classes.
+   */
+  static class KeycloakSetupExtension implements BeforeAllCallback {
+    @Override
+    public void beforeAll(ExtensionContext context) {
+      ensureKeycloakStarted();
+    }
+  }
+
+  /**
+   * Resets everything a test may leave behind: authorizations, the Keycloak query cache and the test utilities
+   * counting HTTP requests and simulating time.
+   */
+  @AfterEach
+  void resetTestState() {
+    authorizationService.createAuthorizationQuery()
+        .list()
+        .forEach(a -> authorizationService.deleteAuthorization(a.getId()));
+    processEngineConfiguration.getProcessEnginePlugins()
+        .stream()
+        .filter(KeycloakIdentityProviderPlugin.class::isInstance)
+        .map(KeycloakIdentityProviderPlugin.class::cast)
+        .forEach(KeycloakIdentityProviderPlugin::clearCache);
+    CountingHttpRequestInterceptor.resetCount();
+    PredictableTicker.reset();
+  }
 
   /**
    * Creates the process engine extension for a test class.
@@ -196,10 +235,9 @@ public abstract class AbstractKeycloakIdentityProviderTest {
    * @param config the process engine configuration
    * @return the configured KeycloakIdentityProviderPlugin
    */
-  protected static KeycloakIdentityProviderPlugin configureKeycloakIdentityProviderPlugin(ProcessEngineConfigurationImpl config) {
+  private static KeycloakIdentityProviderPlugin configureKeycloakIdentityProviderPlugin(ProcessEngineConfigurationImpl config) {
     for (ProcessEnginePlugin p : config.getProcessEnginePlugins()) {
       if (p instanceof KeycloakIdentityProviderPlugin kcp) {
-        ensureKeycloakStarted();
         kcp.setKeycloakAdminUrl(kcp.getKeycloakAdminUrl().replace("http://localhost:9000", keycloakUrl));
         kcp.setKeycloakIssuerUrl(kcp.getKeycloakIssuerUrl().replace("http://localhost:9000", keycloakUrl));
         kcp.setEnforceSubgroupsInGroupQuery(keycloakEnforceSubgroupsInGroupQuery);
@@ -226,7 +264,7 @@ public abstract class AbstractKeycloakIdentityProviderTest {
     HttpHeaders headers = authenticateKeycloakAdmin();
 
     // Create test realm
-    String realm = "test";
+    String realm = TEST_REALM;
     createRealm(headers, realm);
 
     // Create Client
@@ -530,6 +568,19 @@ public abstract class AbstractKeycloakIdentityProviderTest {
     }
     LOG.info("Created user {}", userName);
     return userId;
+  }
+
+  /**
+   * Deletes users and groups created by a test class.
+   *
+   * @param userIds  the IDs of the users to delete
+   * @param groupIds the IDs of the groups to delete
+   * @throws JSONException in case of errors
+   */
+  static void deleteUsersAndGroups(Collection<String> userIds, Collection<String> groupIds) throws JSONException {
+    HttpHeaders headers = authenticateKeycloakAdmin();
+    userIds.forEach(u -> deleteUser(headers, TEST_REALM, u));
+    groupIds.forEach(g -> deleteGroup(headers, TEST_REALM, g));
   }
 
   /**

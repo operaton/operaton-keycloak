@@ -1,4 +1,5 @@
 package org.operaton.bpm.extension.keycloak.test;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,7 @@ class KeycloakMaxResultSizeTest extends AbstractKeycloakIdentityProviderTest {
   @BeforeAll
   static void setupMassData() throws JSONException {
     HttpHeaders headers = authenticateKeycloakAdmin();
-    String realm = "test";
+    String realm = TEST_REALM;
     for (int i = 0; i < 50; i++) {
       USER_IDS.add(
           createUser(headers, realm, "user.test" + i, "UTest" + i, "User Test" + i, "utest.user" + i + "@test.info",
@@ -45,10 +46,7 @@ class KeycloakMaxResultSizeTest extends AbstractKeycloakIdentityProviderTest {
 
   @AfterAll
   static void deleteMassData() throws JSONException {
-    HttpHeaders headers = authenticateKeycloakAdmin();
-    String realm = "test";
-    USER_IDS.forEach(u -> deleteUser(headers, realm, u));
-    GROUP_IDS.forEach(g -> deleteGroup(headers, realm, g));
+    deleteUsersAndGroups(USER_IDS, GROUP_IDS);
   }
 
   @Test
@@ -98,5 +96,4 @@ class KeycloakMaxResultSizeTest extends AbstractKeycloakIdentityProviderTest {
     List<Group> result = identityService.createGroupQuery().groupMember("hans.mustermann@tradermail.info").list();
     assertThat(result).hasSize(25);
   }
-
 }

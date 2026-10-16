@@ -1,4 +1,5 @@
 package org.operaton.bpm.extension.keycloak.test;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +31,7 @@ class KeycloakMassDataTest extends AbstractKeycloakIdentityProviderTest {
   @BeforeAll
   static void setupMassData() throws JSONException {
     HttpHeaders headers = authenticateKeycloakAdmin();
-    String realm = "test";
+    String realm = TEST_REALM;
     for (int i = 0; i < 60; i++) {
       USER_IDS.add(
           createUser(headers, realm, "test.user" + i, "Test" + i, "User Test" + i, "test.user" + i + "@test.info",
@@ -59,10 +60,7 @@ class KeycloakMassDataTest extends AbstractKeycloakIdentityProviderTest {
 
   @AfterAll
   static void deleteMassData() throws JSONException {
-    HttpHeaders headers = authenticateKeycloakAdmin();
-    String realm = "test";
-    USER_IDS.forEach(u -> deleteUser(headers, realm, u));
-    GROUP_IDS.forEach(g -> deleteGroup(headers, realm, g));
+    deleteUsersAndGroups(USER_IDS, GROUP_IDS);
   }
 
   @Test

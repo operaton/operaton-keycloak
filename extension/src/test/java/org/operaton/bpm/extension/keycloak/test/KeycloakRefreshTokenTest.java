@@ -1,9 +1,9 @@
 package org.operaton.bpm.extension.keycloak.test;
+
 import java.lang.reflect.Field;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.operaton.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
 import org.operaton.bpm.extension.keycloak.KeycloakContext;
 import org.operaton.bpm.extension.keycloak.KeycloakContextProvider;
@@ -30,7 +30,7 @@ class KeycloakRefreshTokenTest extends AbstractKeycloakIdentityProviderTest {
     assertThat(identityService.createUserQuery().count()).isEqualTo(5);
 
     // expire current token (the dirty way)
-    KeycloakIdentityProviderFactory sessionFactory = (KeycloakIdentityProviderFactory) ((ProcessEngineConfigurationImpl) processEngine.getProcessEngineConfiguration()).getIdentityProviderSessionFactory();
+    KeycloakIdentityProviderFactory sessionFactory = (KeycloakIdentityProviderFactory) processEngineConfiguration.getIdentityProviderSessionFactory();
     KeycloakContextProvider keycloakContextProvider = getProtectedField(sessionFactory, "keycloakContextProvider");
     KeycloakContext ctx = getProtectedField(keycloakContextProvider, "context");
     Field expiresField = KeycloakContext.class.getDeclaredField("expiresAt");
@@ -57,5 +57,4 @@ class KeycloakRefreshTokenTest extends AbstractKeycloakIdentityProviderTest {
     field.setAccessible(true);
     return (T) field.get(obj);
   }
-
 }

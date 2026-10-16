@@ -1,18 +1,16 @@
 package org.operaton.bpm.extension.keycloak.test;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.operaton.bpm.engine.identity.User;
 import org.operaton.bpm.engine.identity.UserQuery;
 import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
 import org.operaton.bpm.extension.keycloak.CacheableKeycloakUserQuery;
-import org.operaton.bpm.extension.keycloak.plugin.KeycloakIdentityProviderPlugin;
 import org.operaton.bpm.extension.keycloak.test.util.CacheAwareKeycloakIdentityProviderPluginForTest;
 import org.operaton.bpm.extension.keycloak.test.util.CountingHttpRequestInterceptor;
-import org.operaton.bpm.extension.keycloak.test.util.PredictableTicker;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -25,29 +23,6 @@ class KeycloakUserQueryWithCachingAndMaxSizeTest extends AbstractKeycloakIdentit
 
   @RegisterExtension
   static ProcessEngineExtension engineExtension = keycloakEngine("operaton.enableCachingAndConfigureMaxCacheSize.cfg.xml");
-
-  @AfterEach
-  void tearDown() {
-    // delete all created authorizations
-    processEngine.getAuthorizationService()
-        .createAuthorizationQuery()
-        .list()
-        .forEach(a -> processEngine.getAuthorizationService().deleteAuthorization(a.getId()));
-    this.clearCache();
-    PredictableTicker.reset();
-    CountingHttpRequestInterceptor.resetCount();
-  }
-
-  /**
-   * clears the query cache so each test can start with a clean slate
-   */
-  private void clearCache() {
-    processEngineConfiguration.getProcessEnginePlugins()
-        .stream()
-        .filter(KeycloakIdentityProviderPlugin.class::isInstance)
-        .map(KeycloakIdentityProviderPlugin.class::cast)
-        .forEach(KeycloakIdentityProviderPlugin::clearCache);
-  }
 
   // ------------------------------------------------------------------------
   // Test configuration
@@ -118,5 +93,4 @@ class KeycloakUserQueryWithCachingAndMaxSizeTest extends AbstractKeycloakIdentit
         .sorted()
         .collect(Collectors.toList());
   }
-
 }

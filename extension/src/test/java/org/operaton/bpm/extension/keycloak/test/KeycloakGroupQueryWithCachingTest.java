@@ -1,12 +1,11 @@
 package org.operaton.bpm.extension.keycloak.test;
+
 import java.util.List;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.operaton.bpm.engine.identity.Group;
 import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
-import org.operaton.bpm.extension.keycloak.plugin.KeycloakIdentityProviderPlugin;
 import org.operaton.bpm.extension.keycloak.test.util.CountingHttpRequestInterceptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,28 +17,6 @@ class KeycloakGroupQueryWithCachingTest extends AbstractKeycloakIdentityProvider
 
   @RegisterExtension
   static ProcessEngineExtension engineExtension = keycloakEngine("operaton.enableCaching.cfg.xml");
-
-  @AfterEach
-  void tearDown() {
-    // delete all created authorizations
-    processEngine.getAuthorizationService()
-        .createAuthorizationQuery()
-        .list()
-        .forEach(a -> processEngine.getAuthorizationService().deleteAuthorization(a.getId()));
-    this.clearCache();
-    CountingHttpRequestInterceptor.resetCount();
-  }
-
-  /**
-   * clears the query cache so each test can start with a clean slate
-   */
-  private void clearCache() {
-    processEngineConfiguration.getProcessEnginePlugins()
-        .stream()
-        .filter(KeycloakIdentityProviderPlugin.class::isInstance)
-        .map(KeycloakIdentityProviderPlugin.class::cast)
-        .forEach(KeycloakIdentityProviderPlugin::clearCache);
-  }
 
   // ------------------------------------------------------------------------
   // Test configuration
@@ -156,5 +133,4 @@ class KeycloakGroupQueryWithCachingTest extends AbstractKeycloakIdentityProvider
       identityService.clearAuthentication();
     }
   }
-
 }

@@ -1,4 +1,5 @@
 package org.operaton.bpm.extension.keycloak.test;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;

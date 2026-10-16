@@ -1,13 +1,12 @@
 package org.operaton.bpm.extension.keycloak.test;
+
 import java.time.Duration;
 import java.util.List;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
 import org.operaton.bpm.extension.keycloak.CacheableKeycloakCheckPasswordCall;
-import org.operaton.bpm.extension.keycloak.plugin.KeycloakIdentityProviderPlugin;
 import org.operaton.bpm.extension.keycloak.test.util.CacheAwareKeycloakIdentityProviderPluginForTest;
 import org.operaton.bpm.extension.keycloak.test.util.CountingHttpRequestInterceptor;
 import org.operaton.bpm.extension.keycloak.test.util.PredictableTicker;
@@ -23,23 +22,6 @@ class KeycloakLoginWithCachingTest extends AbstractKeycloakIdentityProviderTest 
 
   @RegisterExtension
   static ProcessEngineExtension engineExtension = keycloakEngine("operaton.enableLoginCaching.cfg.xml");
-
-  @AfterEach
-  void tearDown() {
-    this.clearCache();
-    CountingHttpRequestInterceptor.resetCount();
-  }
-
-  /**
-   * clears the query cache so each test can start with a clean state
-   */
-  private void clearCache() {
-    processEngineConfiguration.getProcessEnginePlugins()
-        .stream()
-        .filter(KeycloakIdentityProviderPlugin.class::isInstance)
-        .map(KeycloakIdentityProviderPlugin.class::cast)
-        .forEach(KeycloakIdentityProviderPlugin::clearCache);
-  }
 
   // ------------------------------------------------------------------------
   // Test methods
@@ -230,5 +212,4 @@ class KeycloakLoginWithCachingTest extends AbstractKeycloakIdentityProviderTest 
         .sorted()
         .toList();
   }
-
 }

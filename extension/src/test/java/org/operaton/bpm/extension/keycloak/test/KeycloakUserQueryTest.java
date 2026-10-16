@@ -1,4 +1,5 @@
 package org.operaton.bpm.extension.keycloak.test;
+
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,7 @@ import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
 import org.operaton.bpm.extension.keycloak.KeycloakUserQuery;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.operaton.bpm.engine.authorization.Authorization.AUTH_TYPE_GRANT;
 import static org.operaton.bpm.extension.keycloak.CacheableKeycloakUserQuery.of;
 
@@ -287,13 +288,9 @@ class KeycloakUserQueryTest extends AbstractKeycloakIdentityProviderTest {
 
   @Test
   void nativeQueryFail() {
-    try {
-      identityService.createNativeUserQuery();
-      fail("Native queries are not supported in Keycloak case.");
-    } catch (BadUserRequestException ex) {
-      assertThat(ex.getMessage()).withFailMessage("Wrong exception").contains("Native user queries are not supported for Keycloak");
-    }
-
+    assertThatThrownBy(identityService::createNativeUserQuery)
+        .isInstanceOf(BadUserRequestException.class)
+        .hasMessageContaining("Native user queries are not supported for Keycloak");
   }
 
   @Test
@@ -343,5 +340,4 @@ class KeycloakUserQueryTest extends AbstractKeycloakIdentityProviderTest {
 
     return authorization;
   }
-
 }

@@ -1,4 +1,5 @@
 package org.operaton.bpm.extension.keycloak.test;
+
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -286,5 +287,4 @@ class KeycloakGroupQueryTest extends AbstractKeycloakIdentityProviderTest {
 
     return authorization;
   }
-
 }

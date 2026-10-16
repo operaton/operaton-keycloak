@@ -1,4 +1,5 @@
 package org.operaton.bpm.extension.keycloak.test;
+
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -118,5 +119,4 @@ class KeycloakNestedGroupsQueryTest extends AbstractKeycloakIdentityProviderTest
     user = identityService.createUserQuery().memberOfGroup(groupIdHierarchyChild1).singleResult();
     assertThat(user).isNull();
   }
-
 }

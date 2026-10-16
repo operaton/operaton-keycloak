@@ -1,4 +1,5 @@
 package org.operaton.bpm.extension.keycloak.test;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,15 +29,13 @@ class KeycloakUseUsernameAsUserIdQueryTest extends AbstractKeycloakIdentityProvi
   @BeforeAll
   static void setupSpecialTestUsers() throws JSONException {
     HttpHeaders headers = authenticateKeycloakAdmin();
-    String realm = "test";
+    String realm = TEST_REALM;
     USER_IDS.add(createUser(headers, realm, "hans.wurst", null, null, null, null));
   }
 
   @AfterAll
   static void deleteSpecialTestUsers() throws JSONException {
-    HttpHeaders headers = authenticateKeycloakAdmin();
-    String realm = "test";
-    USER_IDS.forEach(u -> deleteUser(headers, realm, u));
+    deleteUsersAndGroups(USER_IDS, List.of());
   }
 
   // ------------------------------------------------------------------------
