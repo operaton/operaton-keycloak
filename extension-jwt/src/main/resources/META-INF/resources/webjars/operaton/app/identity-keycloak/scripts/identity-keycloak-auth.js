@@ -66,20 +66,26 @@ await fetchKeycloakOptions(portalName+"/app/keycloak/keycloak-options.json")
     )
 
 
-// observe document if logout link is rendered and override it for SSO logout
-const observer = new MutationObserver(() => {
-    const logoutListItem = document.querySelector("li.account li.logout");
-    if (logoutListItem) {
+function replaceLogoutLink() {
+    const oldLogoutLink = document.querySelector("li.account a.logout, li.account li.logout > a");
+    if (oldLogoutLink) {
         observer.disconnect();
 
-        const oldLogoutLink = logoutListItem.getElementsByTagName("a")[0];
         // create a clone so no listeners are attached anymore
         const logoutLink = oldLogoutLink.cloneNode(true);
-        logoutListItem.replaceChild(logoutLink, oldLogoutLink);
-
-        logoutLink.href = '#'
-        logoutLink.onclick = () => operatonIdentityKeycloak && operatonIdentityKeycloak.logout();
+        logoutLink.href = '#';
+        logoutLink.onclick = event => {
+            event.preventDefault();
+            if (operatonIdentityKeycloak) {
+                operatonIdentityKeycloak.logout();
+            }
+        };
+        oldLogoutLink.replaceWith(logoutLink);
     }
-});
+}
+
+// override the logout link now or when it is rendered for SSO logout
+const observer = new MutationObserver(replaceLogoutLink);
 observer.observe(document, { attributes: false, childList: true, characterData: false, subtree: true });
+replaceLogoutLink();
 
