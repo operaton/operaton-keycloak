@@ -3,9 +3,8 @@ package org.operaton.bpm.extension.keycloak;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.operaton.bpm.engine.identity.Group;
-import org.operaton.bpm.engine.identity.Tenant;
 import org.operaton.bpm.engine.identity.User;
 import org.operaton.bpm.engine.impl.identity.IdentityProviderException;
 import org.operaton.bpm.extension.keycloak.cache.PassThroughCache;
@@ -15,44 +14,44 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.InstanceOfAssertFactories.throwable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class KeycloakIdentityProviderSessionTest {
+class KeycloakIdentityProviderSessionTest {
 
   private static final String ISSUER_URL = "http://localhost:8080/realms/test";
   private static final String TOKEN_URL = ISSUER_URL + "/protocol/openid-connect/token";
 
   @Test
-  public void shouldReturnFalseForUnauthorizedInvalidCredentials() {
+  void shouldReturnFalseForUnauthorizedInvalidCredentials() {
     KeycloakRestTemplate restTemplate = mock(KeycloakRestTemplate.class);
     when(restTemplate.postForEntity(eq(TOKEN_URL), any(HttpEntity.class), eq(String.class)))
         .thenThrow(clientError(HttpStatus.UNAUTHORIZED, "{\"error\":\"invalid_grant\"}"));
 
-    assertFalse(createSession(restTemplate).checkPassword("operaton@accso.de", "wrong"));
+    assertThat(createSession(restTemplate).checkPassword("operaton@accso.de", "wrong")).isFalse();
   }
 
   @Test
-  public void shouldReturnFalseForBadRequestInvalidGrant() {
+  void shouldReturnFalseForBadRequestInvalidGrant() {
     KeycloakRestTemplate restTemplate = mock(KeycloakRestTemplate.class);
     when(restTemplate.postForEntity(eq(TOKEN_URL), any(HttpEntity.class), eq(String.class)))
         .thenThrow(clientError(HttpStatus.BAD_REQUEST, "{\"error\":\"invalid_grant\"}"));
 
-    assertFalse(createSession(restTemplate).checkPassword("operaton@accso.de", "wrong"));
+    assertThat(createSession(restTemplate).checkPassword("operaton@accso.de", "wrong")).isFalse();
   }
 
   @Test
-  public void shouldThrowForOtherBadRequestErrors() {
+  void shouldThrowForOtherBadRequestErrors() {
     KeycloakRestTemplate restTemplate = mock(KeycloakRestTemplate.class);
     when(restTemplate.postForEntity(eq(TOKEN_URL), any(HttpEntity.class), eq(String.class)))
         .thenThrow(clientError(HttpStatus.BAD_REQUEST, "{\"error\":\"invalid_client\"}"));
 
-    assertThrows(IdentityProviderException.class,
-        () -> createSession(restTemplate).checkPassword("operaton@accso.de", "wrong"));
+    assertThatThrownBy(() -> createSession(restTemplate).checkPassword("operaton@accso.de", "wrong")).asInstanceOf(throwable(IdentityProviderException.class));
   }
 
   private TestableKeycloakIdentityProviderSession createSession(KeycloakRestTemplate restTemplate) {

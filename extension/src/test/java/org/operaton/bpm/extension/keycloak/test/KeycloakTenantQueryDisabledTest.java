@@ -1,12 +1,22 @@
 package org.operaton.bpm.extension.keycloak.test;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Tests tenant queries when organizations are not enabled.
  */
-public class KeycloakTenantQueryDisabledTest extends AbstractKeycloakIdentityProviderTest {
+class KeycloakTenantQueryDisabledTest extends AbstractKeycloakIdentityProviderTest {
 
-  public void testTenantQueriesDisabledReturnEmpty() {
-    assertEquals(0, identityService.createTenantQuery().count());
-    assertEquals(0, identityService.createTenantQuery().list().size());
+  @RegisterExtension
+  static ProcessEngineExtension engineExtension = keycloakEngine("operaton.cfg.xml");
+
+  @Test
+  void tenantQueriesDisabledReturnEmpty() {
+    assertThat(identityService.createTenantQuery().count()).isZero();
+    assertThat(identityService.createTenantQuery().list()).isEmpty();
   }
 }
