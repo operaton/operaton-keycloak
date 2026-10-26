@@ -2,117 +2,104 @@ package org.operaton.bpm.extension.keycloak.test;
 
 import java.util.List;
 
-import junit.extensions.TestSetup;
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import org.operaton.bpm.engine.ProcessEngineConfiguration;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.operaton.bpm.engine.identity.Group;
 import org.operaton.bpm.engine.identity.User;
-import org.operaton.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
-import org.operaton.bpm.engine.impl.test.PluggableProcessEngineTestCase;
+import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * User query test for the Keycloak identity provider.
  * Flags useEmailAsOperatonUserId and useUsernameAsOperatonUserId disabled.
  */
-public class KeycloakUseKeycloakIdAsUserIdQueryTest extends AbstractKeycloakIdentityProviderTest {
+class KeycloakUseKeycloakIdAsUserIdQueryTest extends AbstractKeycloakIdentityProviderTest {
 
-  public static Test suite() {
-    return new TestSetup(new TestSuite(KeycloakUseKeycloakIdAsUserIdQueryTest.class)) {
-
-      // @BeforeClass
-      protected void setUp() {
-        ProcessEngineConfigurationImpl config = (ProcessEngineConfigurationImpl) ProcessEngineConfiguration.createProcessEngineConfigurationFromResource(
-            "operaton.useKeycloakIdAsOperatonUserId.cfg.xml");
-        configureKeycloakIdentityProviderPlugin(config);
-        PluggableProcessEngineTestCase.cachedProcessEngine = config.buildProcessEngine();
-      }
-
-      // @AfterClass
-      protected void tearDown() {
-        PluggableProcessEngineTestCase.cachedProcessEngine.close();
-        PluggableProcessEngineTestCase.cachedProcessEngine = null;
-      }
-    };
-  }
+  @RegisterExtension
+  static ProcessEngineExtension engineExtension = keycloakEngine("operaton.useKeycloakIdAsOperatonUserId.cfg.xml");
 
   // ------------------------------------------------------------------------
   // Authorization tests
   // ------------------------------------------------------------------------
 
-  public void testKeycloakLoginSuccess() {
-    assertTrue(identityService.checkPassword(userIdOperatonAdmin, "operaton1!"));
+  @Test
+  void keycloakLoginSuccess() {
+    assertThat(identityService.checkPassword(userIdOperatonAdmin, "operaton1!")).isTrue();
   }
 
   // ------------------------------------------------------------------------
   // User Query tests
   // ------------------------------------------------------------------------
 
-  public void testUserQueryFilterByUserId() {
+  @Test
+  void userQueryFilterByUserId() {
     User user = identityService.createUserQuery().userId(userIdTeamlead).singleResult();
-    assertNotNull(user);
+    assertThat(user).isNotNull();
 
     user = identityService.createUserQuery().userId(userIdOperatonAdmin).singleResult();
-    assertNotNull(user);
+    assertThat(user).isNotNull();
 
     // validate user
-    assertEquals(userIdOperatonAdmin, user.getId());
-    assertEquals("Admin", user.getFirstName());
-    assertEquals("Operaton", user.getLastName());
-    assertEquals("operaton@accso.de", user.getEmail());
+    assertThat(user.getId()).isEqualTo(userIdOperatonAdmin);
+    assertThat(user.getFirstName()).isEqualTo("Admin");
+    assertThat(user.getLastName()).isEqualTo("Operaton");
+    assertThat(user.getEmail()).isEqualTo("operaton@accso.de");
 
     user = identityService.createUserQuery().userId("non-existing").singleResult();
-    assertNull(user);
+    assertThat(user).isNull();
   }
 
-  public void testUserQueryFilterByUserIdIn() {
+  @Test
+  void userQueryFilterByUserIdIn() {
     List<User> users = identityService.createUserQuery().userIdIn(userIdOperatonAdmin, userIdTeamlead).list();
-    assertNotNull(users);
-    assertEquals(2, users.size());
+    assertThat(users).isNotNull().hasSize(2);
 
     users = identityService.createUserQuery().userIdIn(userIdOperatonAdmin, "non-existing").list();
-    assertNotNull(users);
-    assertEquals(1, users.size());
+    assertThat(users).isNotNull().hasSize(1);
   }
 
-  public void testUserQueryFilterByEmail() {
+  @Test
+  void userQueryFilterByEmail() {
     User user = identityService.createUserQuery().userEmail("operaton@accso.de").singleResult();
-    assertNotNull(user);
+    assertThat(user).isNotNull();
 
     // validate user
-    assertEquals(userIdOperatonAdmin, user.getId());
-    assertEquals("Admin", user.getFirstName());
-    assertEquals("Operaton", user.getLastName());
-    assertEquals("operaton@accso.de", user.getEmail());
+    assertThat(user.getId()).isEqualTo(userIdOperatonAdmin);
+    assertThat(user.getFirstName()).isEqualTo("Admin");
+    assertThat(user.getLastName()).isEqualTo("Operaton");
+    assertThat(user.getEmail()).isEqualTo("operaton@accso.de");
 
     user = identityService.createUserQuery().userEmail("non-exist*").singleResult();
-    assertNull(user);
+    assertThat(user).isNull();
   }
 
-  public void testUserQueryFilterByGroupIdAndId() {
+  @Test
+  void userQueryFilterByGroupIdAndId() {
     List<User> result = identityService.createUserQuery()
         .memberOfGroup(groupIdAdmin)
         .userId(userIdOperatonAdmin)
         .list();
-    assertEquals(1, result.size());
+    assertThat(result).hasSize(1);
 
     result = identityService.createUserQuery().memberOfGroup(groupIdAdmin).userId("non-exist").list();
-    assertEquals(0, result.size());
+    assertThat(result).isEmpty();
 
     result = identityService.createUserQuery().memberOfGroup("non-exist").userId(userIdOperatonAdmin).list();
-    assertEquals(0, result.size());
+    assertThat(result).isEmpty();
 
   }
 
-  public void testAuthenticatedUserSeesHimself() {
+  @Test
+  void authenticatedUserSeesHimself() {
     try {
       processEngineConfiguration.setAuthorizationEnabled(true);
 
       identityService.setAuthenticatedUserId("non-existing");
-      assertEquals(0, identityService.createUserQuery().count());
+      assertThat(identityService.createUserQuery().count()).isZero();
 
       identityService.setAuthenticatedUserId(userIdOperatonAdmin);
-      assertEquals(1, identityService.createUserQuery().count());
+      assertThat(identityService.createUserQuery().count()).isOne();
 
     } finally {
       processEngineConfiguration.setAuthorizationEnabled(false);
@@ -124,42 +111,44 @@ public class KeycloakUseKeycloakIdAsUserIdQueryTest extends AbstractKeycloakIden
   // Group query tests
   // ------------------------------------------------------------------------
 
-  public void testGroupQueryFilterByUserId() {
+  @Test
+  void groupQueryFilterByUserId() {
     List<Group> result = identityService.createGroupQuery().groupMember(userIdOperatonAdmin).list();
-    assertEquals(1, result.size());
+    assertThat(result).hasSize(1);
 
     result = identityService.createGroupQuery().groupMember("non-exist").list();
-    assertEquals(0, result.size());
+    assertThat(result).isEmpty();
   }
 
-  public void testFilterByGroupIdAndUserId() {
+  @Test
+  void filterByGroupIdAndUserId() {
     Group group = identityService.createGroupQuery()
         .groupId(groupIdAdmin)
         .groupMember(userIdOperatonAdmin)
         .singleResult();
-    assertNotNull(group);
-    assertEquals("operaton-admin", group.getName());
+    assertThat(group).isNotNull();
+    assertThat(group.getName()).isEqualTo("operaton-admin");
 
     group = identityService.createGroupQuery().groupId("non-exist").groupMember(userIdOperatonAdmin).singleResult();
-    assertNull(group);
+    assertThat(group).isNull();
 
     group = identityService.createGroupQuery().groupId(groupIdAdmin).groupMember("non-exist").singleResult();
-    assertNull(group);
+    assertThat(group).isNull();
   }
 
-  public void testFilterByGroupIdInAndUserId() {
+  @Test
+  void filterByGroupIdInAndUserId() {
     Group group = identityService.createGroupQuery()
         .groupIdIn(groupIdAdmin, groupIdTeamlead)
         .groupMember(userIdOperatonAdmin)
         .singleResult();
-    assertNotNull(group);
-    assertEquals("operaton-admin", group.getName());
+    assertThat(group).isNotNull();
+    assertThat(group.getName()).isEqualTo("operaton-admin");
 
     group = identityService.createGroupQuery()
         .groupIdIn(groupIdAdmin, groupIdTeamlead)
         .groupMember("non-exist")
         .singleResult();
-    assertNull(group);
+    assertThat(group).isNull();
   }
-
 }

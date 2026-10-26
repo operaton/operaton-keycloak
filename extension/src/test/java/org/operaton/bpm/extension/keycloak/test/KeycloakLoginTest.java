@@ -1,36 +1,50 @@
 package org.operaton.bpm.extension.keycloak.test;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Keycloak login test.
  */
-public class KeycloakLoginTest extends AbstractKeycloakIdentityProviderTest {
+class KeycloakLoginTest extends AbstractKeycloakIdentityProviderTest {
 
-  public void testKeycloakLoginSuccess() {
-    assertTrue(identityService.checkPassword("operaton@accso.de", "operaton1!"));
+  @RegisterExtension
+  static ProcessEngineExtension engineExtension = keycloakEngine("operaton.cfg.xml");
+
+  @Test
+  void keycloakLoginSuccess() {
+    assertThat(identityService.checkPassword("operaton@accso.de", "operaton1!")).isTrue();
   }
 
-  public void testKeycloakLoginCapitalization() {
-    assertTrue(identityService.checkPassword("Operaton@Accso.de", "operaton1!"));
+  @Test
+  void keycloakLoginCapitalization() {
+    assertThat(identityService.checkPassword("Operaton@Accso.de", "operaton1!")).isTrue();
   }
 
-  public void testKeycloakLoginFailure() {
-    assertFalse(identityService.checkPassword("operaton@accso.de", "c"));
-    assertFalse(identityService.checkPassword("non-existing", "operaton1!"));
+  @Test
+  void keycloakLoginFailure() {
+    assertThat(identityService.checkPassword("operaton@accso.de", "c")).isFalse();
+    assertThat(identityService.checkPassword("non-existing", "operaton1!")).isFalse();
   }
 
-  public void testKeycloakLoginNullValues() {
-    assertFalse(identityService.checkPassword(null, "operaton1!"));
-    assertFalse(identityService.checkPassword("operaton@accso.de", null));
-    assertFalse(identityService.checkPassword(null, null));
+  @Test
+  void keycloakLoginNullValues() {
+    assertThat(identityService.checkPassword(null, "operaton1!")).isFalse();
+    assertThat(identityService.checkPassword("operaton@accso.de", null)).isFalse();
+    assertThat(identityService.checkPassword(null, null)).isFalse();
   }
 
-  public void testKeycloakLoginEmptyPassword() {
-    assertFalse(identityService.checkPassword("operaton@accso.de", ""));
+  @Test
+  void keycloakLoginEmptyPassword() {
+    assertThat(identityService.checkPassword("operaton@accso.de", "")).isFalse();
   }
 
-  public void testKeycloakLoginSpecialCharacterPassword() {
-    assertTrue(identityService.checkPassword("johnfoo@gmail.com", "!§$%&/()=?#'-_.:,;+*~@€"));
-    assertTrue(identityService.checkPassword("hans.mustermann@tradermail.info", "äöüÄÖÜ"));
+  @Test
+  void keycloakLoginSpecialCharacterPassword() {
+    assertThat(identityService.checkPassword("johnfoo@gmail.com", "!§$%&/()=?#'-_.:,;+*~@€")).isTrue();
+    assertThat(identityService.checkPassword("hans.mustermann@tradermail.info", "äöüÄÖÜ")).isTrue();
   }
-
 }
