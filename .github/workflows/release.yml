@@ -15,6 +15,10 @@ on:
         description: 'The next development version to set (without -SNAPSHOT suffix). For prereleases (M, RC), provide the base version so the snapshot stays at that base (e.g., 2.0.0 after releasing 2.0.0-M1).'
         required: true
         default: '2.0.0'
+      previous_tag:
+        description: 'The tag to start the changelog from (e.g., v2.1.0). If not provided, the latest final release tag (no M, RC, alpha or beta suffix) before this release is used.'
+        required: false
+        default: ''
       dry_run:
         description: 'Dry-Run: Skips remote operations when true'
         type: boolean
@@ -27,6 +31,7 @@ jobs:
     outputs:
       version: ${{steps.version.outputs.version}}
       is_prerelease: ${{steps.version.outputs.is_prerelease}}
+      previous_tag: ${{steps.version.outputs.previous_tag}}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -51,6 +56,13 @@ jobs:
             echo "⚙ Releasing version '$RELEASE_VERSION'"
             echo "is_prerelease=false" >> $GITHUB_OUTPUT
           fi
+          if [ -n "${{github.event.inputs.previous_tag}}" ]; then
+            PREVIOUS_TAG="${{github.event.inputs.previous_tag}}"
+          else
+            PREVIOUS_TAG=$(git tag --merged HEAD --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | grep -vx "v$RELEASE_VERSION" | head -n 1 || true)
+          fi
+          echo "⚙ Changelog starts after tag '$PREVIOUS_TAG'"
+          echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
           .github/scripts/set-project-version.sh $RELEASE_VERSION
           if ! git diff-index --quiet HEAD --; then
             git config --local user.name "$GITHUB_ACTOR"
@@ -127,6 +139,7 @@ jobs:
         uses: jreleaser/release-action@90ac653bb9c79d11179e65d81499f3f34527dcd5 #v2.5.0
         env:
           JRELEASER_PROJECT_VERSION: ${{needs.precheck.outputs.version}}
+          JRELEASER_PREVIOUS_TAG_NAME: ${{needs.precheck.outputs.previous_tag}}
           JRELEASER_GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           JRELEASER_GPG_PUBLIC_KEY: ${{secrets.GPG_PUBLIC_KEY}}
           JRELEASER_GPG_SECRET_KEY: ${{secrets.GPG_PRIVATE_KEY}}

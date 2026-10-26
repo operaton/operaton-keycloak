@@ -134,7 +134,7 @@
         <version>3.12.0</version>
         <configuration>
           <!-- disable javadoc linter to not fail on incomplete javadoc -->
-          <additionalJOption>-Xdoclint:none</additionalJOption>
+          <doclint>none</doclint>
           <legacyMode>true</legacyMode>
           <additionalDependencies>
             <dependency>
@@ -222,8 +222,10 @@
             <version>3.12.0</version>
             <configuration>
               <!-- disable javadoc linter to not fail on incomplete javadoc -->
-              <additionalJOption>-Xdoclint:none</additionalJOption>
-              <additionalJOption>--ignore-source-errors</additionalJOption>
+              <doclint>none</doclint>
+              <additionalOptions>
+                <additionalOption>--ignore-source-errors</additionalOption>
+              </additionalOptions>
               <additionalDependencies>
                 <dependency>
                   <groupId>org.operaton.bpm</groupId>
