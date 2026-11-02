@@ -96,7 +96,7 @@ public class KeycloakJwtAuthenticationFilter extends ContainerBasedAuthenticatio
   protected String extractEngineName(HttpServletRequest request) {
     String requestUri = request.getRequestURI().substring(operatonApplicationPath.length());
     Matcher apiStaticPluginPattern = API_STATIC_PLUGIN_PATTERN.matcher(requestUri);
-    if (request.getMethod().equals(GET_METHOD) && apiStaticPluginPattern.matches()) {
+    if (GET_METHOD.equals(request.getMethod()) && apiStaticPluginPattern.matches()) {
       return null;
     } else {
       return processEngineName;
