@@ -103,7 +103,7 @@ class ProcessLocalTest {
    */
   @Test
   @Deployment(resources = PROCESS_RESOURCE)
-  void approvedPath() throws Exception {
+  void approvedPath() {
     // start process
     ProcessInstance pi = runtimeService().startProcessInstanceByKey(PROCESS_DEFINITION_KEY,
         withVariables(Variable.NAME, "Demo"));
@@ -132,7 +132,7 @@ class ProcessLocalTest {
    */
   @Test
   @Deployment(resources = PROCESS_RESOURCE)
-  void notApprovedPath() throws Exception {
+  void notApprovedPath() {
     // start process
     ProcessInstance pi = runtimeService().startProcessInstanceByKey(PROCESS_DEFINITION_KEY,
         withVariables(Variable.NAME, "Demo"));
