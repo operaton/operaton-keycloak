@@ -25,6 +25,15 @@ allowing us to extract groups from the corresponding token claim.
 ![JWT client mappers](docs/camunda-jwt-mappers.PNG)
 ![JWT client scopes](docs/camunda-jwt-group-mapper.PNG)
 
+3. Provide the client secret of the ``operaton-identity-service`` client (Keycloak: *Clients* → *operaton-identity-service* → *Credentials*)
+   as environment variable before starting the application:
+
+```bash
+export KEYCLOAK_CLIENT_SECRET=<your-client-secret>
+```
+
+The secret is intentionally not part of ``application.yaml``; the application will not start without it.
+
 ## Usage with Operaton Spring Boot
 
 The integration basics are absolutely the same as described in the main part - [here](https://github.com/operaton/operaton-keycloak/tree/master/examples#usage-with-operaton-spring-boot)
