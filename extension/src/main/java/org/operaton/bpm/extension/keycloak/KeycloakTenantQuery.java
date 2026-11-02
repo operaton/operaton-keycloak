@@ -1,5 +1,6 @@
 package org.operaton.bpm.extension.keycloak;
 
+import java.io.Serial;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import org.operaton.bpm.engine.impl.interceptor.CommandExecutor;
  */
 public class KeycloakTenantQuery extends TenantQueryImpl {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   public KeycloakTenantQuery() {
