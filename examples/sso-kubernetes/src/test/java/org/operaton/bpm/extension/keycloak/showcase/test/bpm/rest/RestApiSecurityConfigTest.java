@@ -25,6 +25,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.operaton.bpm.engine.test.assertions.bpmn.AbstractAssertions.init;
 
 /**
@@ -95,12 +96,10 @@ class RestApiSecurityConfigTest {
   @Test
   void unSecuredRestApiDenied() {
     HttpHeaders headers = new HttpHeaders();
-    try {
-      restTemplate.exchange(getEngineRestUrl("engine"), HttpMethod.GET, new HttpEntity<>(headers), String.class);
-      org.assertj.core.api.Assertions.fail("Expected Status 401 Unauthorized");
-    } catch (HttpClientErrorException ex) {
-      assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-    }
+    assertThatThrownBy(() -> restTemplate.exchange(getEngineRestUrl("engine"), HttpMethod.GET,
+        new HttpEntity<>(headers), String.class))
+        .isInstanceOfSatisfying(HttpClientErrorException.class,
+            ex -> assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED));
   }
 
   // ---------------------------------------------------------------------------
