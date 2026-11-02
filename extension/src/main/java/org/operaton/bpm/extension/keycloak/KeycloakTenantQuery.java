@@ -8,7 +8,6 @@ import org.operaton.bpm.engine.impl.Page;
 import org.operaton.bpm.engine.impl.TenantQueryImpl;
 import org.operaton.bpm.engine.impl.interceptor.CommandContext;
 import org.operaton.bpm.engine.impl.interceptor.CommandExecutor;
-import org.operaton.bpm.engine.impl.persistence.entity.TenantEntity;
 
 /**
  * Keycloak specific tenant query implementation.
