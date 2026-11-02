@@ -40,9 +40,9 @@ public abstract class KeycloakServiceBase {
    * @param restTemplate            REST template
    * @param keycloakContextProvider Keycloak context provider
    */
-  public KeycloakServiceBase(KeycloakConfiguration keycloakConfiguration,
-                             KeycloakRestTemplate restTemplate,
-                             KeycloakContextProvider keycloakContextProvider) {
+  protected KeycloakServiceBase(KeycloakConfiguration keycloakConfiguration,
+                                KeycloakRestTemplate restTemplate,
+                                KeycloakContextProvider keycloakContextProvider) {
     this.keycloakConfiguration = keycloakConfiguration;
     this.restTemplate = restTemplate;
     this.keycloakContextProvider = keycloakContextProvider;
