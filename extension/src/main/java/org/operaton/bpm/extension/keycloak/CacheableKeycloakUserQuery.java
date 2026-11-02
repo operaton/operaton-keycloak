@@ -95,7 +95,6 @@ public final class CacheableKeycloakUserQuery {
   @Override
   public int hashCode() {
     int result = Objects.hash(id, firstName, firstNameLike, lastName, lastNameLike, email, emailLike, groupId, tenantId);
-    result = 31 * result + Arrays.hashCode(ids);
-    return result;
+    return 31 * result + Arrays.hashCode(ids);
   }
 }
