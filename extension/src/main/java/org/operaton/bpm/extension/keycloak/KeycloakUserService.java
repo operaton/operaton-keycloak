@@ -148,15 +148,9 @@ public class KeycloakUserService extends KeycloakServiceBase {
       JsonArray searchResult = parseAsJsonArray(response.getBody());
       for (int i = 0; i < searchResult.size(); i++) {
         JsonObject keycloakUser = getJsonObjectAtIndex(searchResult, i);
-        if (keycloakConfiguration.isUseEmailAsOperatonUserId() && !StringUtils.hasLength(
-            getJsonString(keycloakUser, MEMBER_EMAIL))) {
-          continue;
+        if (hasOperatonUserId(keycloakUser)) {
+          userList.add(transformUser(keycloakUser));
         }
-        if (keycloakConfiguration.isUseUsernameAsOperatonUserId() && !StringUtils.hasLength(
-            getJsonString(keycloakUser, MEMBER_USERNAME))) {
-          continue;
-        }
-        userList.add(transformUser(keycloakUser));
       }
 
     } catch (HttpClientErrorException hcee) {
@@ -182,26 +176,7 @@ public class KeycloakUserService extends KeycloakServiceBase {
     List<User> userList = new ArrayList<>();
 
     try {
-      // get members of this group
-      ResponseEntity<String> response = null;
-
-      if (StringUtils.hasLength(query.getId())) {
-        response = requestUserById(query.getId());
-      } else if (query.getIds() != null && query.getIds().length == 1) {
-        response = requestUserById(query.getIds()[0]);
-      } else {
-        // Create user search filter
-        String userFilter = createUserSearchFilter(query);
-
-        String url;
-        if(keycloakConfiguration.isUseOrganizationsAsTenants() && StringUtils.hasLength(query.getTenantId())) {
-          url = keycloakConfiguration.getKeycloakAdminUrl() + "/organizations/" + query.getTenantId() + "/members";
-        } else {
-          url = keycloakConfiguration.getKeycloakAdminUrl() + "/users";
-        }
-
-        response = restTemplate.exchange(url + userFilter, HttpMethod.GET, String.class);
-      }
+      ResponseEntity<String> response = requestUsers(query);
       if (!response.getStatusCode().equals(HttpStatus.OK)) {
         throw new IdentityProviderException(
             "Unable to read users from " + keycloakConfiguration.getKeycloakAdminUrl() + ": HTTP status code "
@@ -211,16 +186,9 @@ public class KeycloakUserService extends KeycloakServiceBase {
       JsonArray searchResult = parseAsJsonArray(response.getBody());
       for (int i = 0; i < searchResult.size(); i++) {
         JsonObject keycloakUser = getJsonObjectAtIndex(searchResult, i);
-        if (keycloakConfiguration.isUseEmailAsOperatonUserId() && !StringUtils.hasLength(
-            getJsonString(keycloakUser, MEMBER_EMAIL))) {
-          continue;
+        if (hasOperatonUserId(keycloakUser)) {
+          userList.add(transformUser(keycloakUser));
         }
-        if (keycloakConfiguration.isUseUsernameAsOperatonUserId() && !StringUtils.hasLength(
-            getJsonString(keycloakUser, MEMBER_USERNAME))) {
-          continue;
-        }
-
-        userList.add(transformUser(keycloakUser));
       }
 
     } catch (RestClientException | JsonException rce) {
@@ -228,6 +196,52 @@ public class KeycloakUserService extends KeycloakServiceBase {
     }
 
     return userList;
+  }
+
+  /**
+   * Requests users from Keycloak - either a single user by ID or a filtered user search.
+   *
+   * @param query the user query - not including a groupId criteria
+   * @return the Keycloak response
+   */
+  private ResponseEntity<String> requestUsers(CacheableKeycloakUserQuery query) {
+    String userId = query.getId();
+    if (StringUtils.hasLength(userId)) {
+      return requestUserById(userId);
+    }
+
+    String[] ids = query.getIds();
+    if (ids != null && ids.length == 1) {
+      return requestUserById(ids[0]);
+    }
+
+    boolean useOrganizationEndpoint = keycloakConfiguration.isUseOrganizationsAsTenants()
+        && StringUtils.hasLength(query.getTenantId());
+    String endpoint = useOrganizationEndpoint
+        ? "/organizations/" + query.getTenantId() + "/members"
+        : "/users";
+    String url = keycloakConfiguration.getKeycloakAdminUrl() + endpoint;
+
+    return restTemplate.exchange(url + createUserSearchFilter(query), HttpMethod.GET, String.class);
+  }
+
+  /**
+   * Checks whether a Keycloak user has the attribute configured to be used as Operaton user ID.
+   *
+   * @param keycloakUser the Keycloak user
+   * @return {@code false} if email or username is configured as user ID but missing on the user
+   * @throws JsonException in case of errors reading the user's attributes
+   */
+  private boolean hasOperatonUserId(JsonObject keycloakUser) throws JsonException {
+    if (keycloakConfiguration.isUseEmailAsOperatonUserId()
+        && !StringUtils.hasLength(getJsonString(keycloakUser, MEMBER_EMAIL))) {
+      return false;
+    }
+    if (keycloakConfiguration.isUseUsernameAsOperatonUserId()
+        && !StringUtils.hasLength(getJsonString(keycloakUser, MEMBER_USERNAME))) {
+      return false;
+    }
+    return true;
   }
 
   /**
