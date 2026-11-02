@@ -163,7 +163,6 @@ public class KeycloakTenantService extends KeycloakServiceBase {
    */
   private String createOrganizationSearchFilter(CacheableKeycloakTenantQuery query) {
     StringBuilder filter = new StringBuilder();
-    boolean hasSearch = false;
     if (StringUtils.hasLength(query.getName())) {
       // search = A String representing either an organization name or domain
       addArgument(filter, "search", query.getName());
