@@ -72,7 +72,6 @@ public final class CacheableKeycloakTenantQuery {
   @Override
   public int hashCode() {
     int result = Objects.hash(id, name, nameLike, userId, groupId,includingGroups);
-    result = 31 * result + Arrays.hashCode(ids);
-    return result;
+    return 31 * result + Arrays.hashCode(ids);
   }
 }

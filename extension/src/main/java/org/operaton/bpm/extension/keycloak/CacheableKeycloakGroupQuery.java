@@ -76,7 +76,6 @@ public final class CacheableKeycloakGroupQuery {
   @Override
   public int hashCode() {
     int result = Objects.hash(id, name, nameLike, type, userId, tenantId);
-    result = 31 * result + Arrays.hashCode(ids);
-    return result;
+    return 31 * result + Arrays.hashCode(ids);
   }
 }
