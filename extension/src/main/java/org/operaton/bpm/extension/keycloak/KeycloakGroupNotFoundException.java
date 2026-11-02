@@ -1,5 +1,7 @@
 package org.operaton.bpm.extension.keycloak;
 
+import java.io.Serial;
+
 /**
  * Thrown in case a query for a unique group fails.
  */
@@ -8,6 +10,7 @@ public class KeycloakGroupNotFoundException extends Exception {
   /**
    * This class' serial version UID.
    */
+  @Serial
   private static final long serialVersionUID = 4368608195497046998L;
 
   /**
