@@ -10,6 +10,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.operaton.bpm.engine.authorization.Permission;
 import org.operaton.bpm.engine.authorization.Resource;
+import org.operaton.bpm.engine.impl.context.Context;
 import org.operaton.bpm.engine.impl.persistence.entity.UserEntity;
 import org.operaton.bpm.extension.keycloak.json.JsonException;
 import org.operaton.bpm.extension.keycloak.rest.KeycloakRestTemplate;
@@ -238,7 +239,7 @@ public abstract class KeycloakServiceBase {
       return false;
     }
     return userId.equalsIgnoreCase(
-        org.operaton.bpm.engine.impl.context.Context.getCommandContext().getAuthenticatedUserId());
+        Context.getCommandContext().getAuthenticatedUserId());
   }
 
   /**
@@ -251,7 +252,7 @@ public abstract class KeycloakServiceBase {
    */
   protected boolean isAuthorized(Permission permission, Resource resource, String resourceId) {
     return !keycloakConfiguration.isAuthorizationCheckEnabled()
-        || org.operaton.bpm.engine.impl.context.Context.getCommandContext()
+        || Context.getCommandContext()
         .getAuthorizationManager()
         .isAuthorized(permission, resource, resourceId);
   }

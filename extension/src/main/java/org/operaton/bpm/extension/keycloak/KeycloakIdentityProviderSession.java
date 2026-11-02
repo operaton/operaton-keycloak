@@ -14,6 +14,7 @@ import org.operaton.bpm.engine.identity.TenantQuery;
 import org.operaton.bpm.engine.identity.User;
 import org.operaton.bpm.engine.identity.UserQuery;
 import org.operaton.bpm.engine.impl.UserQueryImpl;
+import org.operaton.bpm.engine.impl.context.Context;
 import org.operaton.bpm.engine.impl.identity.IdentityProviderException;
 import org.operaton.bpm.engine.impl.identity.ReadOnlyIdentityProvider;
 import org.operaton.bpm.engine.impl.interceptor.CommandContext;
@@ -101,7 +102,7 @@ public class KeycloakIdentityProviderSession implements ReadOnlyIdentityProvider
    */
   @Override
   public User findUserById(String userId) {
-    return createUserQuery(org.operaton.bpm.engine.impl.context.Context.getCommandContext()).userId(userId)
+    return createUserQuery(Context.getCommandContext()).userId(userId)
         .singleResult();
   }
 
@@ -111,7 +112,7 @@ public class KeycloakIdentityProviderSession implements ReadOnlyIdentityProvider
   @Override
   public UserQuery createUserQuery() {
     return new KeycloakUserQuery(
-        org.operaton.bpm.engine.impl.context.Context.getProcessEngineConfiguration().getCommandExecutorTxRequired());
+        Context.getProcessEngineConfiguration().getCommandExecutorTxRequired());
   }
 
   /**
@@ -321,7 +322,7 @@ public class KeycloakIdentityProviderSession implements ReadOnlyIdentityProvider
    */
   @Override
   public Group findGroupById(String groupId) {
-    return createGroupQuery(org.operaton.bpm.engine.impl.context.Context.getCommandContext()).groupId(groupId)
+    return createGroupQuery(Context.getCommandContext()).groupId(groupId)
         .singleResult();
   }
 
@@ -331,7 +332,7 @@ public class KeycloakIdentityProviderSession implements ReadOnlyIdentityProvider
   @Override
   public GroupQuery createGroupQuery() {
     return new KeycloakGroupQuery(
-        org.operaton.bpm.engine.impl.context.Context.getProcessEngineConfiguration().getCommandExecutorTxRequired());
+        Context.getProcessEngineConfiguration().getCommandExecutorTxRequired());
   }
 
   /**
@@ -413,7 +414,7 @@ public class KeycloakIdentityProviderSession implements ReadOnlyIdentityProvider
   @Override
   public TenantQuery createTenantQuery() {
     return new KeycloakTenantQuery(
-        org.operaton.bpm.engine.impl.context.Context.getProcessEngineConfiguration().getCommandExecutorTxRequired());
+        Context.getProcessEngineConfiguration().getCommandExecutorTxRequired());
   }
 
   @Override
