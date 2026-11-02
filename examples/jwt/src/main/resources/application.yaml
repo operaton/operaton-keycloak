@@ -43,7 +43,7 @@ keycloak:
   # Keycloak Operaton Identity Service
   plugin:
     client.id: operaton-identity-service
-    client.secret: FOZQuxYwfuvb9R708askvn9XkZMfwlKp
+    client.secret: ${KEYCLOAK_CLIENT_SECRET}
 
 # Spring Boot Security OAuth2 SSO
 spring.security:
