@@ -7,11 +7,12 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * Keycloak specific RestTemplate taking care of authentication and a single retry in case of HTTP 401.
  */
-public class KeycloakRestTemplate extends org.springframework.web.client.RestTemplate {
+public class KeycloakRestTemplate extends RestTemplate {
 
   /**
    * Access to the Keycloak context.
