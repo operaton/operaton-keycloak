@@ -3,7 +3,7 @@ package org.operaton.bpm.extension.keycloak.config;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.core.Ordered;
 
-public class KeycloakConfigurationFilterRegistrationBean extends FilterRegistrationBean {
+public class KeycloakConfigurationFilterRegistrationBean extends FilterRegistrationBean<KeycloakCockpitConfigurationFilter> {
 
   public KeycloakConfigurationFilterRegistrationBean(KeycloakCockpitConfiguration keycloakCockpitConfiguration,
                                                      String operatonWebappApplicationPath) {
