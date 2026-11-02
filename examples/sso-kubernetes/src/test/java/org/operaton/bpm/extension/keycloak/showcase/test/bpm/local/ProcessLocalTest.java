@@ -24,6 +24,7 @@ import static org.operaton.bpm.engine.test.assertions.bpmn.BpmnAwareTests.assert
 import static org.operaton.bpm.engine.test.assertions.bpmn.BpmnAwareTests.complete;
 import static org.operaton.bpm.engine.test.assertions.bpmn.BpmnAwareTests.execute;
 import static org.operaton.bpm.engine.test.assertions.bpmn.BpmnAwareTests.job;
+import static org.operaton.bpm.engine.test.assertions.bpmn.BpmnAwareTests.repositoryService;
 import static org.operaton.bpm.engine.test.assertions.bpmn.BpmnAwareTests.runtimeService;
 import static org.operaton.bpm.engine.test.assertions.bpmn.BpmnAwareTests.task;
 import static org.operaton.bpm.engine.test.assertions.bpmn.BpmnAwareTests.withVariables;
@@ -92,8 +93,9 @@ class ProcessLocalTest {
   @Test
   @Deployment(resources = PROCESS_RESOURCE)
   void parsingAndDeployment() {
-    // nothing is done here, as we just want to check for exceptions during
-    // deployment
+    assertThat(repositoryService().createProcessDefinitionQuery()
+        .processDefinitionKey(PROCESS_DEFINITION_KEY)
+        .singleResult()).isNotNull();
   }
 
   /**
