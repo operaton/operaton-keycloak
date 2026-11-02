@@ -1,7 +1,6 @@
 package org.operaton.bpm.extension.keycloak;
 
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.operaton.bpm.engine.identity.Group;
@@ -73,9 +72,9 @@ class KeycloakIdentityProviderSessionTest {
     private TestableKeycloakIdentityProviderSession(KeycloakConfiguration keycloakConfiguration,
                                                     KeycloakRestTemplate restTemplate) {
       super(keycloakConfiguration, restTemplate, mock(KeycloakContextProvider.class), new PassThroughCache<>(),
-          new PassThroughCache<CacheableKeycloakUserQuery, List<User>>(),
-          new PassThroughCache<CacheableKeycloakGroupQuery, List<Group>>(),
-          new PassThroughCache<CacheableKeycloakCheckPasswordCall, Boolean>());
+          new PassThroughCache<>(),
+          new PassThroughCache<>(),
+          new PassThroughCache<>());
     }
 
     @Override
