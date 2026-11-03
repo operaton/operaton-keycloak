@@ -17,13 +17,13 @@ You need to set:
 - Standard Flow Enabled - ``on``
 - Also ``Valid Redirect URIs`` and ``Web Origions`` should be defined
 
-![Keycloak client for UI](docs/camunda-jwt.PNG)
+![Keycloak client for UI](docs/operaton-jwt.png)
 
 The setup additionally requires the registration of a group mapper under the `operaton-jwt-dedicated` client scope,
 allowing us to extract groups from the corresponding token claim.
-![JWT client scopes](docs/camunda-jwt-client-scopes.PNG)
-![JWT client mappers](docs/camunda-jwt-mappers.PNG)
-![JWT client scopes](docs/camunda-jwt-group-mapper.PNG)
+![JWT client scopes](docs/operaton-jwt-client-scopes.png)
+![JWT client mappers](docs/operaton-jwt-mappers.png)
+![JWT client scopes](docs/operaton-jwt-group-mapper.png)
 
 3. Provide the client secret of the ``operaton-identity-service`` client (Keycloak: *Clients* → *operaton-identity-service* → *Credentials*)
    as environment variable before starting the application:
