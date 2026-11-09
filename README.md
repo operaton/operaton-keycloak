@@ -67,7 +67,7 @@ Click any screenshot to open it full size.
 6. If you are using Keycloak 26.8.2 or higher, add the 'kc-admin-api' to the service Client scopes as default or
    optional type.
 
-   [<img src="doc/operaton-kc-8.png" alt="Client scopes" width="900">](doc/operaton-kc-13.png)
+   [<img src="doc/operaton-kc-13.png" alt="Client scopes" width="900">](doc/operaton-kc-13.png)
 
    See [Keycloak 26.8.2 Breaking Changes](https://www.keycloak.org/docs/latest/upgrading/#admin-rest-api-now-enforces-an-audience-check)
 
