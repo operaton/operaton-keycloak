@@ -64,11 +64,21 @@ Click any screenshot to open it full size.
 
    [<img src="doc/operaton-kc-8.png" alt="Service account roles" width="900">](doc/operaton-kc-8.png)
 
-6. Your client credentials can be found here:
+6. If you are using Keycloak 26.8.2 or higher, add the 'kc-admin-api' to the service Client scopes as default or
+   optional type.
+
+   [<img src="doc/operaton-kc-13.png" alt="Client scopes" width="900">](doc/operaton-kc-13.png)
+
+   See [Keycloak 26.8.2 Breaking Changes](https://www.keycloak.org/docs/latest/upgrading/#admin-rest-api-now-enforces-an-audience-check)
+
+7. Your client credentials can be found here:
 
    [<img src="doc/operaton-kc-9.png" alt="Client credentials" width="900">](doc/operaton-kc-9.png)
 
-7. Once you're done with the basic setup you're now ready to manage your users and groups with Keycloak. Please keep in mind, that in order to make the Keycloak Identity Provider work, you will need at least one dedicated Operaton admin group or Operaton admin user in your realm. Whether you create this group/user manually or import it using the LDAP user federation or any other Identity Provider is up to you.
+8. Once you're done with the basic setup you're now ready to manage your users and groups with Keycloak. Please keep in
+   mind, that in order to make the Keycloak Identity Provider work, you will need at least one dedicated Operaton admin
+   group or Operaton admin user in your realm. Whether you create this group/user manually or import it using the LDAP
+   user federation or any other Identity Provider is up to you.
 
    [<img src="doc/operaton-kc-12.png" alt="Operaton admin group" width="900">](doc/operaton-kc-12.png)
 
